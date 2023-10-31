@@ -2,8 +2,8 @@
 % Please edit documentation in R/coglasso-package.R
 \docType{package}
 \name{coglasso-package}
-\alias{coglasso}
 \alias{coglasso-package}
+\alias{_PACKAGE}
 \title{coglasso: Collaborative Graphical Lasso - Multi-Omics Network Reconstruction}
 \description{
 An algorithm for network reconstruction from multi-omics data sets joining the principles of the graphical lasso by Friedman et al. (2008) and collaborative regression by Gross and Tibshirani (2015).

@@ -100,7 +100,7 @@ parameter for which the best (\eqn{λ_w}, \eqn{λ_b}) couple yielded the most
 stable, yet sparse network.
 }
 \examples{
-cg <- coglasso(multi_omics_SD_small, pX=4, nlambda_w=6, nlambda_b=6, nc=3)
+cg <- coglasso(multi_omics_SD_micro, pX=4, nlambda_w=6, nlambda_b=6, nc=3)
 sel_cg <- stars_coglasso(cg)
 
 }
