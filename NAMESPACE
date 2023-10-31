@@ -2,6 +2,7 @@
 
 export(coglasso)
 export(stars_coglasso)
-importFrom(Matrix,Matrix)
 importFrom(Rcpp,evalCpp)
+importFrom(stats,cor)
+importFrom(utils,flush.console)
 useDynLib(coglasso, .registration=TRUE)

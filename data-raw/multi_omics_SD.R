@@ -86,8 +86,11 @@ multi_omics_SD <- mo_sd[-25, mo_subset]
 
 usethis::use_data(multi_omics_SD, overwrite = TRUE)
 
-# Load neighborhood of Cirbp described in Albanese et al. 2023
+# Select neighborhood of Cirbp described in Albanese et al. 2023
 load("data-raw/cirbp_neighborhood.RData")
 multi_omics_SD_small <- multi_omics_SD[, cirbp_neighborhood]
-
 usethis::use_data(multi_omics_SD_small, overwrite = TRUE)
+
+cirbp_neighborhood <- c(65,  57, 124, 146, 180, 200)
+multi_omics_SD_micro <- multi_omics_SD[, cirbp_neighborhood]
+usethis::use_data(multi_omics_SD_micro, overwrite = TRUE)

@@ -4,16 +4,18 @@ Title: Collaborative Graphical Lasso - Multi-Omics Network Reconstruction
 Version: 1.0
 Date: 2023-10-23
 Authors@R: c(
-  person("Alessio", "Albanese", email = "alessio.albanese@wur.nl", role = c("aut", "cre"), comment=c(ORCID = "0000-0003-1783-5613")),
-  person("Pariya", "Behrouzi", role = c("aut"), comment=c(ORCID = "0000-0001-6762-5433")))
+  person("Alessio", "Albanese", email = "alessio.albanese@wur.nl", role = c("aut", "cre"), comment=c(ORCID = "0000-0003-1783-5613")))
 Description: An algorithm for network reconstruction from multi-omics data sets 
   joining the principles of the graphical lasso by Friedman et al. (2008) and 
   collaborative regression by Gross and Tibshirani (2015).
 URL: https://github.com/DrQuestion/coglasso
 BugReports: https://github.com/DrQuestion/coglasso/issues
 License: GPL (>= 2)
-Imports: Matrix,
-  Rcpp (>= 1.0.11)
+Imports: 
+    Matrix,
+    Rcpp (>= 1.0.11),
+    stats,
+    utils
 LinkingTo: Rcpp,
   RcppEigen
 Depends: 
@@ -21,6 +23,7 @@ Depends:
 LazyData: true
 Encoding: UTF-8
 RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE)
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
