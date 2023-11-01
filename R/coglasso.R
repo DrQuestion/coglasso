@@ -127,11 +127,6 @@ coglasso <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, nlamb
 #' * A numerical vector with all the generated \eqn{λ_b}.
 #' * A numerical vector with all the generated \eqn{c}.
 #' 
-#' @examples 
-#' S <- stats::cor(multi_omics_SD_micro)
-#' p <- dim(S)[[1]]
-#' hpars <- gen_hpars(S, p, nlambda_w=6, nlambda_b=6, nc=3)
-#' 
 gen_hpars <- function(S=NULL, p=NULL, lambda_w = NULL, lambda_b = NULL, c = NULL, 
                       nlambda_w = NULL, nlambda_b = NULL, 
                       nc = NULL, c.max=NULL, lambda_w.min.ratio = NULL, lambda_b.min.ratio = NULL, 

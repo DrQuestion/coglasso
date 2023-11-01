@@ -78,8 +78,7 @@ user.}
 \code{gen_hpars()} generates an ordered table of all the combinations of the hyperparameters given as input to \code{coglasso()}
 }
 \examples{
-S <- stats::cor(multi_omics_SD_micro)
-p <- dim(S)[[1]]
-hpars <- gen_hpars(S, p, nlambda_w=6, nlambda_b=6, nc=3)
+# Typical usage: set the number of hyperparameters to explore
+cg <- coglasso(multi_omics_SD_micro, pX=4, nlambda_w=6, nlambda_b=6, nc=3)
 
 }
