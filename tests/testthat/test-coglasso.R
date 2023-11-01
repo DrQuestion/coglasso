@@ -67,3 +67,24 @@ test_that("single c works and overrides nc", {
   actual_c <- coglasso(multi_omics_SD_micro, pX = 4, c = c, nlambda_w = n, nlambda_b = n, nc = n, verbose = FALSE)$c
   expect_length(actual_c, 1)
 })
+
+test_that("Verbose mode works", {
+  expect_output(coglasso(multi_omics_SD_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3))
+})
+
+test_that("Covariance as input works", {
+  S <- stats::cor(multi_omics_SD_micro)
+  expect_no_error(coglasso(S, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE))
+  expect_output(coglasso(S, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3))
+})
+
+test_that("Default run works", {
+  expect_no_error(coglasso(multi_omics_SD_micro, pX = 4, verbose = FALSE))
+})
+
+test_that("gen_hpar getc parameter works", {
+  S <- stats::cor(multi_omics_SD_micro)
+  d <- dim(S)[[1]]
+  hpars <- gen_hpars(S, d, getc = TRUE)
+  expect_equal(colnames(hpars[[1]])[1], "c")
+})
