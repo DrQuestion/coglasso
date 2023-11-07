@@ -82,15 +82,15 @@ dems_sig <- dems[dems$adjPval<=0.05, 1]
 # Generate subset of multi-omics data set and 
 # remove sample BXD85, it contains 3 NAs
 mo_subset <- c(genes_subset, dems_sig)
-multi_omics_SD <- mo_sd[-25, mo_subset]
+multi_omics_sd <- mo_sd[-25, mo_subset]
 
-usethis::use_data(multi_omics_SD, overwrite = TRUE)
+usethis::use_data(multi_omics_sd, overwrite = TRUE)
 
 # Select neighborhood of Cirbp described in Albanese et al. 2023
 load("data-raw/cirbp_neighborhood.RData")
-multi_omics_SD_small <- multi_omics_SD[, cirbp_neighborhood]
-usethis::use_data(multi_omics_SD_small, overwrite = TRUE)
+multi_omics_sd_small <- multi_omics_sd[, cirbp_neighborhood]
+usethis::use_data(multi_omics_sd_small, overwrite = TRUE)
 
 cirbp_neighborhood <- c(65,  57, 124, 146, 180, 200)
-multi_omics_SD_micro <- multi_omics_SD[, cirbp_neighborhood]
-usethis::use_data(multi_omics_SD_micro, overwrite = TRUE)
+multi_omics_sd_micro <- multi_omics_sd[, cirbp_neighborhood]
+usethis::use_data(multi_omics_sd_micro, overwrite = TRUE)

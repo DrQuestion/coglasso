@@ -1,0 +1,89 @@
+---
+title: "Reconstructing mult-omics networks with `coglasso`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Reconstructing mult-omics networks with `coglasso`}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+This vignette illustrates the basic usage of the package `coglasso` to reconstruct a multi-omics network. The package implements and R interface to *collaborative graphical lasso*, a network estimation algorithm based on *graphical lasso* ([Friedman, Hastie and Tibshirani, 2008](#ref)) and *collaborative regression* ([Gross and Tibshirani, 2015](#ref))
+
+Let us first attach coglasso.
+
+```{r setup}
+library(coglasso)
+```
+
+We then choose the multi-omics data set to use. The `coglasso` package offers three alternative version of a transcriptomics and metabolomics data set. We will use `multi_omics_sd_small`. For further explanation about all the multi-omics data sets see `help(multi_omics_sd)`.
+
+```{r}
+colnames(multi_omics_sd_small)
+nrow(multi_omics_sd_small)
+```
+
+This smaller version of `multi_omics_sd` has 21 variables, 16 genes and 5 metabolites, and 30 samples. We can directly proceed with network reconstruction.
+
+## Multi-omics network reconstruction
+
+Our objective is to reconstruct a network from this data set using *collaborative graphical lasso*. To do so with the package `coglasso`, we mainly call two functions. First, we use `coglasso()` to estimate a network for every combination of hyperparameters we want to explore. Following this, we call `stars_coglasso()` to select the best combination of hyperparameters using stability selection.
+
+The usual application of `coglasso()` requires to give an input data set to the argument `data`, the number of variables of the the first type to `pX`, and hyperparameter settings. Collaborative graphical lasso has three hyperparameters: $λ_w$, penalizing "within" same-type interactions, $λ_b$ penalizing "between" different-type interactions, and $c$, the weight of the collaborative term. In this vignette we choose to explore 30 possible penalty values for both "within" and "between" penalties, and three possible collaboration values. We do so by setting both `nlambda_w` and `nlambda_b` to 30, and by setting `nc` to 3. We also decide to focus our search to the sparse side of possible networks, by setting higher minimum ratios between the smallest (least penalizing) and the largest (most penalizing) penalty explored. While the default value of these parameters is 0.1, we decide to set the minimum ratio to 0.7 for $λ_w$ and to 0.5 for $λ_b$. For further explanation on other arguments of `coglasso()` and how to use them, please see `help(coglasso)`.
+
+```{r}
+cg <- coglasso(data = multi_omics_sd_small, pX = 16, nlambda_w = 30, nlambda_b = 30, nc = 3, lambda_w_min_ratio = 0.7, lambda_b_min_ratio = 0.5, verbose = FALSE)
+
+# To see the explored paramaters:
+cg$lambda_w
+cg$lambda_b
+cg$c
+```
+
+To select the best combination of hyperparameters, we will use `stars_coglasso()`. This function implements a *coglasso*-adapted version of *StARS*, the stability selection method developed by Liu, Roeder and Wasserman ([2010](#ref)). The usual application of `stars_coglasso()` uses the default options of the function, whose only required input is the object resulting from `coglasso()`.
+
+```{r}
+sel_cg <- stars_coglasso(coglasso_obj = cg, verbose = FALSE)
+
+# To see the selected parameters:
+sel_cg$sel_lambda_w
+sel_cg$sel_lambda_b
+sel_cg$sel_c
+```
+
+With this we have selected the combination of hyperparameters yielding the most stable, yet sparse *coglasso* network. The adjacency matrix of the selected network is stored in the object `sel_cg$sel_adj`. We can use this matrix to display the selected network with the R package `igraph`.
+
+```{r}
+# To create the igraph object from the selected adjacency matrix:
+sel_graph <- igraph::graph.adjacency(sel_cg$sel_adj, mode = "undirected")
+
+# Setting some graphical parameters and removing disconnected nodes from the graph
+igraph::V(sel_graph)$label <- colnames(multi_omics_sd_small)
+igraph::V(sel_graph)$color <- c(rep("#00ccff", 16), rep("#ff9999", 5))
+igraph::V(sel_graph)$frame.color <- c(rep("#002060", 16), rep("#800000", 5))
+igraph::V(sel_graph)$frame.width <- 2
+igraph::V(sel_graph)$size <- c(30)
+igraph::E(sel_graph)$width <- 2
+
+lo <- igraph::layout_with_fr(sel_graph)
+diconnected <- which(igraph::degree(sel_graph) == 0)
+sel_graph2 <- igraph::delete.vertices(sel_graph, diconnected)
+lo2 <- lo[-diconnected, ]
+
+# Plotting
+plot(sel_graph2, layout = lo2)
+```
+
+## References {#ref}
+
+  Friedman, J., Hastie, T., & Tibshirani, R. (2008). Sparse inverse covariance estimation with the graphical lasso. *Biostatistics*, 9(3), 432–441. https://doi.org/10.1093/biostatistics/kxm045
+  Gross, S. M., & Tibshirani, R. (2015). Collaborative regression. *Biostatistics*, 16(2), 326–338. https://doi.org/10.1093/biostatistics/kxu047
+  Liu, H., Roeder, K., & Wasserman, L. (2010). Stability Approach to Regularization Selection (StARS) for High Dimensional Graphical Models (arXiv:1006.3316). *arXiv.* https://doi.org/10.48550/arXiv.1006.3316

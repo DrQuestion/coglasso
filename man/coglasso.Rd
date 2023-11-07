@@ -13,11 +13,11 @@ coglasso(
   nlambda_w = NULL,
   nlambda_b = NULL,
   nc = NULL,
-  c.max = NULL,
-  lambda_w.min.ratio = NULL,
-  lambda_b.min.ratio = NULL,
-  c.min.ratio = NULL,
-  cov.output = FALSE,
+  c_max = NULL,
+  lambda_w_min_ratio = NULL,
+  lambda_b_min_ratio = NULL,
+  c_min_ratio = NULL,
+  cov_output = FALSE,
   verbose = TRUE
 )
 }
@@ -52,22 +52,22 @@ Defaults to 8. Ignored when \code{lambda_b} is set by the user.}
 of size \code{nc} of \eqn{c} parameters will be generated. Defaults to 8.
 Ignored when \code{c} is set by the user.}
 
-\item{c.max}{The greatest generated \eqn{c}. Defaults to 10. Ignored when \code{c}
+\item{c_max}{The greatest generated \eqn{c}. Defaults to 10. Ignored when \code{c}
 is set by the user.}
 
-\item{lambda_w.min.ratio}{The ratio of the smallest generated \eqn{λ_w} over
+\item{lambda_w_min_ratio}{The ratio of the smallest generated \eqn{λ_w} over
 the greatest generated \eqn{λ_w}. Defaults to 0.1. Ignored when \code{lambda_w}
 is set by the user.}
 
-\item{lambda_b.min.ratio}{The ratio of the smallest generated \eqn{λ_b} over
+\item{lambda_b_min_ratio}{The ratio of the smallest generated \eqn{λ_b} over
 the greatest generated \eqn{λ_b}. Defaults to 0.1. Ignored when \code{lambda_b}
 is set by the user.}
 
-\item{c.min.ratio}{The ratio of the smallest generated \eqn{c} over the
+\item{c_min_ratio}{The ratio of the smallest generated \eqn{c} over the
 greatest generated \eqn{c}. Defaults to 0.1. Ignored when \code{c} is set by the
 user.}
 
-\item{cov.output}{Add the estimated variance-covariance matrix to the output.}
+\item{cov_output}{Add the estimated variance-covariance matrix to the output.}
 
 \item{verbose}{Print information regarding current \code{coglasso} run on the
 console.}
@@ -100,17 +100,17 @@ used.
 \item \code{c} is a numerical vector with all the \eqn{c} values \code{coglasso()}
 used.
 \item \code{pX} is the number of variables of the first data set.
-\item \code{cov} optional, returned when \code{cov.output} is TRUE, is a list containing
+\item \code{cov} optional, returned when \code{cov_output} is TRUE, is a list containing
 the variance-covariance matrices of all the estimated networks.
 }
 }
 \description{
 \code{coglasso()} estimates multiple multi-omics networks with the algorithm
-\emph{Collaborative Graphical Lasso}, one for each combination of input values for
+\emph{collaborative graphical lasso}, one for each combination of input values for
 the hyperparameters \eqn{λ_w}, \eqn{λ_b} and \eqn{c}.
 }
 \examples{
 # Typical usage: set the number of hyperparameters to explore
-cg <- coglasso(multi_omics_SD_micro, pX=4, nlambda_w=6, nlambda_b=6, nc=3)
+cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3)
 
 }
