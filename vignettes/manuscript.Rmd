@@ -1,0 +1,97 @@
+---
+title: "Reproduction of manuscript's results"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Reproduction of manuscript's results}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## Introduction
+
+This vignette serves the purpose to reproduce the results shown in the section "Real data example" of the manuscript describing *collaborative graphical lasso*. The computations carried out by the following code are heavy and could take a considerable amount of time. On our machine it took almost 3 hours. Hence, we refer the user who wants to get started with the package to the introductory vignette: `vignette("coglasso")`. *Collaborative graphical lasso* is an algorithm to reconstruct multi-omics networks based on *graphical lasso* ([Friedman, Hastie and Tibshirani, 2008](#ref)) and *collaborative regression* ([Gross and Tibshirani, 2015](#ref)). The package `coglasso` implements and R interface to this algorithm. We will use it to reproduce the results obtained in the original manuscript.
+
+Let us first attach coglasso.
+
+```{r setup}
+library(coglasso)
+```
+
+We will use the multi-omics data set provided by the package, in its largest version: `multi_omics_sd`. Let's inspect its description in the manual.
+
+```{r}
+help(multi_omics_sd)
+```
+
+We notice that this data set has 162 transcripts and 76 metabolites. For further information on the data set sources and generation, we refer the user to the script [multi_omics_sd.R](https://github.com/DrQuestion/coglasso/blob/main/data-raw/multi_omics_sd.R) on the GitHub repository of the package.
+
+## Reproducing the results
+
+For the multi-omics network reconstruction carried out in the manuscript we explored 30 automatically generated $λ_w$ and $λ_b$ values and 10 given $c$ values.
+
+```{r}
+nlambda_w <- 30
+nlambda_b <- 30
+cs<-c(0.01, 0.05, 0.1, 0.2, 1, 5, 10, 20, 100)
+```
+
+We can now build the networks, one per combination of the chosen hyperparameters, with `coglasso()`.
+
+```{r}
+cg <- coglasso(data = multi_omics_sd, pX = 162, nlambda_w = nlambda_w, nlambda_b = nlambda_b, c = cs)
+```
+
+We proceed now to select the most stable, yet sparse network, using an adaptation to `coglasso` of *StARS* ([Liu, Roeder and Wasserman, 2010](#ref)). The function implementing this adapted version is `stars_coglasso()`.
+
+```{r}
+set.seed(123)
+sel_cg <- stars_coglasso(cg)
+```
+
+We display now the selected network using the package `igraph`, reproducing the one displayed in Figure 3 of the manuscript. The orientation of the network may vary.
+
+```{r}
+# To create the igraph object from the selected adjacency matrix:
+sel_graph <- igraph::graph.adjacency(sel_cg$sel_adj, mode = "undirected")
+
+# Setting some graphical parameters and removing disconnected nodes from the graph
+igraph::V(sel_graph)$label <- NA
+igraph::V(sel_graph)$color <- c(rep("#00ccff", 162), rep("#ff9999", 76))
+igraph::V(sel_graph)$frame.color <- c(rep("#002060", 162), rep("#800000", 76))
+igraph::V(sel_graph)$frame.width <- 2
+igraph::V(sel_graph)$size <- 4
+igraph::E(sel_graph)$width <- 0.3
+
+lo <- igraph::layout_with_fr(sel_graph)
+diconnected <- which(igraph::degree(sel_graph) == 0)
+sel_graph2 <- igraph::delete.vertices(sel_graph, diconnected)
+lo2 <- lo[-diconnected, ]
+
+# Plotting
+plot(sel_graph2, layout = lo2)
+```
+
+We now plot the subnetwork of the gene *Cirbp* and of its neighborhood. This reproduces Figure 4.
+
+```{r}
+cirbp_index <- which(colnames(sel_cg$data) == "Cirbp")
+subnetwork <- igraph::subgraph(sel_graph, c(cirbp_index, igraph::neighbors(sel_graph, cirbp_index)))
+plot(subnetwork)
+```
+
+## References {#ref}
+
+Friedman, J., Hastie, T., & Tibshirani, R. (2008). Sparse inverse covariance estimation with the graphical lasso. *Biostatistics*, 9(3), 432--441. <https://doi.org/10.1093/biostatistics/kxm045>
+
+Gross, S. M., & Tibshirani, R. (2015). Collaborative regression. *Biostatistics*, 16(2), 326--338. <https://doi.org/10.1093/biostatistics/kxu047> 
+
+Liu, H., Roeder, K., & Wasserman, L. (2010).
+Stability Approach to Regularization Selection (StARS) for High Dimensional Graphical Models (arXiv:1006.3316). *arXiv.* <https://doi.org/10.48550/arXiv.1006.3316>

@@ -1,8 +1,8 @@
 ---
-title: "Reconstructing mult-omics networks with `coglasso`"
+title: "Reconstructing mult-omics networks with coglasso"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Reconstructing mult-omics networks with `coglasso`}
+  %\VignetteIndexEntry{Reconstructing mult-omics networks with coglasso}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -85,5 +85,7 @@ plot(sel_graph2, layout = lo2)
 ## References {#ref}
 
   Friedman, J., Hastie, T., & Tibshirani, R. (2008). Sparse inverse covariance estimation with the graphical lasso. *Biostatistics*, 9(3), 432–441. https://doi.org/10.1093/biostatistics/kxm045
+  
   Gross, S. M., & Tibshirani, R. (2015). Collaborative regression. *Biostatistics*, 16(2), 326–338. https://doi.org/10.1093/biostatistics/kxu047
+  
   Liu, H., Roeder, K., & Wasserman, L. (2010). Stability Approach to Regularization Selection (StARS) for High Dimensional Graphical Models (arXiv:1006.3316). *arXiv.* https://doi.org/10.48550/arXiv.1006.3316
