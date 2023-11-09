@@ -111,6 +111,6 @@ the hyperparameters \eqn{λ_w}, \eqn{λ_b} and \eqn{c}.
 }
 \examples{
 # Typical usage: set the number of hyperparameters to explore
-cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3)
+cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
 
 }

@@ -12,6 +12,7 @@ An algorithm for network reconstruction from multi-omics data sets joining the p
 Useful links:
 \itemize{
   \item \url{https://github.com/DrQuestion/coglasso}
+  \item \url{https://drquestion.github.io/coglasso/}
   \item Report bugs at \url{https://github.com/DrQuestion/coglasso/issues}
 }
 

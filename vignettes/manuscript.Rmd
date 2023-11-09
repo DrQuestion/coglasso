@@ -46,7 +46,7 @@ cs<-c(0.01, 0.05, 0.1, 0.2, 1, 5, 10, 20, 100)
 We can now build the networks, one per combination of the chosen hyperparameters, with `coglasso()`.
 
 ```{r}
-cg <- coglasso(data = multi_omics_sd, pX = 162, nlambda_w = nlambda_w, nlambda_b = nlambda_b, c = cs)
+cg <- coglasso(multi_omics_sd, pX = 162, nlambda_w = nlambda_w, nlambda_b = nlambda_b, c = cs)
 ```
 
 We proceed now to select the most stable, yet sparse network, using an adaptation to `coglasso` of *StARS* ([Liu, Roeder and Wasserman, 2010](#ref)). The function implementing this adapted version is `stars_coglasso()`.

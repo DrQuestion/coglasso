@@ -78,8 +78,8 @@
 #' @export
 #'
 #' @examples
-#' cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3)
-#' sel_cg <- stars_coglasso(cg)
+#' cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+#' sel_cg <- stars_coglasso(cg, verbose = FALSE)
 #'
 stars_coglasso <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NULL, rep_num = 20, max_iter = 10, verbose = TRUE) {
   n <- nrow(coglasso_obj$data)
