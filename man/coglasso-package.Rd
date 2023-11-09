@@ -6,7 +6,7 @@
 \alias{_PACKAGE}
 \title{coglasso: Collaborative Graphical Lasso - Multi-Omics Network Reconstruction}
 \description{
-An algorithm for network reconstruction from multi-omics data sets joining the principles of the graphical lasso by Friedman et al. (2008) and collaborative regression by Gross and Tibshirani (2015).
+Reconstruct networks from multi-omics data sets with the collaborative graphical lasso (coglasso) algorithm.
 }
 \seealso{
 Useful links:
@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Alessio Albanese \email{alessio.albanese@wur.nl} (\href{https://orcid.org/0000-0003-1783-5613}{ORCID})
+\strong{Maintainer}: Alessio Albanese \email{alessio.albanese@wur.nl} (\href{https://orcid.org/0000-0003-1783-5613}{ORCID}) [copyright holder]
 
 }
 \keyword{internal}

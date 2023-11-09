@@ -125,7 +125,8 @@ coglasso <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, nlamb
 #' * A numerical vector with all the generated \eqn{λ_w}.
 #' * A numerical vector with all the generated \eqn{λ_b}.
 #' * A numerical vector with all the generated \eqn{c}.
-#'
+#' 
+#' @noRd
 gen_hpars <- function(S = NULL, p = NULL, lambda_w = NULL, lambda_b = NULL, c = NULL,
                       nlambda_w = NULL, nlambda_b = NULL,
                       nc = NULL, c_max = NULL, lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL,

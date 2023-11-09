@@ -4,10 +4,9 @@ Title: Collaborative Graphical Lasso - Multi-Omics Network Reconstruction
 Version: 0.0.0.999
 Date: 2023-10-23
 Authors@R: c(
-  person("Alessio", "Albanese", email = "alessio.albanese@wur.nl", role = c("aut", "cre"), comment=c(ORCID = "0000-0003-1783-5613")))
-Description: An algorithm for network reconstruction from multi-omics data sets 
-  joining the principles of the graphical lasso by Friedman et al. (2008) and 
-  collaborative regression by Gross and Tibshirani (2015).
+  person("Alessio", "Albanese", email = "alessio.albanese@wur.nl", role = c("aut", "cre", "cph"), comment=c(ORCID = "0000-0003-1783-5613")))
+Description: Reconstruct networks from multi-omics data sets with the 
+  collaborative graphical lasso (coglasso) algorithm.
 URL: https://github.com/DrQuestion/coglasso, https://drquestion.github.io/coglasso/
 BugReports: https://github.com/DrQuestion/coglasso/issues
 License: GPL (>= 2)
