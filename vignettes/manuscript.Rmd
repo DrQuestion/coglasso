@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-This vignette serves the purpose to reproduce the results shown in the section "Real data example" of the manuscript describing *collaborative graphical lasso*. The computations carried out by the following code are heavy and could take a considerable amount of time. On our machine it took almost 3 hours. Hence, we refer the user who wants to get started with the package to the introductory vignette: `vignette("coglasso")`. *Collaborative graphical lasso* is an algorithm to reconstruct multi-omics networks based on *graphical lasso* ([Friedman, Hastie and Tibshirani, 2008](#ref)) and *collaborative regression* ([Gross and Tibshirani, 2015](#ref)). The package `coglasso` implements and R interface to this algorithm. We will use it to reproduce the results obtained in the original manuscript.
+This vignette serves the purpose to reproduce the results shown in the section "Real data example" of the manuscript describing *collaborative graphical lasso*. The computations carried out by the following code are heavy and could take a considerable amount of time. On our machine it took almost 3 hours. Hence, we refer the user who wants to get started with the package to the introductory vignette: `vignette("coglasso")`. *Collaborative graphical lasso* is an algorithm to reconstruct multi-omics networks based on *graphical lasso* ([Friedman, Hastie and Tibshirani, 2008](#ref)) and *collaborative regression* ([Gross and Tibshirani, 2015](#ref)). The coglasso package implements and R interface to this algorithm. We will use it to reproduce the results obtained in the original manuscript.
 
 Let us first attach coglasso.
 
@@ -40,16 +40,21 @@ For the multi-omics network reconstruction carried out in the manuscript we expl
 ```{r}
 nlambda_w <- 30
 nlambda_b <- 30
-cs<-c(0.01, 0.05, 0.1, 0.2, 1, 5, 10, 20, 100)
+cs <- c(0.01, 0.05, 0.1, 0.2, 1, 5, 10, 20, 100)
 ```
 
 We can now build the networks, one per combination of the chosen hyperparameters, with `coglasso()`.
 
 ```{r}
-cg <- coglasso(multi_omics_sd, pX = 162, nlambda_w = nlambda_w, nlambda_b = nlambda_b, c = cs)
+cg <- coglasso(multi_omics_sd,
+  pX = 162,
+  nlambda_w = nlambda_w,
+  nlambda_b = nlambda_b,
+  c = cs
+)
 ```
 
-We proceed now to select the most stable, yet sparse network, using an adaptation to `coglasso` of *StARS* ([Liu, Roeder and Wasserman, 2010](#ref)). The function implementing this adapted version is `stars_coglasso()`.
+We proceed now to select the most stable, yet sparse network, using an adaptation to coglasso of *StARS* ([Liu, Roeder and Wasserman, 2010](#ref)). The function implementing this adapted version is `stars_coglasso()`.
 
 ```{r}
 set.seed(123)
@@ -83,7 +88,10 @@ We now plot the subnetwork of the gene *Cirbp* and of its neighborhood. This rep
 
 ```{r}
 cirbp_index <- which(colnames(sel_cg$data) == "Cirbp")
-subnetwork <- igraph::subgraph(sel_graph, c(cirbp_index, igraph::neighbors(sel_graph, cirbp_index)))
+subnetwork <- igraph::subgraph(
+  sel_graph,
+  c(cirbp_index, igraph::neighbors(sel_graph, cirbp_index))
+)
 plot(subnetwork)
 ```
 

@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-This vignette illustrates the basic usage of the package `coglasso` to reconstruct a multi-omics network. The package implements and R interface to *collaborative graphical lasso*, a network estimation algorithm based on *graphical lasso* ([Friedman, Hastie and Tibshirani, 2008](#ref)) and *collaborative regression* ([Gross and Tibshirani, 2015](#ref))
+This vignette illustrates the basic usage of the coglasso package to reconstruct a multi-omics network. The package implements and R interface to *collaborative graphical lasso*, a network estimation algorithm based on *graphical lasso* ([Friedman, Hastie and Tibshirani, 2008](#ref)) and *collaborative regression* ([Gross and Tibshirani, 2015](#ref))
 
 Let us first attach coglasso.
 
@@ -24,7 +24,7 @@ Let us first attach coglasso.
 library(coglasso)
 ```
 
-We then choose the multi-omics data set to use. The `coglasso` package offers three alternative version of a transcriptomics and metabolomics data set. We will use `multi_omics_sd_small`. For further explanation about all the multi-omics data sets see `help(multi_omics_sd)`.
+We then choose the multi-omics data set to use. The coglasso package offers three alternative version of a transcriptomics and metabolomics data set. We will use `multi_omics_sd_small`. For further explanation about all the multi-omics data sets see `help(multi_omics_sd)`.
 
 ```{r}
 colnames(multi_omics_sd_small)
@@ -35,12 +35,20 @@ This smaller version of `multi_omics_sd` has 21 variables, 16 genes and 5 metabo
 
 ## Multi-omics network reconstruction
 
-Our objective is to reconstruct a network from this data set using *collaborative graphical lasso*. To do so with the package `coglasso`, we mainly call two functions. First, we use `coglasso()` to estimate a network for every combination of hyperparameters we want to explore. Following this, we call `stars_coglasso()` to select the best combination of hyperparameters using stability selection.
+Our objective is to reconstruct a network from this data set using *collaborative graphical lasso*. To do so with the coglasso package, we mainly call two functions. First, we use `coglasso()` to estimate a network for every combination of hyperparameters we want to explore. Following this, we call `stars_coglasso()` to select the best combination of hyperparameters using stability selection.
 
 The usual application of `coglasso()` requires to give an input data set to the argument `data`, the number of variables of the the first type to `pX`, and hyperparameter settings. Collaborative graphical lasso has three hyperparameters: $λ_w$, penalizing "within" same-type interactions, $λ_b$ penalizing "between" different-type interactions, and $c$, the weight of the collaborative term. In this vignette we choose to explore 30 possible penalty values for both "within" and "between" penalties, and three possible collaboration values. We do so by setting both `nlambda_w` and `nlambda_b` to 30, and by setting `nc` to 3. We also decide to focus our search to the sparse side of possible networks, by setting higher minimum ratios between the smallest (least penalizing) and the largest (most penalizing) penalty explored. While the default value of these parameters is 0.1, we decide to set the minimum ratio to 0.7 for $λ_w$ and to 0.5 for $λ_b$. For further explanation on other arguments of `coglasso()` and how to use them, please see `help(coglasso)`.
 
 ```{r}
-cg <- coglasso(multi_omics_sd_small, pX = 16, nlambda_w = 30, nlambda_b = 30, nc = 3, lambda_w_min_ratio = 0.7, lambda_b_min_ratio = 0.5, verbose = FALSE)
+cg <- coglasso(multi_omics_sd_small,
+  pX = 16,
+  nlambda_w = 30,
+  nlambda_b = 30,
+  nc = 3,
+  lambda_w_min_ratio = 0.7,
+  lambda_b_min_ratio = 0.5,
+  verbose = FALSE
+)
 
 # To see the explored paramaters:
 cg$lambda_w
@@ -48,7 +56,7 @@ cg$lambda_b
 cg$c
 ```
 
-To select the best combination of hyperparameters, we will use `stars_coglasso()`. This function implements a *coglasso*-adapted version of *StARS*, the stability selection method developed by Liu, Roeder and Wasserman ([2010](#ref)). The usual application of `stars_coglasso()` uses the default options of the function, whose only required input is the object resulting from `coglasso()`.
+To select the best combination of hyperparameters, we will use `stars_coglasso()`. This function implements a coglasso-adapted version of *StARS*, the stability selection method developed by Liu, Roeder and Wasserman ([2010](#ref)). The usual application of `stars_coglasso()` uses the default options of the function, whose only required input is the object resulting from `coglasso()`.
 
 ```{r}
 sel_cg <- stars_coglasso(cg, verbose = FALSE)
@@ -59,7 +67,7 @@ sel_cg$sel_lambda_b
 sel_cg$sel_c
 ```
 
-With this we have selected the combination of hyperparameters yielding the most stable, yet sparse *coglasso* network. The adjacency matrix of the selected network is stored in the object `sel_cg$sel_adj`. We can use this matrix to display the selected network with the R package `igraph`.
+With this we have selected the combination of hyperparameters yielding the most stable, yet sparse coglasso network. The adjacency matrix of the selected network is stored in the object `sel_cg$sel_adj`. We can use this matrix to display the selected network with the R package `igraph`.
 
 ```{r}
 # To create the igraph object from the selected adjacency matrix:

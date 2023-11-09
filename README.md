@@ -48,13 +48,13 @@ Here follows an example on how to reconstruct a multi-omics network with
 *collaborative graphical lasso*. For a more exhaustive example we refer
 the user to the vignette `vignette("coglasso")`. The package provides
 example multi-omics data sets of different dimensions, here we will use
-`multi_omics_sd_small`. Please notice that the current version of
-`coglasso` expects multi-omics data sets with *two* “omic” layers, where
-the single layers are grouped by column. For example, in
+`multi_omics_sd_small`. Please notice that the current version of the
+coglasso package expects multi-omics data sets with *two* “omic” layers,
+where the single layers are grouped by column. For example, in
 `multi_omics_sd_small` the first 16 columns represent transcript
 abundances, and the other 5 columns represent metabolite abundances. To
-default usage of coglasso only needs the input dataset and the dimension
-of the first “omic” layer.
+default usage of `coglasso()` only needs the input dataset and the
+dimension of the first “omic” layer.
 
 ``` r
 library(coglasso)
@@ -62,12 +62,12 @@ library(coglasso)
 cg <- coglasso(multi_omics_sd_small, pX = 16)
 ```
 
-The function `coglasso()` explores several combinations of the
-hyperparameters characterizing *collaborative graphical lasso*. To
-select the combination yielding the most stable, yet sparse network, the
-package provides the function `stars_coglasso()`. This function
-implements a `coglasso`-adapted version of the *StARS* selection
-algorithm ([Liu, Roeder and Wasserman, 2010](#references)).
+`coglasso()` explores several combinations of the hyperparameters
+characterizing *collaborative graphical lasso*. To select the
+combination yielding the most stable, yet sparse network, the package
+provides the function `stars_coglasso()`. This function implements a
+coglasso-adapted version of the *StARS* selection algorithm ([Liu,
+Roeder and Wasserman, 2010](#references)).
 
 ``` r
 sel_cg <- stars_coglasso(cg)
