@@ -95,10 +95,9 @@ who wants to get started with the package to the introductory vignette:
 <code><a href="../articles/coglasso.html">vignette("coglasso")</a></code>. <em>Collaborative graphical
 lasso</em> is an algorithm to reconstruct multi-omics networks based on
 <em>graphical lasso</em> (<a href="#ref">Friedman, Hastie and
-Tibshirani, 2008</a>) and <em>collaborative regression</em> (<a href="#ref">Gross and Tibshirani, 2015</a>). The package
-<code>coglasso</code> implements and R interface to this algorithm. We
-will use it to reproduce the results obtained in the original
-manuscript.</p>
+Tibshirani, 2008</a>) and <em>collaborative regression</em> (<a href="#ref">Gross and Tibshirani, 2015</a>). The coglasso package
+implements and R interface to this algorithm. We will use it to
+reproduce the results obtained in the original manuscript.</p>
 <p>Let us first attach coglasso.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/DrQuestion/coglasso" class="external-link">coglasso</a></span><span class="op">)</span></span></code></pre></div>
@@ -120,14 +119,20 @@ manuscript we explored 30 automatically generated <span class="math inline">\(λ
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nlambda_w</span> <span class="op">&lt;-</span> <span class="fl">30</span></span>
 <span><span class="va">nlambda_b</span> <span class="op">&lt;-</span> <span class="fl">30</span></span>
-<span><span class="va">cs</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">100</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">100</span><span class="op">)</span></span></code></pre></div>
 <p>We can now build the networks, one per combination of the chosen
 hyperparameters, with <code><a href="../reference/coglasso.html">coglasso()</a></code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coglasso.html">coglasso</a></span><span class="op">(</span><span class="va">multi_omics_sd</span>, pX <span class="op">=</span> <span class="fl">162</span>, nlambda_w <span class="op">=</span> <span class="va">nlambda_w</span>, nlambda_b <span class="op">=</span> <span class="va">nlambda_b</span>, c <span class="op">=</span> <span class="va">cs</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coglasso.html">coglasso</a></span><span class="op">(</span><span class="va">multi_omics_sd</span>,</span>
+<span>  pX <span class="op">=</span> <span class="fl">162</span>,</span>
+<span>  nlambda_w <span class="op">=</span> <span class="va">nlambda_w</span>,</span>
+<span>  nlambda_b <span class="op">=</span> <span class="va">nlambda_b</span>,</span>
+<span>  c <span class="op">=</span> <span class="va">cs</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>We proceed now to select the most stable, yet sparse network, using
-an adaptation to <code>coglasso</code> of <em>StARS</em> (<a href="#ref">Liu, Roeder and Wasserman, 2010</a>). The function
-implementing this adapted version is <code><a href="../reference/stars_coglasso.html">stars_coglasso()</a></code>.</p>
+an adaptation to coglasso of <em>StARS</em> (<a href="#ref">Liu, Roeder
+and Wasserman, 2010</a>). The function implementing this adapted version
+is <code><a href="../reference/stars_coglasso.html">stars_coglasso()</a></code>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="va">sel_cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stars_coglasso.html">stars_coglasso</a></span><span class="op">(</span><span class="va">cg</span><span class="op">)</span></span></code></pre></div>
@@ -157,7 +162,10 @@ manuscript. The orientation of the network may vary.</p>
 neighborhood. This reproduces Figure 4.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cirbp_index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sel_cg</span><span class="op">$</span><span class="va">data</span><span class="op">)</span> <span class="op">==</span> <span class="st">"Cirbp"</span><span class="op">)</span></span>
-<span><span class="va">subnetwork</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/subgraph.html" class="external-link">subgraph</a></span><span class="op">(</span><span class="va">sel_graph</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cirbp_index</span>, <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/neighbors.html" class="external-link">neighbors</a></span><span class="op">(</span><span class="va">sel_graph</span>, <span class="va">cirbp_index</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">subnetwork</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/subgraph.html" class="external-link">subgraph</a></span><span class="op">(</span></span>
+<span>  <span class="va">sel_graph</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cirbp_index</span>, <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/neighbors.html" class="external-link">neighbors</a></span><span class="op">(</span><span class="va">sel_graph</span>, <span class="va">cirbp_index</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">subnetwork</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

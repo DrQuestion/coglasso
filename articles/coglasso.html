@@ -86,20 +86,20 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>This vignette illustrates the basic usage of the package
-<code>coglasso</code> to reconstruct a multi-omics network. The package
-implements and R interface to <em>collaborative graphical lasso</em>, a
-network estimation algorithm based on <em>graphical lasso</em> (<a href="#ref">Friedman, Hastie and Tibshirani, 2008</a>) and
+<p>This vignette illustrates the basic usage of the coglasso package to
+reconstruct a multi-omics network. The package implements and R
+interface to <em>collaborative graphical lasso</em>, a network
+estimation algorithm based on <em>graphical lasso</em> (<a href="#ref">Friedman, Hastie and Tibshirani, 2008</a>) and
 <em>collaborative regression</em> (<a href="#ref">Gross and Tibshirani,
 2015</a>)</p>
 <p>Let us first attach coglasso.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/DrQuestion/coglasso" class="external-link">coglasso</a></span><span class="op">)</span></span></code></pre></div>
-<p>We then choose the multi-omics data set to use. The
-<code>coglasso</code> package offers three alternative version of a
-transcriptomics and metabolomics data set. We will use
-<code>multi_omics_sd_small</code>. For further explanation about all the
-multi-omics data sets see <code><a href="../reference/multi_omics_sd.html">help(multi_omics_sd)</a></code>.</p>
+<p>We then choose the multi-omics data set to use. The coglasso package
+offers three alternative version of a transcriptomics and metabolomics
+data set. We will use <code>multi_omics_sd_small</code>. For further
+explanation about all the multi-omics data sets see
+<code><a href="../reference/multi_omics_sd.html">help(multi_omics_sd)</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">multi_omics_sd_small</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "Cirbp"       "Hspa5"       "Spry4"       "P4ha1"       "Spred1"     </span></span>
@@ -117,8 +117,8 @@ network reconstruction.</p>
 <h2 id="multi-omics-network-reconstruction">Multi-omics network reconstruction<a class="anchor" aria-label="anchor" href="#multi-omics-network-reconstruction"></a>
 </h2>
 <p>Our objective is to reconstruct a network from this data set using
-<em>collaborative graphical lasso</em>. To do so with the package
-<code>coglasso</code>, we mainly call two functions. First, we use
+<em>collaborative graphical lasso</em>. To do so with the coglasso
+package, we mainly call two functions. First, we use
 <code><a href="../reference/coglasso.html">coglasso()</a></code> to estimate a network for every combination of
 hyperparameters we want to explore. Following this, we call
 <code><a href="../reference/stars_coglasso.html">stars_coglasso()</a></code> to select the best combination of
@@ -141,7 +141,15 @@ value of these parameters is 0.1, we decide to set the minimum ratio to
 arguments of <code><a href="../reference/coglasso.html">coglasso()</a></code> and how to use them, please see
 <code><a href="../reference/coglasso.html">help(coglasso)</a></code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coglasso.html">coglasso</a></span><span class="op">(</span><span class="va">multi_omics_sd_small</span>, pX <span class="op">=</span> <span class="fl">16</span>, nlambda_w <span class="op">=</span> <span class="fl">30</span>, nlambda_b <span class="op">=</span> <span class="fl">30</span>, nc <span class="op">=</span> <span class="fl">3</span>, lambda_w_min_ratio <span class="op">=</span> <span class="fl">0.7</span>, lambda_b_min_ratio <span class="op">=</span> <span class="fl">0.5</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coglasso.html">coglasso</a></span><span class="op">(</span><span class="va">multi_omics_sd_small</span>,</span>
+<span>  pX <span class="op">=</span> <span class="fl">16</span>,</span>
+<span>  nlambda_w <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  nlambda_b <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  nc <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  lambda_w_min_ratio <span class="op">=</span> <span class="fl">0.7</span>,</span>
+<span>  lambda_b_min_ratio <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># To see the explored paramaters:</span></span>
 <span><span class="va">cg</span><span class="op">$</span><span class="va">lambda_w</span></span>
@@ -160,24 +168,24 @@ arguments of <code><a href="../reference/coglasso.html">coglasso()</a></code> an
 <span><span class="co">#&gt; [1] 10.000000  3.162278  1.000000</span></span></code></pre></div>
 <p>To select the best combination of hyperparameters, we will use
 <code><a href="../reference/stars_coglasso.html">stars_coglasso()</a></code>. This function implements a
-<em>coglasso</em>-adapted version of <em>StARS</em>, the stability
-selection method developed by Liu, Roeder and Wasserman (<a href="#ref">2010</a>). The usual application of
-<code><a href="../reference/stars_coglasso.html">stars_coglasso()</a></code> uses the default options of the function,
-whose only required input is the object resulting from
-<code><a href="../reference/coglasso.html">coglasso()</a></code>.</p>
+coglasso-adapted version of <em>StARS</em>, the stability selection
+method developed by Liu, Roeder and Wasserman (<a href="#ref">2010</a>).
+The usual application of <code><a href="../reference/stars_coglasso.html">stars_coglasso()</a></code> uses the default
+options of the function, whose only required input is the object
+resulting from <code><a href="../reference/coglasso.html">coglasso()</a></code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sel_cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stars_coglasso.html">stars_coglasso</a></span><span class="op">(</span><span class="va">cg</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># To see the selected parameters:</span></span>
 <span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_lambda_w</span></span>
-<span><span class="co">#&gt; [1] 0.913698</span></span>
+<span><span class="co">#&gt; [1] 0.8592023</span></span>
 <span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_lambda_b</span></span>
-<span><span class="co">#&gt; [1] 0.4679</span></span>
+<span><span class="co">#&gt; [1] 0.5148425</span></span>
 <span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_c</span></span>
 <span><span class="co">#&gt; [1] 3.162278</span></span></code></pre></div>
 <p>With this we have selected the combination of hyperparameters
-yielding the most stable, yet sparse <em>coglasso</em> network. The
-adjacency matrix of the selected network is stored in the object
+yielding the most stable, yet sparse coglasso network. The adjacency
+matrix of the selected network is stored in the object
 <code>sel_cg$sel_adj</code>. We can use this matrix to display the
 selected network with the R package <code>igraph</code>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
