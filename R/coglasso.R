@@ -2,37 +2,38 @@
 #'
 #' `coglasso()` estimates multiple multi-omics networks with the algorithm
 #' *collaborative graphical lasso*, one for each combination of input values for
-#' the hyperparameters \eqn{λ_w}, \eqn{λ_b} and \eqn{c}.
-#'
+#' the hyperparameters \eqn{\lambda_w}, \eqn{\lambda_b} and \eqn{c}.
+#' 
+#' @encoding UTF-8
 #' @param data The input multi-omics data set. Rows should be samples, columns
 #'   should be variables. Variables should be grouped by their assay (i.e.
 #'   transcripts first, then metabolites). `data` is a required parameter.
 #' @param pX The number of variables of the first data set (i.e. the number of
 #'   transcripts). `pX` is a required parameter.
-#' @param lambda_w A vector of values for the parameter \eqn{λ_w}, the
+#' @param lambda_w A vector of values for the parameter \eqn{\lambda_w}, the
 #'   penalization parameter for the "within" interactions. Overrides
 #'   `nlambda_w`.
-#' @param lambda_b A vector of values for the parameter \eqn{λ_b}, the
+#' @param lambda_b A vector of values for the parameter \eqn{\lambda_b}, the
 #'   penalization parameter for the "between" interactions. Overrides
 #'   `nlambda_b`.
 #' @param c A vector of values for the parameter \eqn{c}, the weight given to
 #'   collaboration. Overrides `nc`.
-#' @param nlambda_w The number of requested \eqn{λ_w} parameters to explore. A
-#'   sequence of size `nlambda_w` of \eqn{λ_w} parameters will be generated.
+#' @param nlambda_w The number of requested \eqn{\lambda_w} parameters to explore. A
+#'   sequence of size `nlambda_w` of \eqn{\lambda_w} parameters will be generated.
 #'   Defaults to 8. Ignored when `lambda_w` is set by the user.
-#' @param nlambda_b The number of requested \eqn{λ_b} parameters to explore. A
-#'   sequence of size `nlambda_b` of \eqn{λ_b} parameters will be generated.
+#' @param nlambda_b The number of requested \eqn{\lambda_b} parameters to explore. A
+#'   sequence of size `nlambda_b` of \eqn{\lambda_b} parameters will be generated.
 #'   Defaults to 8. Ignored when `lambda_b` is set by the user.
 #' @param nc The number of requested \eqn{c} parameters to explore. A sequence
 #'   of size `nc` of \eqn{c} parameters will be generated. Defaults to 8.
 #'   Ignored when `c` is set by the user.
 #' @param c_max The greatest generated \eqn{c}. Defaults to 10. Ignored when `c`
 #'   is set by the user.
-#' @param lambda_w_min_ratio The ratio of the smallest generated \eqn{λ_w} over
-#'   the greatest generated \eqn{λ_w}. Defaults to 0.1. Ignored when `lambda_w`
+#' @param lambda_w_min_ratio The ratio of the smallest generated \eqn{\lambda_w} over
+#'   the greatest generated \eqn{\lambda_w}. Defaults to 0.1. Ignored when `lambda_w`
 #'   is set by the user.
-#' @param lambda_b_min_ratio The ratio of the smallest generated \eqn{λ_b} over
-#'   the greatest generated \eqn{λ_b}. Defaults to 0.1. Ignored when `lambda_b`
+#' @param lambda_b_min_ratio The ratio of the smallest generated \eqn{\lambda_b} over
+#'   the greatest generated \eqn{\lambda_b}. Defaults to 0.1. Ignored when `lambda_b`
 #'   is set by the user.
 #' @param c_min_ratio The ratio of the smallest generated \eqn{c} over the
 #'   greatest generated \eqn{c}. Defaults to 0.1. Ignored when `c` is set by the
@@ -58,11 +59,11 @@
 #'   `coglasso()` failed to converge.
 #' * `data` is the input multi-omics data set.
 #' * `hpars` is the ordered table of all the combinations of hyperparameters
-#'   given as input to `coglasso()`, with \eqn{α(λ_w+λ_b)} being the key to sort
+#'   given as input to `coglasso()`, with \eqn{\alpha(\lambda_w+\lambda_b)} being the key to sort
 #'   rows.
-#' * `lambda_w` is a numerical vector with all the \eqn{λ_w} values `coglasso()`
+#' * `lambda_w` is a numerical vector with all the \eqn{\lambda_w} values `coglasso()`
 #'   used.
-#' * `lambda_b` is a numerical vector with all the \eqn{λ_b} values `coglasso()`
+#' * `lambda_b` is a numerical vector with all the \eqn{\lambda_b} values `coglasso()`
 #'   used.
 #' * `c` is a numerical vector with all the \eqn{c} values `coglasso()`
 #'   used.
@@ -117,13 +118,13 @@ coglasso <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, nlamb
 #' @inherit coglasso
 #' @param S The empirical Pearson's correlation matrix of the multi-omics data set.
 #' @param p The total number of variables in the multi-omics data set.
-#' @param getc Parameter for testing purposes. If TRUE, the returned table contains a column with *c* values rather than *α* values.
+#' @param getc Parameter for testing purposes. If TRUE, the returned table contains a column with *c* values rather than *\alpha* values.
 #'
 #' @return
 #' `gen_hpars()` returns a list of four elements:
-#' * A table of all the combinations of hyperparameters given as input to `coglasso()`, with \eqn{α(λ_w+λ_b)} being the key to sort rows.
-#' * A numerical vector with all the generated \eqn{λ_w}.
-#' * A numerical vector with all the generated \eqn{λ_b}.
+#' * A table of all the combinations of hyperparameters given as input to `coglasso()`, with \eqn{\alpha(\lambda_w+\lambda_b)} being the key to sort rows.
+#' * A numerical vector with all the generated \eqn{\lambda_w}.
+#' * A numerical vector with all the generated \eqn{\lambda_b}.
 #' * A numerical vector with all the generated \eqn{c}.
 #' 
 #' @noRd

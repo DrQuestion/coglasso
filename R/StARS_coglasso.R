@@ -14,15 +14,15 @@
 #' explore three different hyperparameters. In particular, two of these are
 #' penalty parameters with a direct influence on network sparsity, hence on
 #' stability. For every \eqn{c} parameter, `stars_coglasso()` explores one of
-#' the two penalty parameters (\eqn{λ_w} or \eqn{λ_b}), keeping the other one
+#' the two penalty parameters (\eqn{\lambda_w} or \eqn{\lambda_b}), keeping the other one
 #' fixed at its previous best estimate, using the normal, one-dimentional
 #' *StARS* approach, until finding the best couple. It then selects the \eqn{c}
-#' parameter for which the best (\eqn{λ_w}, \eqn{λ_b}) couple yielded the most
+#' parameter for which the best (\eqn{\lambda_w}, \eqn{\lambda_b}) couple yielded the most
 #' stable, yet sparse network.
 #'
 #' @param coglasso_obj The object returned by `coglasso()`.
 #' @param stars_thresh The threshold set for variability of the explored
-#'   networks at each iteration of the algorithm. The \eqn{λ_w} or the \eqn{λ_b}
+#'   networks at each iteration of the algorithm. The \eqn{\lambda_w} or the \eqn{\lambda_b}
 #'   associated to the most stable network before the threshold is overcome is
 #'   selected.
 #' @param stars_subsample_ratio The proportion of samples in the multi-omics
@@ -34,7 +34,7 @@
 #'   estimate the variability of the network under the given hyperparameters
 #'   setting. Defaults to 20.
 #' @param max_iter The greatest number of times the algorithm is allowed to
-#'   choose a new best \eqn{λ_w}. Defaults to 10.
+#'   choose a new best \eqn{\lambda_w}. Defaults to 10.
 #' @param verbose Print information regarding the progress of the selection
 #'   procedure on the console.
 #'
@@ -43,33 +43,33 @@
 #' * ... are the same elements returned by [coglasso()].
 #' * `merge_lw` and `merge_lb` are lists with as many elements as the number of
 #'   \eqn{c} parameters explored. Every element is in turn a list of as many
-#'   matrices as the number of \eqn{λ_w} (or \eqn{λ_b}) values explored. Each
+#'   matrices as the number of \eqn{\lambda_w} (or \eqn{\lambda_b}) values explored. Each
 #'   matrix is the "merged" adjacency matrix, the average of all the adjacency
-#'   matrices estimated  for those specific \eqn{c} and \eqn{λ_w} (or \eqn{λ_b})
+#'   matrices estimated  for those specific \eqn{c} and \eqn{\lambda_w} (or \eqn{\lambda_b})
 #'   values across all the subsampling in the last path explored before
-#'   convergence, the one when the final combination of \eqn{λ_w} and \eqn{λ_b}
+#'   convergence, the one when the final combination of \eqn{\lambda_w} and \eqn{\lambda_b}
 #'   is selected for the given \eqn{c} value.
 #' * `variability_lw` and `variability_lb` are lists with as many elements as
 #'  the number of \eqn{c} parameters explored. Every element is a numeric vector
-#'  of as many items as the number of \eqn{λ_w} (or \eqn{λ_b}) values explored.
+#'  of as many items as the number of \eqn{\lambda_w} (or \eqn{\lambda_b}) values explored.
 #'  Each item is the variability of the network estimated for those specific
-#'  \eqn{c} and \eqn{λ_w} (or \eqn{λ_b}) values in the last path explored before
-#'  convergence, the one when the final combination of \eqn{λ_w} and \eqn{λ_b}
+#'  \eqn{c} and \eqn{\lambda_w} (or \eqn{\lambda_b}) values in the last path explored before
+#'  convergence, the one when the final combination of \eqn{\lambda_w} and \eqn{\lambda_b}
 #'  is selected for the given \eqn{c} value.
 #' * `opt_adj` is a list of the adjacency matrices finally selected for each
 #'  \eqn{c} parameter explored.
 #' * `opt_variability` is a numerical vector containing the variabilities
 #'  associated to the adjacency matrices in `opt_adj`.
 #' * `opt_index_lw` and `opt_index_lb` are integer vectors containing the
-#'  index of the selected \eqn{λ_w}s (or \eqn{λ_b}s) for each \eqn{c} parameters
+#'  index of the selected \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each \eqn{c} parameters
 #'  explored.
 #' * `opt_lambda_w` and `opt_lambda_b` are vectors containing the selected
-#'  \eqn{λ_w}s (or \eqn{λ_b}s) for each \eqn{c} parameters explored.
+#'  \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each \eqn{c} parameters explored.
 #' * `sel_index_c`, `sel_index_lw` and `sel_index_lb` are the indexes of the
-#'  final selected parameters \eqn{c}, \eqn{λ_w} and \eqn{λ_b} leading to the
+#'  final selected parameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b} leading to the
 #'  most stable sparse network.
 #' * `sel_c`, `sel_lambda_w` and `sel_lambda_b` are the final selected
-#'  parameters \eqn{c}, \eqn{λ_w} and \eqn{λ_b} leading to the most stable
+#'  parameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b} leading to the most stable
 #'  sparse network.
 #' * `sel_adj` is the adjacency matrix of the final selected network.
 #' * `sel_density` is the density of the final selected network.
@@ -79,8 +79,10 @@
 #'
 #' @examples
 #' cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+#' \dontrun{
+#' # Takes around 20 seconds
 #' sel_cg <- stars_coglasso(cg, verbose = FALSE)
-#'
+#' }
 stars_coglasso <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NULL, rep_num = 20, max_iter = 10, verbose = TRUE) {
   n <- nrow(coglasso_obj$data)
   d <- ncol(coglasso_obj$data)

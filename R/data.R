@@ -22,7 +22,7 @@
 #' }
 #' @source Jan, M., Gobet, N., Diessler, S. et al. A multi-omics digital
 #'   research object for the genetics of sleep regulation. Sci Data 6, 258
-#'   (2019) <https://doi.org/10.1038/s41597-019-0171-x>
+#'   (2019) \doi{10.1038/s41597-019-0171-x}
 #' @source Figshare folder of the original manuscript:
 #'   <https://figshare.com/articles/dataset/Input_data_for_systems_genetics_of_sleep_regulation/7797434>
 "multi_omics_sd"

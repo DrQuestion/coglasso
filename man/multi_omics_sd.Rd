@@ -41,7 +41,7 @@ under sleep deprivation (4.78--9.31)}
 \source{
 Jan, M., Gobet, N., Diessler, S. et al. A multi-omics digital
 research object for the genetics of sleep regulation. Sci Data 6, 258
-(2019) \url{https://doi.org/10.1038/s41597-019-0171-x}
+(2019) \doi{10.1038/s41597-019-0171-x}
 
 Figshare folder of the original manuscript:
 \url{https://figshare.com/articles/dataset/Input_data_for_systems_genetics_of_sleep_regulation/7797434}
