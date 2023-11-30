@@ -8,8 +8,8 @@
 <meta name="description" content="coglasso">
 <title>Reconstructing mult-omics networks with coglasso • coglasso</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Reconstructing mult-omics networks with coglasso">
 <meta property="og:description" content="coglasso">
@@ -102,15 +102,14 @@ explanation about all the multi-omics data sets see
 <code><a href="../reference/multi_omics_sd.html">help(multi_omics_sd)</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">multi_omics_sd_small</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "Cirbp"       "Hspa5"       "Spry4"       "P4ha1"       "Spred1"     </span></span>
-<span><span class="co">#&gt;  [6] "Creld2"      "Pdia6"       "Hsp90b1"     "Hsph1"       "Manf"       </span></span>
-<span><span class="co">#&gt; [11] "Pdia3"       "Dnajb11"     "Gfod1"       "Dnajc3"      "BC004004"   </span></span>
-<span><span class="co">#&gt; [16] "Stip1"       "Phe"         "Trp"         "Putrescine"  "PC aa C36:3"</span></span>
-<span><span class="co">#&gt; [21] "PC ae C32:2"</span></span>
+<span><span class="co">#&gt;  [1] "Cirbp"       "Hspa5"       "P4ha1"       "Spred1"      "Creld2"     </span></span>
+<span><span class="co">#&gt;  [6] "Pdia6"       "Hsp90b1"     "Hsph1"       "Manf"        "Pdia3"      </span></span>
+<span><span class="co">#&gt; [11] "Dnajb11"     "Dnajc3"      "BC004004"    "Stip1"       "Phe"        </span></span>
+<span><span class="co">#&gt; [16] "Trp"         "Putrescine"  "PC aa C36:3" "PC ae C32:2"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">multi_omics_sd_small</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 30</span></span></code></pre></div>
-<p>This smaller version of <code>multi_omics_sd</code> has 21 variables,
-16 genes and 5 metabolites, and 30 samples. We can directly proceed with
+<p>This smaller version of <code>multi_omics_sd</code> has 19 variables,
+14 genes and 5 metabolites, and 30 samples. We can directly proceed with
 network reconstruction.</p>
 </div>
 <div class="section level2">
@@ -142,7 +141,7 @@ arguments of <code><a href="../reference/coglasso.html">coglasso()</a></code> an
 <code><a href="../reference/coglasso.html">help(coglasso)</a></code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coglasso.html">coglasso</a></span><span class="op">(</span><span class="va">multi_omics_sd_small</span>,</span>
-<span>  pX <span class="op">=</span> <span class="fl">16</span>,</span>
+<span>  pX <span class="op">=</span> <span class="fl">14</span>,</span>
 <span>  nlambda_w <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  nlambda_b <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  nc <span class="op">=</span> <span class="fl">3</span>,</span>
@@ -178,11 +177,11 @@ resulting from <code><a href="../reference/coglasso.html">coglasso()</a></code>.
 <span></span>
 <span><span class="co"># To see the selected parameters:</span></span>
 <span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_lambda_w</span></span>
-<span><span class="co">#&gt; [1] 0.8805993</span></span>
+<span><span class="co">#&gt; [1] 0.9025291</span></span>
 <span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_lambda_b</span></span>
-<span><span class="co">#&gt; [1] 0.4908104</span></span>
+<span><span class="co">#&gt; [1] 0.5026828</span></span>
 <span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_c</span></span>
-<span><span class="co">#&gt; [1] 10</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
 <p>With this we have selected the combination of hyperparameters
 yielding the most stable, yet sparse coglasso network. The adjacency
 matrix of the selected network is stored in the object
@@ -194,8 +193,8 @@ selected network with the R package <code>igraph</code>.</p>
 <span></span>
 <span><span class="co"># Setting some graphical parameters and removing disconnected nodes from the graph</span></span>
 <span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">sel_graph</span><span class="op">)</span><span class="op">$</span><span class="va">label</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">multi_omics_sd_small</span><span class="op">)</span></span>
-<span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">sel_graph</span><span class="op">)</span><span class="op">$</span><span class="va">color</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"#00ccff"</span>, <span class="fl">16</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"#ff9999"</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">sel_graph</span><span class="op">)</span><span class="op">$</span><span class="va">frame.color</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"#002060"</span>, <span class="fl">16</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"#800000"</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">sel_graph</span><span class="op">)</span><span class="op">$</span><span class="va">color</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"#00ccff"</span>, <span class="fl">14</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"#ff9999"</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">sel_graph</span><span class="op">)</span><span class="op">$</span><span class="va">frame.color</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"#002060"</span>, <span class="fl">14</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"#800000"</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">sel_graph</span><span class="op">)</span><span class="op">$</span><span class="va">frame.width</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
 <span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">sel_graph</span><span class="op">)</span><span class="op">$</span><span class="va">size</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span><span class="op">)</span></span>
 <span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/E.html" class="external-link">E</a></span><span class="op">(</span><span class="va">sel_graph</span><span class="op">)</span><span class="op">$</span><span class="va">width</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
