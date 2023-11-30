@@ -87,29 +87,29 @@ stars_coglasso <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_rat
   n <- nrow(coglasso_obj$data)
   d <- ncol(coglasso_obj$data)
   pX <- coglasso_obj$pX
-  n.lambda_w <- length(coglasso_obj$lambda_w)
-  n.lambda_b <- length(coglasso_obj$lambda_b)
-  n.c <- length(coglasso_obj$c)
+  n_lambda_w <- length(coglasso_obj$lambda_w)
+  n_lambda_b <- length(coglasso_obj$lambda_b)
+  n_c <- length(coglasso_obj$c)
 
   if (is.null(stars_subsample_ratio)) {
     if (n > 144) stars_subsample_ratio <- 10 * sqrt(n) / n
     if (n <= 144) stars_subsample_ratio <- 0.8
   }
 
-  coglasso_obj$merge_lw <- vector(mode = "list", length = n.c)
-  coglasso_obj$merge_lb <- vector(mode = "list", length = n.c)
-  coglasso_obj$variability_lw <- vector(mode = "list", length = n.c)
-  coglasso_obj$variability_lb <- vector(mode = "list", length = n.c)
-  coglasso_obj$opt_adj <- vector(mode = "list", length = n.c)
-  coglasso_obj$opt_variability <- rep(0, n.c)
-  coglasso_obj$opt_index_lw <- rep(0, n.c)
-  coglasso_obj$opt_index_lb <- rep(0, n.c)
-  coglasso_obj$opt_lambda_w <- rep(0, n.c)
-  coglasso_obj$opt_lambda_b <- rep(0, n.c)
+  coglasso_obj$merge_lw <- vector(mode = "list", length = n_c)
+  coglasso_obj$merge_lb <- vector(mode = "list", length = n_c)
+  coglasso_obj$variability_lw <- vector(mode = "list", length = n_c)
+  coglasso_obj$variability_lb <- vector(mode = "list", length = n_c)
+  coglasso_obj$opt_adj <- vector(mode = "list", length = n_c)
+  coglasso_obj$opt_variability <- rep(0, n_c)
+  coglasso_obj$opt_index_lw <- rep(0, n_c)
+  coglasso_obj$opt_index_lb <- rep(0, n_c)
+  coglasso_obj$opt_lambda_w <- rep(0, n_c)
+  coglasso_obj$opt_lambda_b <- rep(0, n_c)
 
-  for (i in 1:n.c) {
+  for (i in 1:n_c) {
     if (verbose) {
-      mes <- paste(c("Selecting best Lambda_w/Lambda_b combination for all c values with \"stars\"....in progress:", floor(100 * i / n.c), "%"), collapse = "")
+      mes <- paste(c("Selecting best Lambda_w/Lambda_b combination for all c values with \"stars\"....in progress:", floor(100 * i / n_c), "%"), collapse = "")
       cat(mes, "\r")
       cat("\n")
       flush.console()
@@ -118,7 +118,7 @@ stars_coglasso <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_rat
     alpha <- 1 / (1 + coglasso_obj$c[i])
 
     lw_sel <- -1
-    lb_sel <- coglasso_obj$lambda_b[n.lambda_b]
+    lb_sel <- coglasso_obj$lambda_b[n_lambda_b]
     num_iter <- 0
     converged <- FALSE
     select_lw <- TRUE
@@ -126,9 +126,9 @@ stars_coglasso <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_rat
     while (!converged & num_iter < max_iter) {
       if (select_lw) {
         coglasso_obj$merge_lw[[i]] <- list()
-        for (j in 1:n.lambda_w) coglasso_obj$merge_lw[[i]][[j]] <- Matrix::Matrix(0, d, d)
+        for (j in 1:n_lambda_w) coglasso_obj$merge_lw[[i]][[j]] <- Matrix::Matrix(0, d, d)
 
-        real_rep.num <- rep(0, n.lambda_w)
+        real_rep.num <- rep(0, n_lambda_w)
 
         for (j in 1:rep_num)
         {
@@ -143,7 +143,7 @@ stars_coglasso <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_rat
           convergence <- tmp$convergence
           tmp <- tmp$path
 
-          for (k in 1:n.lambda_w) {
+          for (k in 1:n_lambda_w) {
             if (convergence[k] == 1) {
               real_rep.num[k] <- real_rep.num[k] + 1
               coglasso_obj$merge_lw[[i]][[k]] <- coglasso_obj$merge_lw[[i]][[k]] + tmp[[k]]
@@ -153,8 +153,8 @@ stars_coglasso <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_rat
           gc()
         }
 
-        coglasso_obj$variability_lw[[i]] <- rep(0, n.lambda_w)
-        for (j in 1:n.lambda_w) {
+        coglasso_obj$variability_lw[[i]] <- rep(0, n_lambda_w)
+        for (j in 1:n_lambda_w) {
           coglasso_obj$merge_lw[[i]][[j]] <- coglasso_obj$merge_lw[[i]][[j]] / real_rep.num[j]
           coglasso_obj$variability_lw[[i]][j] <- 4 * sum(coglasso_obj$merge_lw[[i]][[j]] *
             (1 - coglasso_obj$merge_lw[[i]][[j]])) / (d * (d - 1))
@@ -181,9 +181,9 @@ stars_coglasso <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_rat
         }
       } else {
         coglasso_obj$merge_lb[[i]] <- list()
-        for (j in 1:n.lambda_b) coglasso_obj$merge_lb[[i]][[j]] <- Matrix::Matrix(0, d, d)
+        for (j in 1:n_lambda_b) coglasso_obj$merge_lb[[i]][[j]] <- Matrix::Matrix(0, d, d)
 
-        real_rep.num <- rep(0, n.lambda_b)
+        real_rep.num <- rep(0, n_lambda_b)
 
         for (j in 1:rep_num)
         {
@@ -198,7 +198,7 @@ stars_coglasso <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_rat
           convergence <- tmp$convergence
           tmp <- tmp$path
 
-          for (k in 1:n.lambda_b) {
+          for (k in 1:n_lambda_b) {
             if (convergence[k] == 1) {
               real_rep.num[k] <- real_rep.num[k] + 1
               coglasso_obj$merge_lb[[i]][[k]] <- coglasso_obj$merge_lb[[i]][[k]] + tmp[[k]]
@@ -208,8 +208,8 @@ stars_coglasso <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_rat
           gc()
         }
 
-        coglasso_obj$variability_lb[[i]] <- rep(0, n.lambda_b)
-        for (j in 1:n.lambda_b) {
+        coglasso_obj$variability_lb[[i]] <- rep(0, n_lambda_b)
+        for (j in 1:n_lambda_b) {
           coglasso_obj$merge_lb[[i]][[j]] <- coglasso_obj$merge_lb[[i]][[j]] / real_rep.num[j]
           coglasso_obj$variability_lb[[i]][j] <- 4 * sum(coglasso_obj$merge_lb[[i]][[j]] *
             (1 - coglasso_obj$merge_lb[[i]][[j]])) / (d * (d - 1))
@@ -264,8 +264,11 @@ stars_coglasso <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_rat
       coglasso_obj$hpars[, 3] == coglasso_obj$opt_lambda_b[i])
     coglasso_obj$opt_adj[[i]] <- coglasso_obj$path[[opt_hpars_combination]]
   }
-
-  coglasso_obj$sel_index_c <- which.min(coglasso_obj$opt_variability)
+  
+  if (which.min(coglasso_obj$opt_variability) == 0) {
+   warning("coglasso did not converge for any c parameter. Will select the highest c.")
+  }
+  coglasso_obj$sel_index_c <- min(which.min(coglasso_obj$opt_variability), n_c)
   coglasso_obj$sel_index_lw <- coglasso_obj$opt_index_lw[coglasso_obj$sel_index_c]
   coglasso_obj$sel_index_lb <- coglasso_obj$opt_index_lb[coglasso_obj$sel_index_c]
   coglasso_obj$sel_lambda_w <- coglasso_obj$lambda_w[coglasso_obj$sel_index_lw]

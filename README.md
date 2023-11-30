@@ -51,7 +51,7 @@ example multi-omics data sets of different dimensions, here we will use
 `multi_omics_sd_small`. Please notice that the current version of the
 coglasso package expects multi-omics data sets with *two* “omic” layers,
 where the single layers are grouped by column. For example, in
-`multi_omics_sd_small` the first 16 columns represent transcript
+`multi_omics_sd_small` the first 14 columns represent transcript
 abundances, and the other 5 columns represent metabolite abundances. To
 default usage of `coglasso()` only needs the input dataset and the
 dimension of the first “omic” layer.
@@ -59,7 +59,7 @@ dimension of the first “omic” layer.
 ``` r
 library(coglasso)
 
-cg <- coglasso(multi_omics_sd_small, pX = 16)
+cg <- coglasso(multi_omics_sd_small, pX = 14)
 ```
 
 `coglasso()` explores several combinations of the hyperparameters

@@ -31,7 +31,7 @@ colnames(multi_omics_sd_small)
 nrow(multi_omics_sd_small)
 ```
 
-This smaller version of `multi_omics_sd` has 21 variables, 16 genes and 5 metabolites, and 30 samples. We can directly proceed with network reconstruction.
+This smaller version of `multi_omics_sd` has 19 variables, 14 genes and 5 metabolites, and 30 samples. We can directly proceed with network reconstruction.
 
 ## Multi-omics network reconstruction
 
@@ -41,7 +41,7 @@ The usual application of `coglasso()` requires to give an input data set to the 
 
 ```{r}
 cg <- coglasso(multi_omics_sd_small,
-  pX = 16,
+  pX = 14,
   nlambda_w = 30,
   nlambda_b = 30,
   nc = 3,
@@ -75,8 +75,8 @@ sel_graph <- igraph::graph.adjacency(sel_cg$sel_adj, mode = "undirected")
 
 # Setting some graphical parameters and removing disconnected nodes from the graph
 igraph::V(sel_graph)$label <- colnames(multi_omics_sd_small)
-igraph::V(sel_graph)$color <- c(rep("#00ccff", 16), rep("#ff9999", 5))
-igraph::V(sel_graph)$frame.color <- c(rep("#002060", 16), rep("#800000", 5))
+igraph::V(sel_graph)$color <- c(rep("#00ccff", 14), rep("#ff9999", 5))
+igraph::V(sel_graph)$frame.color <- c(rep("#002060", 14), rep("#800000", 5))
 igraph::V(sel_graph)$frame.width <- 2
 igraph::V(sel_graph)$size <- c(30)
 igraph::E(sel_graph)$width <- 2

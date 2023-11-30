@@ -91,6 +91,7 @@ load("data-raw/cirbp_neighborhood.RData")
 multi_omics_sd_small <- multi_omics_sd[, cirbp_neighborhood]
 usethis::use_data(multi_omics_sd_small, overwrite = TRUE)
 
+# Select subset of neighborhood
 cirbp_neighborhood <- c(65,  57, 124, 146, 180, 200)
 multi_omics_sd_micro <- multi_omics_sd[, cirbp_neighborhood]
 usethis::use_data(multi_omics_sd_micro, overwrite = TRUE)

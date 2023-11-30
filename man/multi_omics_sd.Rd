@@ -20,9 +20,9 @@ under sleep deprivation (-4.52--10.46)}
 
 \subsection{\code{multi_omics_sd_small}}{
 
-A data frame with 30 rows and 21 variables (16 transcripts and 5 metabolites)
+A data frame with 30 rows and 19 variables (14 transcripts and 5 metabolites)
 \describe{
-\item{Cirbp to Stip1}{log2 CPM values of 16 transcripts in mouse cortex
+\item{Cirbp to Stip1}{log2 CPM values of 14 transcripts in mouse cortex
 under sleep deprivation (4.24--9.31)}
 \item{Phe to PC ae C32:2}{Abundance values of 5 metabolites (0.17--145.33)}
 }
