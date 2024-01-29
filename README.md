@@ -7,7 +7,7 @@
 
 [![R-CMD-check](https://github.com/DrQuestion/coglasso/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/DrQuestion/coglasso/actions/workflows/R-CMD-check.yaml)
 
-[![codecov](https://app.codecov.io/gh/DrQuestion/coglasso/graph/badge.svg?token=Q370RQ1CAD)](https://app.codecov.io/gh/DrQuestion/coglasso)
+[![codecov](https://codecov.io/gh/DrQuestion/coglasso/graph/badge.svg?token=Q370RQ1CAD)](https://app.codecov.io/gh/DrQuestion/coglasso)
 <!-- badges: end -->
 
 Coglasso implements *collaborative graphical lasso*, an algorithm for
