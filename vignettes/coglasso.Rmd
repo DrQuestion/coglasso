@@ -42,9 +42,11 @@ The usual application of `coglasso()` requires to give an input data set to the 
 ```{r}
 cg <- coglasso(multi_omics_sd_small,
   pX = 14,
-  nlambda_w = 30,
-  nlambda_b = 30,
+  nlambda_w = 15,
+  nlambda_b = 15,
   nc = 3,
+  lambda_w_max = 0.85,
+  lambda_b_max = 0.85,
   lambda_w_min_ratio = 0.7,
   lambda_b_min_ratio = 0.5,
   verbose = FALSE

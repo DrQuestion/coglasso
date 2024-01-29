@@ -3,7 +3,7 @@
 #' `coglasso()` estimates multiple multi-omics networks with the algorithm
 #' *collaborative graphical lasso*, one for each combination of input values for
 #' the hyperparameters \eqn{\lambda_w}, \eqn{\lambda_b} and \eqn{c}.
-#' 
+#'
 #' @encoding UTF-8
 #' @param data The input multi-omics data set. Rows should be samples, columns
 #'   should be variables. Variables should be grouped by their assay (i.e.
@@ -18,23 +18,29 @@
 #'   `nlambda_b`.
 #' @param c A vector of values for the parameter \eqn{c}, the weight given to
 #'   collaboration. Overrides `nc`.
-#' @param nlambda_w The number of requested \eqn{\lambda_w} parameters to explore. A
-#'   sequence of size `nlambda_w` of \eqn{\lambda_w} parameters will be generated.
-#'   Defaults to 8. Ignored when `lambda_w` is set by the user.
-#' @param nlambda_b The number of requested \eqn{\lambda_b} parameters to explore. A
-#'   sequence of size `nlambda_b` of \eqn{\lambda_b} parameters will be generated.
-#'   Defaults to 8. Ignored when `lambda_b` is set by the user.
+#' @param nlambda_w The number of requested \eqn{\lambda_w} parameters to
+#'   explore. A sequence of size `nlambda_w` of \eqn{\lambda_w} parameters will
+#'   be generated. Defaults to 8. Ignored when `lambda_w` is set by the user.
+#' @param nlambda_b The number of requested \eqn{\lambda_b} parameters to
+#'   explore. A sequence of size `nlambda_b` of \eqn{\lambda_b} parameters will
+#'   be generated. Defaults to 8. Ignored when `lambda_b` is set by the user.
 #' @param nc The number of requested \eqn{c} parameters to explore. A sequence
 #'   of size `nc` of \eqn{c} parameters will be generated. Defaults to 8.
 #'   Ignored when `c` is set by the user.
+#' @param lambda_w_max The greatest generated \eqn{\lambda_w}. By default it is
+#'   computed with a data-driven approach. Ignored when `lambda_w` is set by the
+#'   user.
+#' @param lambda_b_max The greatest generated \eqn{\lambda_b}. By default it is
+#'   computed with a data-driven approach. Ignored when `lambda_b` is set by the
+#'   user.
 #' @param c_max The greatest generated \eqn{c}. Defaults to 10. Ignored when `c`
 #'   is set by the user.
-#' @param lambda_w_min_ratio The ratio of the smallest generated \eqn{\lambda_w} over
-#'   the greatest generated \eqn{\lambda_w}. Defaults to 0.1. Ignored when `lambda_w`
-#'   is set by the user.
-#' @param lambda_b_min_ratio The ratio of the smallest generated \eqn{\lambda_b} over
-#'   the greatest generated \eqn{\lambda_b}. Defaults to 0.1. Ignored when `lambda_b`
-#'   is set by the user.
+#' @param lambda_w_min_ratio The ratio of the smallest generated \eqn{\lambda_w}
+#'   over the greatest generated \eqn{\lambda_w}. Defaults to 0.1. Ignored when
+#'   `lambda_w` is set by the user.
+#' @param lambda_b_min_ratio The ratio of the smallest generated \eqn{\lambda_b}
+#'   over the greatest generated \eqn{\lambda_b}. Defaults to 0.1. Ignored when
+#'   `lambda_b` is set by the user.
 #' @param c_min_ratio The ratio of the smallest generated \eqn{c} over the
 #'   greatest generated \eqn{c}. Defaults to 0.1. Ignored when `c` is set by the
 #'   user.
@@ -59,8 +65,8 @@
 #'   `coglasso()` failed to converge.
 #' * `data` is the input multi-omics data set.
 #' * `hpars` is the ordered table of all the combinations of hyperparameters
-#'   given as input to `coglasso()`, with \eqn{\alpha(\lambda_w+\lambda_b)} being the key to sort
-#'   rows.
+#'   given as input to `coglasso()`, with \eqn{\alpha(\lambda_w+\lambda_b)}
+#'   being the key to sort rows.
 #' * `lambda_w` is a numerical vector with all the \eqn{\lambda_w} values `coglasso()`
 #'   used.
 #' * `lambda_b` is a numerical vector with all the \eqn{\lambda_b} values `coglasso()`
@@ -76,8 +82,8 @@
 #' @examples
 #' # Typical usage: set the number of hyperparameters to explore
 #' cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
-#'
-coglasso <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, nlambda_w = NULL, nlambda_b = NULL, nc = NULL, c_max = NULL, lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL, c_min_ratio = NULL, cov_output = FALSE, verbose = TRUE) {
+#' 
+coglasso <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, nlambda_w = NULL, nlambda_b = NULL, nc = NULL, lambda_w_max = NULL, lambda_b_max = NULL, c_max = NULL, lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL, c_min_ratio = NULL, cov_output = FALSE, verbose = TRUE) {
   original_data <- data
   data <- as.matrix(data)
   gcinfo(FALSE)
@@ -95,7 +101,7 @@ coglasso <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, nlamb
   gc()
 
   hpars <- gen_hpars(
-    S = S, p = p, lambda_w = lambda_w, lambda_b = lambda_b, c = c, nlambda_w = nlambda_w, nlambda_b = nlambda_b, nc = nc, c_max = c_max,
+    S = S, p = p, lambda_w = lambda_w, lambda_b = lambda_b, c = c, nlambda_w = nlambda_w, nlambda_b = nlambda_b, nc = nc, lambda_w_max = lambda_w_max, lambda_b_max = lambda_b_max, c_max = c_max,
     lambda_w_min_ratio = lambda_w_min_ratio, lambda_b_min_ratio = lambda_b_min_ratio, c_min_ratio = c_min_ratio
   )
 
@@ -129,8 +135,9 @@ coglasso <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, nlamb
 #' 
 #' @noRd
 gen_hpars <- function(S = NULL, p = NULL, lambda_w = NULL, lambda_b = NULL, c = NULL,
-                      nlambda_w = NULL, nlambda_b = NULL,
-                      nc = NULL, c_max = NULL, lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL,
+                      nlambda_w = NULL, nlambda_b = NULL, nc = NULL, 
+                      lambda_w_max = NULL, lambda_b_max = NULL, c_max = NULL, 
+                      lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL,
                       c_min_ratio = NULL, getc = NULL) {
   if (!is.null(lambda_w)) nlambda_w <- length(lambda_w)
   if (!is.null(lambda_b)) nlambda_b <- length(lambda_b)
@@ -143,9 +150,11 @@ gen_hpars <- function(S = NULL, p = NULL, lambda_w = NULL, lambda_b = NULL, c = 
     if (is.null(lambda_w_min_ratio)) {
       lambda_w_min_ratio <- 0.1
     }
-    lambda_w.max <- max(max(S - diag(p)), -min(S - diag(p)))
-    lambda_w.min <- lambda_w_min_ratio * lambda_w.max
-    lambda_w <- exp(seq(log(lambda_w.max), log(lambda_w.min), length = nlambda_w))
+    if (is.null(lambda_w_max)) {
+      lambda_w_max <- max(max(S - diag(p)), -min(S - diag(p)))
+    }
+    lambda_w_min <- lambda_w_min_ratio * lambda_w_max
+    lambda_w <- exp(seq(log(lambda_w_max), log(lambda_w_min), length = nlambda_w))
   }
   if (is.null(lambda_b)) {
     if (is.null(nlambda_b)) {
@@ -154,9 +163,11 @@ gen_hpars <- function(S = NULL, p = NULL, lambda_w = NULL, lambda_b = NULL, c = 
     if (is.null(lambda_b_min_ratio)) {
       lambda_b_min_ratio <- 0.1
     }
-    lambda_b.max <- max(max(S - diag(p)), -min(S - diag(p)))
-    lambda_b.min <- lambda_b_min_ratio * lambda_b.max
-    lambda_b <- exp(seq(log(lambda_b.max), log(lambda_b.min), length = nlambda_b))
+    if (is.null(lambda_b_max)) {
+      lambda_b_max <- max(max(S - diag(p)), -min(S - diag(p)))
+    }
+    lambda_b_min <- lambda_b_min_ratio * lambda_b_max
+    lambda_b <- exp(seq(log(lambda_b_max), log(lambda_b_min), length = nlambda_b))
   }
   if (is.null(c)) {
     if (is.null(nc)) {

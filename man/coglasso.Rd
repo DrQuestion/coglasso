@@ -14,6 +14,8 @@ coglasso(
   nlambda_w = NULL,
   nlambda_b = NULL,
   nc = NULL,
+  lambda_w_max = NULL,
+  lambda_b_max = NULL,
   c_max = NULL,
   lambda_w_min_ratio = NULL,
   lambda_b_min_ratio = NULL,
@@ -41,28 +43,36 @@ penalization parameter for the "between" interactions. Overrides
 \item{c}{A vector of values for the parameter \eqn{c}, the weight given to
 collaboration. Overrides \code{nc}.}
 
-\item{nlambda_w}{The number of requested \eqn{\lambda_w} parameters to explore. A
-sequence of size \code{nlambda_w} of \eqn{\lambda_w} parameters will be generated.
-Defaults to 8. Ignored when \code{lambda_w} is set by the user.}
+\item{nlambda_w}{The number of requested \eqn{\lambda_w} parameters to
+explore. A sequence of size \code{nlambda_w} of \eqn{\lambda_w} parameters will
+be generated. Defaults to 8. Ignored when \code{lambda_w} is set by the user.}
 
-\item{nlambda_b}{The number of requested \eqn{\lambda_b} parameters to explore. A
-sequence of size \code{nlambda_b} of \eqn{\lambda_b} parameters will be generated.
-Defaults to 8. Ignored when \code{lambda_b} is set by the user.}
+\item{nlambda_b}{The number of requested \eqn{\lambda_b} parameters to
+explore. A sequence of size \code{nlambda_b} of \eqn{\lambda_b} parameters will
+be generated. Defaults to 8. Ignored when \code{lambda_b} is set by the user.}
 
 \item{nc}{The number of requested \eqn{c} parameters to explore. A sequence
 of size \code{nc} of \eqn{c} parameters will be generated. Defaults to 8.
 Ignored when \code{c} is set by the user.}
 
+\item{lambda_w_max}{The greatest generated \eqn{\lambda_w}. By default it is
+computed with a data-driven approach. Ignored when \code{lambda_w} is set by the
+user.}
+
+\item{lambda_b_max}{The greatest generated \eqn{\lambda_b}. By default it is
+computed with a data-driven approach. Ignored when \code{lambda_b} is set by the
+user.}
+
 \item{c_max}{The greatest generated \eqn{c}. Defaults to 10. Ignored when \code{c}
 is set by the user.}
 
-\item{lambda_w_min_ratio}{The ratio of the smallest generated \eqn{\lambda_w} over
-the greatest generated \eqn{\lambda_w}. Defaults to 0.1. Ignored when \code{lambda_w}
-is set by the user.}
+\item{lambda_w_min_ratio}{The ratio of the smallest generated \eqn{\lambda_w}
+over the greatest generated \eqn{\lambda_w}. Defaults to 0.1. Ignored when
+\code{lambda_w} is set by the user.}
 
-\item{lambda_b_min_ratio}{The ratio of the smallest generated \eqn{\lambda_b} over
-the greatest generated \eqn{\lambda_b}. Defaults to 0.1. Ignored when \code{lambda_b}
-is set by the user.}
+\item{lambda_b_min_ratio}{The ratio of the smallest generated \eqn{\lambda_b}
+over the greatest generated \eqn{\lambda_b}. Defaults to 0.1. Ignored when
+\code{lambda_b} is set by the user.}
 
 \item{c_min_ratio}{The ratio of the smallest generated \eqn{c} over the
 greatest generated \eqn{c}. Defaults to 0.1. Ignored when \code{c} is set by the
@@ -92,8 +102,8 @@ estimated networks.
 \code{coglasso()} failed to converge.
 \item \code{data} is the input multi-omics data set.
 \item \code{hpars} is the ordered table of all the combinations of hyperparameters
-given as input to \code{coglasso()}, with \eqn{\alpha(\lambda_w+\lambda_b)} being the key to sort
-rows.
+given as input to \code{coglasso()}, with \eqn{\alpha(\lambda_w+\lambda_b)}
+being the key to sort rows.
 \item \code{lambda_w} is a numerical vector with all the \eqn{\lambda_w} values \code{coglasso()}
 used.
 \item \code{lambda_b} is a numerical vector with all the \eqn{\lambda_b} values \code{coglasso()}

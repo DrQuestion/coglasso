@@ -17,6 +17,18 @@ test_that("nc works", {
   expect_length(coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = n, nlambda_b = n, nc = n, verbose = FALSE)$c, n)
 })
 
+test_that("lambda_w_max works", {
+  n <- 3
+  lambda_w_max <- 0.8
+  expect_equal(max(coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = n, nlambda_b = n, nc = n, lambda_w_max = lambda_w_max, verbose = FALSE)$lambda_w), lambda_w_max)
+})
+
+test_that("lambda_b_max works", {
+  n <- 3
+  lambda_b_max <- 0.8
+  expect_equal(max(coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = n, nlambda_b = n, nc = n, lambda_b_max = lambda_b_max, verbose = FALSE)$lambda_b), lambda_b_max)
+})
+
 test_that("c_max works", {
   n <- 3
   c_max <- 20
