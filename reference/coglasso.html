@@ -75,6 +75,8 @@ the hyperparameters \(\lambda_w\), \(\lambda_b\) and \(c\).</p>
 <span>  nlambda_w <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  nlambda_b <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  nc <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lambda_w_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lambda_b_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  c_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lambda_w_min_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lambda_b_min_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -115,15 +117,15 @@ collaboration. Overrides <code>nc</code>.</p></dd>
 
 
 <dt>nlambda_w</dt>
-<dd><p>The number of requested \(\lambda_w\) parameters to explore. A
-sequence of size <code>nlambda_w</code> of \(\lambda_w\) parameters will be generated.
-Defaults to 8. Ignored when <code>lambda_w</code> is set by the user.</p></dd>
+<dd><p>The number of requested \(\lambda_w\) parameters to
+explore. A sequence of size <code>nlambda_w</code> of \(\lambda_w\) parameters will
+be generated. Defaults to 8. Ignored when <code>lambda_w</code> is set by the user.</p></dd>
 
 
 <dt>nlambda_b</dt>
-<dd><p>The number of requested \(\lambda_b\) parameters to explore. A
-sequence of size <code>nlambda_b</code> of \(\lambda_b\) parameters will be generated.
-Defaults to 8. Ignored when <code>lambda_b</code> is set by the user.</p></dd>
+<dd><p>The number of requested \(\lambda_b\) parameters to
+explore. A sequence of size <code>nlambda_b</code> of \(\lambda_b\) parameters will
+be generated. Defaults to 8. Ignored when <code>lambda_b</code> is set by the user.</p></dd>
 
 
 <dt>nc</dt>
@@ -132,21 +134,33 @@ of size <code>nc</code> of \(c\) parameters will be generated. Defaults to 8.
 Ignored when <code>c</code> is set by the user.</p></dd>
 
 
+<dt>lambda_w_max</dt>
+<dd><p>The greatest generated \(\lambda_w\). By default it is
+computed with a data-driven approach. Ignored when <code>lambda_w</code> is set by the
+user.</p></dd>
+
+
+<dt>lambda_b_max</dt>
+<dd><p>The greatest generated \(\lambda_b\). By default it is
+computed with a data-driven approach. Ignored when <code>lambda_b</code> is set by the
+user.</p></dd>
+
+
 <dt>c_max</dt>
 <dd><p>The greatest generated \(c\). Defaults to 10. Ignored when <code>c</code>
 is set by the user.</p></dd>
 
 
 <dt>lambda_w_min_ratio</dt>
-<dd><p>The ratio of the smallest generated \(\lambda_w\) over
-the greatest generated \(\lambda_w\). Defaults to 0.1. Ignored when <code>lambda_w</code>
-is set by the user.</p></dd>
+<dd><p>The ratio of the smallest generated \(\lambda_w\)
+over the greatest generated \(\lambda_w\). Defaults to 0.1. Ignored when
+<code>lambda_w</code> is set by the user.</p></dd>
 
 
 <dt>lambda_b_min_ratio</dt>
-<dd><p>The ratio of the smallest generated \(\lambda_b\) over
-the greatest generated \(\lambda_b\). Defaults to 0.1. Ignored when <code>lambda_b</code>
-is set by the user.</p></dd>
+<dd><p>The ratio of the smallest generated \(\lambda_b\)
+over the greatest generated \(\lambda_b\). Defaults to 0.1. Ignored when
+<code>lambda_b</code> is set by the user.</p></dd>
 
 
 <dt>c_min_ratio</dt>
@@ -184,8 +198,8 @@ estimated networks.</p></li>
 <code>coglasso()</code> failed to converge.</p></li>
 <li><p><code>data</code> is the input multi-omics data set.</p></li>
 <li><p><code>hpars</code> is the ordered table of all the combinations of hyperparameters
-given as input to <code>coglasso()</code>, with \(\alpha(\lambda_w+\lambda_b)\) being the key to sort
-rows.</p></li>
+given as input to <code>coglasso()</code>, with \(\alpha(\lambda_w+\lambda_b)\)
+being the key to sort rows.</p></li>
 <li><p><code>lambda_w</code> is a numerical vector with all the \(\lambda_w\) values <code>coglasso()</code>
 used.</p></li>
 <li><p><code>lambda_b</code> is a numerical vector with all the \(\lambda_b\) values <code>coglasso()</code>
@@ -209,7 +223,7 @@ the variance-covariance matrices of all the estimated networks.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Alessio Albanese.</p>
+  <p></p><p>Developed by Alessio Albanese, Pariya Behrouzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

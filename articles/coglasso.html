@@ -142,9 +142,11 @@ arguments of <code><a href="../reference/coglasso.html">coglasso()</a></code> an
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/coglasso.html">coglasso</a></span><span class="op">(</span><span class="va">multi_omics_sd_small</span>,</span>
 <span>  pX <span class="op">=</span> <span class="fl">14</span>,</span>
-<span>  nlambda_w <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  nlambda_b <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  nlambda_w <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  nlambda_b <span class="op">=</span> <span class="fl">15</span>,</span>
 <span>  nc <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  lambda_w_max <span class="op">=</span> <span class="fl">0.85</span>,</span>
+<span>  lambda_b_max <span class="op">=</span> <span class="fl">0.85</span>,</span>
 <span>  lambda_w_min_ratio <span class="op">=</span> <span class="fl">0.7</span>,</span>
 <span>  lambda_b_min_ratio <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -152,17 +154,13 @@ arguments of <code><a href="../reference/coglasso.html">coglasso()</a></code> an
 <span></span>
 <span><span class="co"># To see the explored paramaters:</span></span>
 <span><span class="va">cg</span><span class="op">$</span><span class="va">lambda_w</span></span>
-<span><span class="co">#&gt;  [1] 0.9136980 0.9025291 0.8914968 0.8805993 0.8698350 0.8592023 0.8486996</span></span>
-<span><span class="co">#&gt;  [8] 0.8383253 0.8280777 0.8179555 0.8079569 0.7980806 0.7883250 0.7786887</span></span>
-<span><span class="co">#&gt; [15] 0.7691702 0.7597680 0.7504807 0.7413070 0.7322454 0.7232945 0.7144531</span></span>
-<span><span class="co">#&gt; [22] 0.7057198 0.6970932 0.6885721 0.6801551 0.6718410 0.6636285 0.6555165</span></span>
-<span><span class="co">#&gt; [29] 0.6475036 0.6395886</span></span>
+<span><span class="co">#&gt;  [1] 0.8500000 0.8286183 0.8077744 0.7874548 0.7676464 0.7483363 0.7295119</span></span>
+<span><span class="co">#&gt;  [8] 0.7111610 0.6932718 0.6758325 0.6588320 0.6422591 0.6261030 0.6103534</span></span>
+<span><span class="co">#&gt; [15] 0.5950000</span></span>
 <span><span class="va">cg</span><span class="op">$</span><span class="va">lambda_b</span></span>
-<span><span class="co">#&gt;  [1] 0.9136980 0.8921181 0.8710478 0.8504752 0.8303884 0.8107761 0.7916270</span></span>
-<span><span class="co">#&gt;  [8] 0.7729302 0.7546749 0.7368508 0.7194477 0.7024556 0.6858648 0.6696659</span></span>
-<span><span class="co">#&gt; [15] 0.6538496 0.6384068 0.6233288 0.6086068 0.5942326 0.5801979 0.5664946</span></span>
-<span><span class="co">#&gt; [22] 0.5531150 0.5400514 0.5272963 0.5148425 0.5026828 0.4908104 0.4792183</span></span>
-<span><span class="co">#&gt; [29] 0.4679000 0.4568490</span></span>
+<span><span class="co">#&gt;  [1] 0.8500000 0.8089409 0.7698651 0.7326769 0.6972851 0.6636028 0.6315476</span></span>
+<span><span class="co">#&gt;  [8] 0.6010408 0.5720076 0.5443768 0.5180808 0.4930550 0.4692380 0.4465716</span></span>
+<span><span class="co">#&gt; [15] 0.4250000</span></span>
 <span><span class="va">cg</span><span class="op">$</span><span class="va">c</span></span>
 <span><span class="co">#&gt; [1] 10.000000  3.162278  1.000000</span></span></code></pre></div>
 <p>To select the best combination of hyperparameters, we will use
@@ -177,11 +175,11 @@ resulting from <code><a href="../reference/coglasso.html">coglasso()</a></code>.
 <span></span>
 <span><span class="co"># To see the selected parameters:</span></span>
 <span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_lambda_w</span></span>
-<span><span class="co">#&gt; [1] 0.9025291</span></span>
+<span><span class="co">#&gt; [1] 0.85</span></span>
 <span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_lambda_b</span></span>
-<span><span class="co">#&gt; [1] 0.5026828</span></span>
+<span><span class="co">#&gt; [1] 0.5443768</span></span>
 <span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_c</span></span>
-<span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 3.162278</span></span></code></pre></div>
 <p>With this we have selected the combination of hyperparameters
 yielding the most stable, yet sparse coglasso network. The adjacency
 matrix of the selected network is stored in the object
@@ -228,7 +226,7 @@ Models (arXiv:1006.3316). <em>arXiv.</em> <a href="https://doi.org/10.48550/arXi
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Alessio Albanese.</p>
+<p>Developed by Alessio Albanese, Pariya Behrouzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">
