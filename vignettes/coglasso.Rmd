@@ -37,7 +37,7 @@ This smaller version of `multi_omics_sd` has 19 variables, 14 genes and 5 metabo
 
 Our objective is to reconstruct a network from this data set using *collaborative graphical lasso*. To do so with the coglasso package, we mainly call two functions. First, we use `coglasso()` to estimate a network for every combination of hyperparameters we want to explore. Following this, we call `stars_coglasso()` to select the best combination of hyperparameters using stability selection.
 
-The usual application of `coglasso()` requires to give an input data set to the argument `data`, the number of variables of the the first type to `pX`, and hyperparameter settings. Collaborative graphical lasso has three hyperparameters: $λ_w$, penalizing "within" same-type interactions, $λ_b$ penalizing "between" different-type interactions, and $c$, the weight of the collaborative term. In this vignette we choose to explore 30 possible penalty values for both "within" and "between" penalties, and three possible collaboration values. We do so by setting both `nlambda_w` and `nlambda_b` to 30, and by setting `nc` to 3. We also decide to focus our search to the sparse side of possible networks, by setting higher minimum ratios between the smallest (least penalizing) and the largest (most penalizing) penalty explored. While the default value of these parameters is 0.1, we decide to set the minimum ratio to 0.7 for $λ_w$ and to 0.5 for $λ_b$. For further explanation on other arguments of `coglasso()` and how to use them, please see `help(coglasso)`.
+The usual application of `coglasso()` requires to give an input data set to the argument `data`, the number of variables of the the first type to `pX`, and hyperparameter settings. Collaborative graphical lasso has three hyperparameters: $λ_w$, penalizing "within" same-type interactions, $λ_b$ penalizing "between" different-type interactions, and $c$, the weight of the collaborative term. In this vignette we choose to explore 15 possible penalty values for both "within" and "between" penalties, and three possible collaboration values. We do so by setting both `nlambda_w` and `nlambda_b` to 15, and by setting `nc` to 3. We also decide to restrict our search to a less extreme penalization, by setting a fixed maximum value for both penalties to 0.85, while by default it is often estimated to a higher value with a data-driven approach. Nevertheless, we also decide to focus our search to the sparse side of possible networks. We achieve this by setting to a fixed value the ratios between the smallest (least penalizing) and the largest (most penalizing) penalty explored. While the default value of these parameters is 0.1, we decide to set the minimum ratio to 0.6 for $λ_w$ and to 0.4 for $λ_b$. For further explanation on other arguments of `coglasso()` and how to use them, please see `help(coglasso)`.
 
 ```{r}
 cg <- coglasso(multi_omics_sd_small,
@@ -47,8 +47,8 @@ cg <- coglasso(multi_omics_sd_small,
   nc = 3,
   lambda_w_max = 0.85,
   lambda_b_max = 0.85,
-  lambda_w_min_ratio = 0.7,
-  lambda_b_min_ratio = 0.5,
+  lambda_w_min_ratio = 0.6,
+  lambda_b_min_ratio = 0.4,
   verbose = FALSE
 )
 

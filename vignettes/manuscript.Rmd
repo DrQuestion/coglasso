@@ -35,7 +35,7 @@ We notice that this data set has 162 transcripts and 76 metabolites. For further
 
 ## Reproducing the results
 
-For the multi-omics network reconstruction carried out in the manuscript we explored 30 automatically generated $λ_w$ and $λ_b$ values and 10 given $c$ values.
+For the multi-omics network reconstruction carried out in the manuscript we explored 30 automatically generated $λ_w$ and $λ_b$ values and 9 given $c$ values.
 
 ```{r}
 nlambda_w <- 30
@@ -67,7 +67,7 @@ We display now the selected network using the package `igraph`, reproducing the 
 # To create the igraph object from the selected adjacency matrix:
 sel_graph <- igraph::graph.adjacency(sel_cg$sel_adj, mode = "undirected")
 
-# Setting some graphical parameters and removing disconnected nodes from the graph
+# Setting some graphical parameters
 igraph::V(sel_graph)$label <- NA
 igraph::V(sel_graph)$color <- c(rep("#00ccff", 162), rep("#ff9999", 76))
 igraph::V(sel_graph)$frame.color <- c(rep("#002060", 162), rep("#800000", 76))
@@ -75,6 +75,7 @@ igraph::V(sel_graph)$frame.width <- 2
 igraph::V(sel_graph)$size <- 4
 igraph::E(sel_graph)$width <- 0.3
 
+# Setting a force-based network layout and removing disconnected nodes from the graph
 lo <- igraph::layout_with_fr(sel_graph)
 diconnected <- which(igraph::degree(sel_graph) == 0)
 sel_graph2 <- igraph::delete.vertices(sel_graph, diconnected)
@@ -84,9 +85,10 @@ lo2 <- lo[-diconnected, ]
 plot(sel_graph2, layout = lo2)
 ```
 
-We now plot the subnetwork of the gene *Cirbp* and of its neighborhood. This reproduces Figure 4.
+We now plot the subnetwork of the gene *Cirbp* and of its neighborhood. This reproduces the network displayed in Figure 4A.
 
 ```{r}
+igraph::V(sel_graph)$label<-colnames(sel_cg$data)
 cirbp_index <- which(colnames(sel_cg$data) == "Cirbp")
 subnetwork <- igraph::subgraph(
   sel_graph,
@@ -95,11 +97,29 @@ subnetwork <- igraph::subgraph(
 plot(subnetwork)
 ```
 
+A useful way to extract information from a network is community discovery. This technique allows to simplify a network by breaking it in functional units where nodes share several connections, enough to be recognized as separate communities. In the manuscript we used the greedy algorithm described in [Clauset, Newman and Moore, 2004](#ref), part of the `igraph` toolkit. We focused and inspected the second largest community, shown in Figure 4B. Here is the code to reproduce it.
+
+```{r}
+communities <- igraph::cluster_fast_greedy(sel_graph)
+community2 <- communities[[2]]
+community2_graph<-igraph::subgraph(sel_graph, community2)
+
+# Focusing on nodes of interest
+fosjun_erg_AA <- c("Fos", "Fosb", "Junb", "Fosl2", "Egr1", "Egr2", "Egr3", "Ala", "Arg", "Asn","His","Ile","Leu","Lys","Met","Orn","Phe","Ser","Thr","Tyr","Val")
+igraph::V(community2_igraph)[!(label %in% fosjun_erg_AA)]$color<-c(rep("#3bd8ff", 29), rep("#ffadad", 5))
+igraph::V(community2_igraph)[!(label %in% fosjun_erg_AA)]$frame.color<-NA
+igraph::V(community2_igraph)[!(label %in% fosjun_erg_AA)]$label<-NA
+
+lo_community2 <- igraph::layout_with_fr(community2_graph)
+plot(community2_graph, layout=lo_community2)
+```
+
 ## References {#ref}
 
 Friedman, J., Hastie, T., & Tibshirani, R. (2008). Sparse inverse covariance estimation with the graphical lasso. *Biostatistics*, 9(3), 432--441. <https://doi.org/10.1093/biostatistics/kxm045>
 
 Gross, S. M., & Tibshirani, R. (2015). Collaborative regression. *Biostatistics*, 16(2), 326--338. <https://doi.org/10.1093/biostatistics/kxu047> 
 
-Liu, H., Roeder, K., & Wasserman, L. (2010).
-Stability Approach to Regularization Selection (StARS) for High Dimensional Graphical Models (arXiv:1006.3316). *arXiv.* <https://doi.org/10.48550/arXiv.1006.3316>
+Liu, H., Roeder, K., & Wasserman, L. (2010). Stability Approach to Regularization Selection (StARS) for High Dimensional Graphical Models (arXiv:1006.3316). *arXiv.* <https://doi.org/10.48550/arXiv.1006.3316>
+
+Clauset, A., Newman, M. E. J., & Moore, C. (2004). Finding community structure in very large networks. *Physical Review E*, 70(6), 066111. <https://doi.org/10.1103/PhysRevE.70.066111>

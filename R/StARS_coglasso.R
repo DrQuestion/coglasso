@@ -263,11 +263,14 @@ stars_coglasso <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_rat
       coglasso_obj$hpars[, 2] == coglasso_obj$opt_lambda_w[i] &
       coglasso_obj$hpars[, 3] == coglasso_obj$opt_lambda_b[i])
     coglasso_obj$opt_adj[[i]] <- coglasso_obj$path[[opt_hpars_combination]]
+    colnames(coglasso_obj$opt_adj[[i]]) <- colnames(coglasso_obj$data)
+    row.names(coglasso_obj$opt_adj[[i]]) <- colnames(coglasso_obj$data)
   }
   
-  if (which.min(coglasso_obj$opt_variability) == 0) {
+  if (all(is.na(coglasso_obj$opt_variability))) {
    warning("coglasso did not converge for any c parameter. Will select the highest c.")
   }
+  
   coglasso_obj$sel_index_c <- min(which.min(coglasso_obj$opt_variability), n_c)
   coglasso_obj$sel_index_lw <- coglasso_obj$opt_index_lw[coglasso_obj$sel_index_c]
   coglasso_obj$sel_index_lb <- coglasso_obj$opt_index_lb[coglasso_obj$sel_index_c]
