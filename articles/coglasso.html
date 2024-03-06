@@ -128,15 +128,18 @@ variables of the the first type to <code>pX</code>, and hyperparameter
 settings. Collaborative graphical lasso has three hyperparameters: <span class="math inline">\(λ_w\)</span>, penalizing “within” same-type
 interactions, <span class="math inline">\(λ_b\)</span> penalizing
 “between” different-type interactions, and <span class="math inline">\(c\)</span>, the weight of the collaborative term.
-In this vignette we choose to explore 30 possible penalty values for
+In this vignette we choose to explore 15 possible penalty values for
 both “within” and “between” penalties, and three possible collaboration
 values. We do so by setting both <code>nlambda_w</code> and
-<code>nlambda_b</code> to 30, and by setting <code>nc</code> to 3. We
-also decide to focus our search to the sparse side of possible networks,
-by setting higher minimum ratios between the smallest (least penalizing)
-and the largest (most penalizing) penalty explored. While the default
-value of these parameters is 0.1, we decide to set the minimum ratio to
-0.7 for <span class="math inline">\(λ_w\)</span> and to 0.5 for <span class="math inline">\(λ_b\)</span>. For further explanation on other
+<code>nlambda_b</code> to 15, and by setting <code>nc</code> to 3. We
+also decide to restrict our search to a less extreme penalization, by
+setting a fixed maximum value for both penalties to 0.85, while by
+default it is often estimated to a higher value with a data-driven
+approach. Nevertheless, we also decide to focus our search to the sparse
+side of possible networks. We achieve this by setting to a fixed value
+the ratios between the smallest (least penalizing) and the largest (most
+penalizing) penalty explored. While the default value of these
+parameters is 0.1, we decide to set the minimum ratio to 0.6 for <span class="math inline">\(λ_w\)</span> and to 0.4 for <span class="math inline">\(λ_b\)</span>. For further explanation on other
 arguments of <code><a href="../reference/coglasso.html">coglasso()</a></code> and how to use them, please see
 <code><a href="../reference/coglasso.html">help(coglasso)</a></code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -147,20 +150,20 @@ arguments of <code><a href="../reference/coglasso.html">coglasso()</a></code> an
 <span>  nc <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  lambda_w_max <span class="op">=</span> <span class="fl">0.85</span>,</span>
 <span>  lambda_b_max <span class="op">=</span> <span class="fl">0.85</span>,</span>
-<span>  lambda_w_min_ratio <span class="op">=</span> <span class="fl">0.7</span>,</span>
-<span>  lambda_b_min_ratio <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  lambda_w_min_ratio <span class="op">=</span> <span class="fl">0.6</span>,</span>
+<span>  lambda_b_min_ratio <span class="op">=</span> <span class="fl">0.4</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># To see the explored paramaters:</span></span>
 <span><span class="va">cg</span><span class="op">$</span><span class="va">lambda_w</span></span>
-<span><span class="co">#&gt;  [1] 0.8500000 0.8286183 0.8077744 0.7874548 0.7676464 0.7483363 0.7295119</span></span>
-<span><span class="co">#&gt;  [8] 0.7111610 0.6932718 0.6758325 0.6588320 0.6422591 0.6261030 0.6103534</span></span>
-<span><span class="co">#&gt; [15] 0.5950000</span></span>
+<span><span class="co">#&gt;  [1] 0.8500000 0.8195446 0.7901804 0.7618683 0.7345706 0.7082511 0.6828745</span></span>
+<span><span class="co">#&gt;  [8] 0.6584072 0.6348165 0.6120711 0.5901407 0.5689960 0.5486089 0.5289523</span></span>
+<span><span class="co">#&gt; [15] 0.5100000</span></span>
 <span><span class="va">cg</span><span class="op">$</span><span class="va">lambda_b</span></span>
-<span><span class="co">#&gt;  [1] 0.8500000 0.8089409 0.7698651 0.7326769 0.6972851 0.6636028 0.6315476</span></span>
-<span><span class="co">#&gt;  [8] 0.6010408 0.5720076 0.5443768 0.5180808 0.4930550 0.4692380 0.4465716</span></span>
-<span><span class="co">#&gt; [15] 0.4250000</span></span>
+<span><span class="co">#&gt;  [1] 0.8500000 0.7961495 0.7457107 0.6984673 0.6542169 0.6127700 0.5739489</span></span>
+<span><span class="co">#&gt;  [8] 0.5375872 0.5035292 0.4716288 0.4417495 0.4137631 0.3875498 0.3629971</span></span>
+<span><span class="co">#&gt; [15] 0.3400000</span></span>
 <span><span class="va">cg</span><span class="op">$</span><span class="va">c</span></span>
 <span><span class="co">#&gt; [1] 10.000000  3.162278  1.000000</span></span></code></pre></div>
 <p>To select the best combination of hyperparameters, we will use
@@ -177,7 +180,7 @@ resulting from <code><a href="../reference/coglasso.html">coglasso()</a></code>.
 <span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_lambda_w</span></span>
 <span><span class="co">#&gt; [1] 0.85</span></span>
 <span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_lambda_b</span></span>
-<span><span class="co">#&gt; [1] 0.5443768</span></span>
+<span><span class="co">#&gt; [1] 0.5739489</span></span>
 <span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_c</span></span>
 <span><span class="co">#&gt; [1] 3.162278</span></span></code></pre></div>
 <p>With this we have selected the combination of hyperparameters
@@ -187,7 +190,12 @@ matrix of the selected network is stored in the object
 selected network with the R package <code>igraph</code>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># To create the igraph object from the selected adjacency matrix:</span></span>
-<span><span class="va">sel_graph</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/graph_from_adjacency_matrix.html" class="external-link">graph.adjacency</a></span><span class="op">(</span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_adj</span>, mode <span class="op">=</span> <span class="st">"undirected"</span><span class="op">)</span></span>
+<span><span class="va">sel_graph</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/graph.adjacency.html" class="external-link">graph.adjacency</a></span><span class="op">(</span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_adj</span>, mode <span class="op">=</span> <span class="st">"undirected"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: `graph.adjacency()` was deprecated in igraph 2.0.0.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Please use `graph_from_adjacency_matrix()` instead.</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">generated.</span></span></span>
 <span></span>
 <span><span class="co"># Setting some graphical parameters and removing disconnected nodes from the graph</span></span>
 <span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">sel_graph</span><span class="op">)</span><span class="op">$</span><span class="va">label</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">multi_omics_sd_small</span><span class="op">)</span></span>
@@ -199,7 +207,12 @@ selected network with the R package <code>igraph</code>.</p>
 <span></span>
 <span><span class="va">lo</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/layout_with_fr.html" class="external-link">layout_with_fr</a></span><span class="op">(</span><span class="va">sel_graph</span><span class="op">)</span></span>
 <span><span class="va">diconnected</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/degree.html" class="external-link">degree</a></span><span class="op">(</span><span class="va">sel_graph</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">sel_graph2</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/delete_vertices.html" class="external-link">delete.vertices</a></span><span class="op">(</span><span class="va">sel_graph</span>, <span class="va">diconnected</span><span class="op">)</span></span>
+<span><span class="va">sel_graph2</span> <span class="op">&lt;-</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/delete.vertices.html" class="external-link">delete.vertices</a></span><span class="op">(</span><span class="va">sel_graph</span>, <span class="va">diconnected</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: `delete.vertices()` was deprecated in igraph 2.0.0.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Please use `delete_vertices()` instead.</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">generated.</span></span></span>
 <span><span class="va">lo2</span> <span class="op">&lt;-</span> <span class="va">lo</span><span class="op">[</span><span class="op">-</span><span class="va">diconnected</span>, <span class="op">]</span></span>
 <span></span>
 <span><span class="co"># Plotting</span></span>
