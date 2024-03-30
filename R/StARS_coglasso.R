@@ -79,7 +79,7 @@
 #'
 #' @examples
 #' cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
-#' \dontrun{
+#' \donttest{
 #' # Takes around 20 seconds
 #' sel_cg <- stars_coglasso(cg, verbose = FALSE)
 #' }
