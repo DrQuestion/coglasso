@@ -17,9 +17,9 @@ the *graphical lasso* by Friedman, Hastie and Tibshirani
 ([2008](#references)) and *collaborative regression* by Gross and
 Tibshirani ([2015](#references)).
 
-## Installing from CRAN (not released on CRAN yet)
+## Installing coglasso
 
-You will be able to install the CRAN release of coglasso with:
+You can install the CRAN release of coglasso with:
 
 ``` r
 install.packages("coglasso")
