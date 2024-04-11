@@ -80,16 +80,16 @@ sparse network.
 \description{
 \code{stars_coglasso()} selects the combination of hyperparameters given to
 \code{coglasso()} yielding the most stable, yet sparse network. Stability is
-computed upon network estimation from subsamples of the multi-omics data set,
+computed upon network estimation from multiple subsamples of the multi-omics data set,
 allowing repetition. Subsamples are collected for a fixed amount of times
 (\code{rep_num}), and with a fixed proportion of the total number of samples
 (\code{stars_subsample_ratio}).
 }
 \details{
-\emph{StARS} for \emph{collaborative graphical regression} is an adaptation of the method
+\emph{eXtended StARS} (\emph{XStARS}) is an adaptation for \emph{collaborative graphical regression} of the method
 published by Liu, H. \emph{et al.} (2010): Stability Approach to Regularization
 Selection (StARS). \emph{StARS} was developed for network estimation regulated by
-a single penalty parameter, while collaborative graphical lasso needs to
+a single penalty parameter, while \emph{collaborative graphical lasso} needs to
 explore three different hyperparameters. In particular, two of these are
 penalty parameters with a direct influence on network sparsity, hence on
 stability. For every \eqn{c} parameter, \code{stars_coglasso()} explores one of

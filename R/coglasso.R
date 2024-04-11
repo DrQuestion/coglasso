@@ -6,9 +6,9 @@
 #'
 #' @encoding UTF-8
 #' @param data The input multi-omics data set. Rows should be samples, columns
-#'   should be variables. Variables should be grouped by their assay (i.e.
+#'   should be variables. Variables should be grouped by their assay (e.g.
 #'   transcripts first, then metabolites). `data` is a required parameter.
-#' @param pX The number of variables of the first data set (i.e. the number of
+#' @param pX The number of variables of the first data set (e.g. the number of
 #'   transcripts). `pX` is a required parameter.
 #' @param lambda_w A vector of values for the parameter \eqn{\lambda_w}, the
 #'   penalization parameter for the "within" interactions. Overrides
@@ -82,6 +82,10 @@
 #' @examples
 #' # Typical usage: set the number of hyperparameters to explore
 #' cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+#' \donttest{
+#' # Model selection using eXtended StARS, takes around 20 seconds
+#' sel_cg_xstars <- select_coglasso(cg, method = "xstars", verbose = FALSE)
+#' }
 #' 
 coglasso <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, nlambda_w = NULL, nlambda_b = NULL, nc = NULL, lambda_w_max = NULL, lambda_b_max = NULL, c_max = NULL, lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL, c_min_ratio = NULL, cov_output = FALSE, verbose = TRUE) {
   original_data <- data

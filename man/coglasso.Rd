@@ -26,10 +26,10 @@ coglasso(
 }
 \arguments{
 \item{data}{The input multi-omics data set. Rows should be samples, columns
-should be variables. Variables should be grouped by their assay (i.e.
+should be variables. Variables should be grouped by their assay (e.g.
 transcripts first, then metabolites). \code{data} is a required parameter.}
 
-\item{pX}{The number of variables of the first data set (i.e. the number of
+\item{pX}{The number of variables of the first data set (e.g. the number of
 transcripts). \code{pX} is a required parameter.}
 
 \item{lambda_w}{A vector of values for the parameter \eqn{\lambda_w}, the
@@ -123,5 +123,9 @@ the hyperparameters \eqn{\lambda_w}, \eqn{\lambda_b} and \eqn{c}.
 \examples{
 # Typical usage: set the number of hyperparameters to explore
 cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+\donttest{
+# Model selection using eXtended StARS, takes around 20 seconds
+sel_cg_xstars <- select_coglasso(cg, method = "xstars", verbose = FALSE)
+}
 
 }
