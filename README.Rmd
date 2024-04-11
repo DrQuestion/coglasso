@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 [![codecov](https://codecov.io/gh/DrQuestion/coglasso/graph/badge.svg?token=Q370RQ1CAD)](https://app.codecov.io/gh/DrQuestion/coglasso)
 <!-- badges: end -->
 
-Coglasso implements *collaborative graphical lasso*, an algorithm for network reconstruction from multi-omics data sets (Albanese, Kohlen and Behrouzi, [2024](#references)). Our algorithm joins the principles of the *graphical lasso* by Friedman, Hastie and Tibshirani ([2008](#references)) and *collaborative regression* by Gross and Tibshirani ([2015](#references)).
+Coglasso implements *collaborative graphical lasso*, an algorithm for network reconstruction from multi-omics data sets ([Albanese, Kohlen and Behrouzi, 2024](#references)). Our algorithm joins the principles of the *graphical lasso* by Friedman, Hastie and Tibshirani ([2008](#references)) and *collaborative regression* by Gross and Tibshirani ([2015](#references)).
 
 ## Installing coglasso
 
@@ -57,10 +57,10 @@ library(coglasso)
 cg <- coglasso(multi_omics_sd_small, pX = 14)
 ```
 
-`coglasso()` explores several combinations of the hyperparameters characterizing *collaborative graphical lasso*. To select the combination yielding the most stable, yet sparse network, the package provides the function `stars_coglasso()`. This function implements a coglasso-adapted version of the *StARS* selection algorithm ([Liu, Roeder and Wasserman, 2010](#references)).
+`coglasso()` explores several combinations of the hyperparameters characterizing *collaborative graphical lasso*. To select the combination yielding the best network according to the chosen model selection method, the package provides the function `select_coglasso()`. Among others, this function implements *eXtended StARS* (*XStARS*, [Albanese, Kohlen and Behrouzi, 2024](#ref)), a coglasso-adapted version of the *StARS* selection algorithm ([Liu, Roeder and Wasserman, 2010](#references)) selecting the hyperparameter combination that yields the most stable, yet sparse network.
 
 ```r
-sel_cg <- stars_coglasso(cg)
+sel_cg <- select_coglasso(cg, method = "xstars")
 ```
 
 ## References

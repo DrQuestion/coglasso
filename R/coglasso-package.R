@@ -3,6 +3,7 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom lifecycle deprecated
 #' @importFrom Rcpp evalCpp
 #' @importFrom stats cor
 #' @importFrom utils flush.console

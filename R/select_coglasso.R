@@ -95,7 +95,7 @@ select_coglasso <- function(coglasso_obj, method = "xstars", stars_thresh = 0.1,
   }
 
   if (method == "xstars") {
-    coglasso_obj <- stars_coglasso(coglasso_obj = coglasso_obj, stars_thresh = stars_thresh, stars_subsample_ratio = stars_subsample_ratio, rep_num = rep_num, max_iter = max_iter, verbose = verbose)
+    coglasso_obj <- xstars(coglasso_obj = coglasso_obj, stars_thresh = stars_thresh, stars_subsample_ratio = stars_subsample_ratio, rep_num = rep_num, max_iter = max_iter, verbose = verbose)
   } else if (method == "ebic") {
     if (verbose) {
       mes <- "Selecting best Lambda_w/Lambda_b combination for all c values with \"ebic\"....in progress"

@@ -3,6 +3,9 @@
 * Implemented `select_coglasso()` for handling all possible present (and future)
   model selection methods from a single wrapping function. For the moment it 
   allows to perform model selection with either *eXtended StARS* or *eBIC*.
+  
+* Began the deprecation process of stars_coglasso(), renamed to the more 
+  accurate xstars()
 
 # coglasso 1.0.2
 

@@ -16,35 +16,12 @@ select_coglasso(
 )
 }
 \arguments{
-\item{coglasso_obj}{The object returned by \code{coglasso()}.}
-
 \item{method}{The model selection method to select the best combination of
 hyperparameters. The available options are "xstars" and "eBIC". Defaults to
 "xstars".}
 
-\item{stars_thresh}{The threshold set for variability of the explored
-networks at each iteration of the algorithm. The \eqn{\lambda_w} or the \eqn{\lambda_b}
-associated to the most stable network before the threshold is overcome is
-selected.}
-
-\item{stars_subsample_ratio}{The proportion of samples in the multi-omics
-data set to be randomly subsampled to estimate the variability of the
-network under the given hyperparameters setting. Defaults to 80\% when the
-number of samples is smaller than 144, otherwise it defaults to
-\eqn{\frac{10}{n}\sqrt{n}}.}
-
-\item{rep_num}{The amount of subsamples of the multi-omics data set used to
-estimate the variability of the network under the given hyperparameters
-setting. Defaults to 20.}
-
-\item{max_iter}{The greatest number of times the algorithm is allowed to
-choose a new best \eqn{\lambda_w}. Defaults to 10.}
-
 \item{ebic_gamma}{The \eqn{\gamma} tuning parameter for \emph{eBIC} selection, to set
 between 0 and 1. When set to 0 one has the standard \emph{BIC}. Defaults to 0.5.}
-
-\item{verbose}{Print information regarding the progress of the selection
-procedure on the console.}
 }
 \value{
 \code{select_coglasso()} returns a list containing the results of the
