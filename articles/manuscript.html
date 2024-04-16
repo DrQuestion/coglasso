@@ -88,11 +88,12 @@
 </h2>
 <p>This vignette serves the purpose to reproduce the results shown in
 the section “Real data example” of the manuscript describing
-<em>collaborative graphical lasso</em>. The computations carried out by
-the following code are heavy and could take a considerable amount of
-time. On our machine (RAM 48 Gb, CPU Intel(R) Xeon(R) W-2235 CPU @
-3.80GHz) it took almost 3 hours. Hence, we refer the user who wants to
-get started with the package to the introductory vignette:
+<em>collaborative graphical lasso</em> (<a href="#ref">Albanese, Kohlen
+and Behrouzi, 2024</a>). The computations carried out by the following
+code are heavy and could take a considerable amount of time. On our
+machine (RAM 48 Gb, CPU Intel(R) Xeon(R) W-2235 CPU @ 3.80GHz) it took
+almost 3 hours. Hence, we refer the user who wants to get started with
+the package to the introductory vignette:
 <code><a href="../articles/coglasso.html">vignette("coglasso")</a></code>. <em>Collaborative graphical
 lasso</em> is an algorithm to reconstruct multi-omics networks based on
 <em>graphical lasso</em> (<a href="#ref">Friedman, Hastie and
@@ -131,12 +132,15 @@ hyperparameters, with <code><a href="../reference/coglasso.html">coglasso()</a><
 <span>  c <span class="op">=</span> <span class="va">cs</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>We proceed now to select the most stable, yet sparse network, using
-an adaptation to coglasso of <em>StARS</em> (<a href="#ref">Liu, Roeder
-and Wasserman, 2010</a>). The function implementing this adapted version
-is <code><a href="../reference/stars_coglasso.html">stars_coglasso()</a></code>.</p>
+<em>eXtended StARS</em> (<em>XStARS</em>, <a href="#ref">Albanese,
+Kohlen and Behrouzi, 2024</a>), an adaptation to coglasso of
+<em>StARS</em> (<a href="#ref">Liu, Roeder and Wasserman, 2010</a>). The
+function implementing <em>XStARS</em> is <code><a href="../reference/select_coglasso.html">select_coglasso()</a></code>,
+when setting the argument <code>method</code> to “xstars” (which is the
+default behaviour).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
-<span><span class="va">sel_cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/stars_coglasso.html">stars_coglasso</a></span><span class="op">(</span><span class="va">cg</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">sel_cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/select_coglasso.html">select_coglasso</a></span><span class="op">(</span><span class="va">cg</span>, method <span class="op">=</span> <span class="st">"xstars"</span><span class="op">)</span></span></code></pre></div>
 <p>We display now the selected network using the package
 <code>igraph</code>, reproducing the one displayed in Figure 3 of the
 manuscript. The orientation of the network may vary.</p>
@@ -195,6 +199,8 @@ code to reproduce it.</p>
 <div class="section level2">
 <h2 id="ref">References<a class="anchor" aria-label="anchor" href="#ref"></a>
 </h2>
+<p>Albanese, A., Kohlen, W., &amp; Behrouzi, P. (2024). Collaborative
+graphical lasso (arXiv:2403.18602). <em>arXiv</em> <a href="https://doi.org/10.48550/arXiv.2403.18602" class="external-link uri">https://doi.org/10.48550/arXiv.2403.18602</a></p>
 <p>Friedman, J., Hastie, T., &amp; Tibshirani, R. (2008). Sparse inverse
 covariance estimation with the graphical lasso. <em>Biostatistics</em>,
 9(3), 432–441. <a href="https://doi.org/10.1093/biostatistics/kxm045" class="external-link uri">https://doi.org/10.1093/biostatistics/kxm045</a></p>

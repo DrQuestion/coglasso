@@ -83,50 +83,15 @@ availble options that can be set for the argument <code>method</code> are  "xsta
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>coglasso_obj</dt>
-<dd><p>The object returned by <code><a href="coglasso.html">coglasso()</a></code>.</p></dd>
-
-
-<dt>method</dt>
+    <dl><dt>method</dt>
 <dd><p>The model selection method to select the best combination of
 hyperparameters. The available options are "xstars" and "eBIC". Defaults to
 "xstars".</p></dd>
 
 
-<dt>stars_thresh</dt>
-<dd><p>The threshold set for variability of the explored
-networks at each iteration of the algorithm. The \(\lambda_w\) or the \(\lambda_b\)
-associated to the most stable network before the threshold is overcome is
-selected.</p></dd>
-
-
-<dt>stars_subsample_ratio</dt>
-<dd><p>The proportion of samples in the multi-omics
-data set to be randomly subsampled to estimate the variability of the
-network under the given hyperparameters setting. Defaults to 80% when the
-number of samples is smaller than 144, otherwise it defaults to
-\(\frac{10}{n}\sqrt{n}\).</p></dd>
-
-
-<dt>rep_num</dt>
-<dd><p>The amount of subsamples of the multi-omics data set used to
-estimate the variability of the network under the given hyperparameters
-setting. Defaults to 20.</p></dd>
-
-
-<dt>max_iter</dt>
-<dd><p>The greatest number of times the algorithm is allowed to
-choose a new best \(\lambda_w\). Defaults to 10.</p></dd>
-
-
 <dt>ebic_gamma</dt>
 <dd><p>The \(\gamma\) tuning parameter for <em>eBIC</em> selection, to set
 between 0 and 1. When set to 0 one has the standard <em>BIC</em>. Defaults to 0.5.</p></dd>
-
-
-<dt>verbose</dt>
-<dd><p>Print information regarding the progress of the selection
-procedure on the console.</p></dd>
 
 </dl></div>
     <div class="section level2">
