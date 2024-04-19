@@ -75,7 +75,7 @@ also allow new memory-lighter and faster possibilities.</p>
 <span>  stars_subsample_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  rep_num <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  max_iter <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -84,7 +84,7 @@ also allow new memory-lighter and faster possibilities.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="coglasso.html">coglasso</a></span><span class="op">(</span><span class="va">multi_omics_sd_micro</span>, pX <span class="op">=</span> <span class="fl">4</span>, nlambda_w <span class="op">=</span> <span class="fl">3</span>, nlambda_b <span class="op">=</span> <span class="fl">3</span>, nc <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span><span class="co"># Deprecated, use xstars() instead. Takes around 20 seconds</span></span></span>
+<span class="r-in"><span><span class="co"># Deprecated, use xstars() instead. Takes around one minute</span></span></span>
 <span class="r-in"><span><span class="va">sel_cg</span> <span class="op">&lt;-</span> <span class="fu">stars_coglasso</span><span class="op">(</span><span class="va">cg</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`stars_coglasso()` was deprecated in coglasso 1.1.0.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `xstars()` instead.</span>

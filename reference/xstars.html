@@ -126,7 +126,7 @@ procedure on the console.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p><code><a href="stars_coglasso.html">stars_coglasso()</a></code> returns a list containing the results of the
+<p><code>xstars()</code> returns a list containing the results of the
 selection procedure, built upon the list returned by <code><a href="coglasso.html">coglasso()</a></code>.</p><ul><li><p>... are the same elements returned by <code><a href="coglasso.html">coglasso()</a></code>.</p></li>
 <li><p><code>merge_lw</code> and <code>merge_lb</code> are lists with as many elements as the number of
 \(c\) parameters explored. Every element is in turn a list of as many
@@ -170,7 +170,7 @@ Selection (StARS). <em>StARS</em> was developed for network estimation regulated
 a single penalty parameter, while <em>collaborative graphical lasso</em> needs to
 explore three different hyperparameters. In particular, two of these are
 penalty parameters with a direct influence on network sparsity, hence on
-stability. For every \(c\) parameter, <code><a href="stars_coglasso.html">stars_coglasso()</a></code> explores one of
+stability. For every \(c\) parameter, <code>xstars()</code> explores one of
 the two penalty parameters (\(\lambda_w\) or \(\lambda_b\)), keeping the other one
 fixed at its previous best estimate, using the normal, one-dimentional
 <em>StARS</em> approach, until finding the best couple. It then selects the \(c\)
@@ -182,7 +182,7 @@ stable, yet sparse network.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="coglasso.html">coglasso</a></span><span class="op">(</span><span class="va">multi_omics_sd_micro</span>, pX <span class="op">=</span> <span class="fl">4</span>, nlambda_w <span class="op">=</span> <span class="fl">3</span>, nlambda_b <span class="op">=</span> <span class="fl">3</span>, nc <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span><span class="co"># Takes around 20 seconds</span></span></span>
+<span class="r-in"><span><span class="co"># Takes around one minute</span></span></span>
 <span class="r-in"><span><span class="va">sel_cg</span> <span class="op">&lt;-</span> <span class="fu">xstars</span><span class="op">(</span><span class="va">cg</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
