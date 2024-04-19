@@ -69,14 +69,17 @@ cg <- coglasso(multi_omics_sd_small, pX = 14)
 characterizing *collaborative graphical lasso*. To select the
 combination yielding the best network according to the chosen model
 selection method, the package provides the function `select_coglasso()`.
-Among others, this function implements *eXtended StARS* (*XStARS*,
-[Albanese, Kohlen and Behrouzi, 2024](#ref)), a coglasso-adapted version
-of the *StARS* selection algorithm ([Liu, Roeder and Wasserman,
-2010](#references)) selecting the hyperparameter combination that yields
-the most stable, yet sparse network.
+Among others, this function implements *eXtended Efficient StARS*
+(*XEStARS*), a significantly faster and memory-efficient version of
+*eXtended StARS* (*XStARS*, [Albanese, Kohlen and Behrouzi,
+2024](#ref)). These are coglasso-adapted versions of the *StARS*
+selection algorithm ([Liu, Roeder and Wasserman, 2010](#references))
+selecting the hyperparameter combination that yields the most stable,
+yet sparse network. *XEStARS* is the default option for the parameter
+`method`, so it is enough to call:
 
 ``` r
-sel_cg <- select_coglasso(cg, method = "xstars")
+sel_cg <- select_coglasso(cg)
 ```
 
 ## References

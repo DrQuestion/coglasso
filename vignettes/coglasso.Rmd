@@ -58,7 +58,7 @@ cg$lambda_b
 cg$c
 ```
 
-To select the best combination of hyperparameters, we will use `select_coglasso()`, setting `method` to "xstars" (which is the default behaviour). This function implements *eXtended StARS* (*XStARS*, [Albanese, Kohlen and Behrouzi, 2024](#ref)) a coglasso-adapted version of *StARS*, the stability selection method developed by Liu, Roeder and Wasserman ([2010](#ref)). The usual application of `select_coglasso()` uses the default options of the function, whose only required input is the object resulting from `coglasso()`.
+To select the best combination of hyperparameters, we will use `select_coglasso()`, setting `method` to "xestars" (which is the default behaviour). This function implements *eXtended Efficient StARS*, a significantly faster version of *eXtended StARS* (*XStARS*, [Albanese, Kohlen and Behrouzi, 2024](#ref)). *XEStARS* and *XStARS* are a coglasso-adapted version of *StARS*, the stability selection method developed by Liu, Roeder and Wasserman ([2010](#ref)). The suggested application of `select_coglasso()` uses the default options of the function, whose only required input is the object resulting from `coglasso()`.
 
 ```{r}
 sel_cg <- select_coglasso(cg, verbose = FALSE)
@@ -69,7 +69,7 @@ sel_cg$sel_lambda_b
 sel_cg$sel_c
 ```
 
-With this we have selected the combination of hyperparameters yielding the most stable, yet sparse coglasso network. The adjacency matrix of the selected network is stored in the object `sel_cg$sel_adj`. We can use this matrix to display the selected network with the R package `igraph`.
+With this we have fastly selected the combination of hyperparameters yielding the most stable, yet sparse coglasso network. The adjacency matrix of the selected network is stored in the object `sel_cg$sel_adj`. We can use this matrix to display the selected network with the R package `igraph`.
 
 ```{r}
 # To create the igraph object from the selected adjacency matrix:

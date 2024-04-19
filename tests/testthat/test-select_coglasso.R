@@ -9,7 +9,22 @@ test_that("Verbose mode works", {
   expect_output(select_coglasso(cg, method = "ebic"))
 })
 
-test_that("xstars call works", {
+test_that("xestars call works", {
+  old_seed <- .Random.seed
+  on.exit({
+    .Random.seed <<- old_seed
+  })
+  set.seed(42)
   cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 2, verbose = FALSE)
   expect_no_error(select_coglasso(cg, rep_num = 3, verbose = FALSE))
+})
+
+test_that("xstars call works", {
+  old_seed <- .Random.seed
+  on.exit({
+    .Random.seed <<- old_seed
+  })
+  set.seed(42)
+  cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 2, verbose = FALSE)
+  expect_no_error(select_coglasso(cg, method = "xstars", rep_num = 3, verbose = FALSE))
 })

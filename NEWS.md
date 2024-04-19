@@ -1,26 +1,73 @@
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
 # coglasso (development version)
 
-* Implemented `select_coglasso()` for handling all possible present (and future)
-  model selection methods from a single wrapping function. For the moment it 
-  allows to perform model selection with either *eXtended StARS* or *eBIC*.
-  
-* Began the deprecation process of stars_coglasso(), renamed to the more 
-  accurate xstars()
+-   Began the deprecation process of `stars_coglasso()`, renamed to the
+    more accurate `xstars()`. Made also some implementation improvements
+    to `xstars()` that made it faster.
+
+-   Implemented `xestars()`, performing *eXtended Efficient StARS*, a
+    significantly faster and more memory-efficient version of *XStARS*.
+    \
+    **How much faster?** \
+    In our tests, `xestars()` runs 80-90% faster than `xstars()`, even
+    more in specific instances. \
+    **What features make `xestars()` faster?** \
+    First of all, the check for stability that in `xstars()` is
+    performed after iterating throughout all the penalty parameters,
+    here is implemented as a stopping criterion. Hence, less penalty
+    parameters are explored, moreover usually are excluded those that
+    lead to denser network (and so to longer network estimations).\
+    Second, the use of vectors instead of matrixes to keep track of the
+    network variabilities makes the algorithm proceed faster, for the
+    former are easier and lighter objects to deal with.\
+    Third, a new sampling strategy allows a the computation of as many
+    correlation matrixes (the input to `coglasso()`), as the number of
+    repetitions of the algorithm only once at the beginning of the
+    algorithm. The original strategy performs this every time the
+    algorithm switches from the selection of lambda_w to that of a
+    lambda_b (which can happen several times). Especially for larger
+    data sets, this consists a huge difference.\
+    **What features make `xestars()` more memory-efficient?\
+    **`xestars()` does not keep in memory for longer than strictly
+    necessary the "merged" matrixes that store the average stability of
+    each edge, without accumulating them as in the original `xstars()`.
+    This, unless not explicitely requested by setting the parameter
+    `light` to `FALSE`.\
+    **How do `xstars()` and `xestars()` differ in results?\
+    **The impressive increase in speed and more memory-efficiency comes
+    with some minor costs.\
+    First of all, some objects returned by `xstars()` are not returned
+    if not explecetely requested, and in general they come in a smaller
+    amount (see question above).\
+    Second, the different sampling strategy may guarantee not only a
+    faster, but also a fairer parameter selection, as they are all
+    selected from the same subsamplings. This may lead to different
+    selected hyperparameters between the older and the new methodology.
+
+-   Implemented `select_coglasso()` for handling all possible present
+    (and future) model selection methods from a single wrapping
+    function. For the moment it allows to perform model selection with
+    either *eXtended StARS*, *eXtended* *Efficient StARS*, or *eBIC*.
 
 # coglasso 1.0.2
 
-* Reformatted the Description field of Description file according to CRAN
-  reviewer's comments.
+-   Reformatted the Description field of DESCRIPTION file according to
+    CRAN reviewer's comments.
 
 # coglasso 1.0.1
 
-* Made the Description field of the DESCRIPTION file more explanatory and added 
-  the official reference to the main method in it.
+-   Made the Description field of the DESCRIPTION file more explanatory
+    and added the official reference to the main method in it.
 
-* Added the official reference to the main method in the README file.
+-   Added the official reference to the main method in the README file.
 
-* Changed \dontrun{} to \donttest{} in man/stars_coglasso.Rd.
+-   Changed \dontrun{} to \donttest{} in man/stars_coglasso.Rd.
 
 # coglasso 1.0.0
 
-* Initial CRAN submission.
+-   Initial CRAN submission.
