@@ -3,6 +3,7 @@
 export(coglasso)
 export(select_coglasso)
 export(stars_coglasso)
+export(xestars)
 export(xstars)
 importFrom(Rcpp,evalCpp)
 importFrom(lifecycle,deprecated)

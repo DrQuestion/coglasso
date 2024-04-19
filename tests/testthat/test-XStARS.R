@@ -1,7 +1,7 @@
 test_that("xstars works", {
-  old_seed <- .Random.seed
+  old_seed <- get0(".Random.seed", envir = .GlobalEnv)
   on.exit({
-    .Random.seed <<- old_seed
+    assign(".Random.seed", old_seed, envir = .GlobalEnv)
   })
   set.seed(42)
   cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 2, verbose = FALSE)
@@ -10,9 +10,9 @@ test_that("xstars works", {
 })
 
 test_that("Verbose mode of xstars works", {
-  old_seed <- .Random.seed
+  old_seed <- get0(".Random.seed", envir = .GlobalEnv)
   on.exit({
-    .Random.seed <<- old_seed
+    assign(".Random.seed", old_seed, envir = .GlobalEnv)
   })
   set.seed(42)
   cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 2, verbose = FALSE)
@@ -20,9 +20,9 @@ test_that("Verbose mode of xstars works", {
 })
 
 test_that("xestars works", {
-  old_seed <- .Random.seed
+  old_seed <- get0(".Random.seed", envir = .GlobalEnv)
   on.exit({
-    .Random.seed <<- old_seed
+    assign(".Random.seed", old_seed, envir = .GlobalEnv)
   })
   set.seed(42)
   cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 2, verbose = FALSE)
@@ -31,9 +31,9 @@ test_that("xestars works", {
 })
 
 test_that("Verbose mode of xestars works", {
-  old_seed <- .Random.seed
+  old_seed <- get0(".Random.seed", envir = .GlobalEnv)
   on.exit({
-    .Random.seed <<- old_seed
+    assign(".Random.seed", old_seed, envir = .GlobalEnv)
   })
   set.seed(42)
   cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 2, verbose = FALSE)
@@ -41,9 +41,9 @@ test_that("Verbose mode of xestars works", {
 })
 
 test_that("stars_coglasso is deprecated", {
-  old_seed <- .Random.seed
+  old_seed <- get0(".Random.seed", envir = .GlobalEnv)
   on.exit({
-    .Random.seed <<- old_seed
+    assign(".Random.seed", old_seed, envir = .GlobalEnv)
   })
   set.seed(42)
   expect_snapshot({

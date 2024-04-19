@@ -38,7 +38,7 @@ choose a new best \eqn{\lambda_w}. Defaults to 10.}
 procedure on the console.}
 }
 \value{
-\code{stars_coglasso()} returns a list containing the results of the
+\code{xstars()} returns a list containing the results of the
 selection procedure, built upon the list returned by \code{coglasso()}.
 \itemize{
 \item ... are the same elements returned by \code{\link[=coglasso]{coglasso()}}.
@@ -92,7 +92,7 @@ Selection (StARS). \emph{StARS} was developed for network estimation regulated b
 a single penalty parameter, while \emph{collaborative graphical lasso} needs to
 explore three different hyperparameters. In particular, two of these are
 penalty parameters with a direct influence on network sparsity, hence on
-stability. For every \eqn{c} parameter, \code{stars_coglasso()} explores one of
+stability. For every \eqn{c} parameter, \code{xstars()} explores one of
 the two penalty parameters (\eqn{\lambda_w} or \eqn{\lambda_b}), keeping the other one
 fixed at its previous best estimate, using the normal, one-dimentional
 \emph{StARS} approach, until finding the best couple. It then selects the \eqn{c}
@@ -102,7 +102,7 @@ stable, yet sparse network.
 \examples{
 cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
 \donttest{
-# Takes around 20 seconds
+# Takes around one minute
 sel_cg <- xstars(cg, verbose = FALSE)
 }
 }

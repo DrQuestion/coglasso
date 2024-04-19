@@ -10,7 +10,7 @@ stars_coglasso(
   stars_subsample_ratio = NULL,
   rep_num = 20,
   max_iter = 10,
-  verbose = TRUE
+  verbose = FALSE
 )
 }
 \description{
@@ -23,7 +23,7 @@ also allow new memory-lighter and faster possibilities.
 \examples{
 cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
 \donttest{
-# Deprecated, use xstars() instead. Takes around 20 seconds
+# Deprecated, use xstars() instead. Takes around one minute
 sel_cg <- stars_coglasso(cg, verbose = FALSE)
 # ->
 sel_cg <- xstars(cg, verbose = FALSE)

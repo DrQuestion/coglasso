@@ -107,15 +107,15 @@
 #'
 #' @examples
 #' cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
-#' \donttest{
 #' # Using eXtended Efficient StARS, takes less than five seconds
 #' sel_cg_xestars <- select_coglasso(cg, method = "xestars", verbose = FALSE)
-#' }
-#' #' # Using eXtended StARS, takes around a minute
+#' \donttest{
+#' # Using eXtended StARS, takes around a minute
 #' sel_cg_xstars <- select_coglasso(cg, method = "xstars", verbose = FALSE)
 #' }
 #' # Using eBIC
 #' sel_cg_xstars <- select_coglasso(cg, method = "ebic", verbose = FALSE)
+#' 
 select_coglasso <- function(coglasso_obj, method = "xestars", stars_thresh = 0.1, stars_subsample_ratio = NULL, rep_num = 20, max_iter = 10, old_sampling = FALSE, light = TRUE, ebic_gamma = 0.5, verbose = TRUE) {
   if ((method != "xestars") & (method != "xstars") & (method != "ebic")) {
     warning("Only available selection methods are \"xstars\", \"xestars\" and \"ebic\". Reverting to default selection method \"xestars\"")

@@ -6,28 +6,61 @@
 \usage{
 select_coglasso(
   coglasso_obj,
-  method = "xstars",
+  method = "xestars",
   stars_thresh = 0.1,
   stars_subsample_ratio = NULL,
   rep_num = 20,
   max_iter = 10,
+  old_sampling = FALSE,
+  light = TRUE,
   ebic_gamma = 0.5,
   verbose = TRUE
 )
 }
 \arguments{
+\item{coglasso_obj}{The object returned by \code{coglasso()}.}
+
 \item{method}{The model selection method to select the best combination of
-hyperparameters. The available options are "xstars" and "eBIC". Defaults to
-"xstars".}
+hyperparameters. The available options are "xstars", "xestars" and "eBIC".
+Defaults to "xestars".}
+
+\item{stars_thresh}{The threshold set for variability of the explored
+networks at each iteration of the algorithm. The \eqn{\lambda_w} or the
+\eqn{\lambda_b} associated to the most stable network before the threshold
+is overcome is selected.}
+
+\item{stars_subsample_ratio}{The proportion of samples in the multi-omics
+data set to be randomly subsampled to estimate the variability of the
+network under the given hyperparameters setting. Defaults to 80\% when the
+number of samples is smaller than 144, otherwise it defaults to
+\eqn{\frac{10}{n}\sqrt{n}}.}
+
+\item{rep_num}{The amount of subsamples of the multi-omics data set used to
+estimate the variability of the network under the given hyperparameters
+setting. Defaults to 20.}
+
+\item{max_iter}{The greatest number of times the algorithm is allowed to
+choose a new best \eqn{\lambda_w}. Defaults to 10.}
+
+\item{old_sampling}{If set to TRUE \code{xestars()} performs the same subsampling
+\code{xstars()} would. Makes a difference with bigger data sets, where computing
+a correlation matrix could take significantly longer. Defaults to FALSE.}
+
+\item{light}{If set TRUE the "merged" matrixes recording average variability
+of each edge are not stored and the algorithm is more memory efficient.
+Defaults to TRUE.}
 
 \item{ebic_gamma}{The \eqn{\gamma} tuning parameter for \emph{eBIC} selection, to set
 between 0 and 1. When set to 0 one has the standard \emph{BIC}. Defaults to 0.5.}
+
+\item{verbose}{Print information regarding the progress of the selection
+procedure on the console.}
 }
 \value{
 \code{select_coglasso()} returns a list containing the results of the
 selection procedure, built upon the list returned by \code{coglasso()}. Some
-output elements are there only when "xstars" is chosen as method. \cr These
-elements are returned by all methods:
+output elements depend on the chosen method. \cr
+These elements are returned by all methods:
 \itemize{
 \item ... are the same elements returned by \code{\link[=coglasso]{coglasso()}}.
 \item \code{sel_index_c}, \code{sel_index_lw} and \code{sel_index_lb} are the indexes of the
@@ -39,6 +72,27 @@ stable sparse network.
 \item \code{sel_adj} is the adjacency matrix of the final selected network.
 \item \code{sel_density} is the density of the final selected network.
 \item \code{sel_icov} is the inverse covariance matrix of the final selected network.
+}
+These are the additional elements returned when choosing "xestars":
+\itemize{
+\item \code{opt_adj} is a list of the adjacency matrices finally selected for each
+\eqn{c} parameter explored.
+\item \code{opt_variability} is a numerical vector containing the variabilities
+associated to the adjacency matrices in \code{opt_adj}.
+\item \code{opt_index_lw} and \code{opt_index_lb} are integer vectors containing the
+index of the selected \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each
+\eqn{c} parameters explored.
+\item \code{opt_lambda_w} and \code{opt_lambda_b} are vectors containing the selected
+\eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each \eqn{c} parameters
+explored.
+\item \code{merge_lw} and \code{merge_lb} are returned only if \code{light} is set to FALSE.
+They are lists with as many elements as the number of
+\eqn{c} parameters explored. Every element is a "merged" adjacency matrix,
+the average of all the adjacency matrices estimated  for those specific
+\eqn{c} and the selected \eqn{\lambda_w} (or \eqn{\lambda_b}) values
+across all the subsampling in the last path explored before convergence,
+the one when the final combination of \eqn{\lambda_w} and \eqn{\lambda_b}
+is selected for the given \eqn{c} value.
 }
 These are the additional elements returned when choosing "xstars":
 \itemize{
@@ -78,9 +132,9 @@ hyperparameter combination.
 }
 \description{
 \code{select_coglasso()} selects the best combination of hyperparameters given to
-\code{coglasso()} according to the selected model selection method. The two
-availble options that can be set for the argument \code{method} are  "xstars" and
-"ebic".
+\code{coglasso()} according to the selected model selection method. The three
+availble options that can be set for the argument \code{method} are  "xstars",
+"xestars" and "ebic".
 }
 \details{
 \code{select_coglasso()} provides two model selection strategies: "xstars" and
@@ -90,8 +144,12 @@ availble options that can be set for the argument \code{method} are  "xstars" an
 network. Stability is computed upon network estimation from multiple subsamples of the
 multi-omics data set, allowing repetition. Subsamples are collected for a
 fixed amount of times (\code{rep_num}), and with a fixed proportion of the total
-number of samples (\code{stars_subsample_ratio}). See \code{\link[=stars_coglasso]{stars_coglasso()}} for more
-information on the methodology.\cr
+number of samples (\code{stars_subsample_ratio}). See \code{\link[=xstars]{xstars()}} for more
+information on the methodology.
+\item "xestars" uses \emph{eXtended Efficient StARS} (\emph{XEStARS}), a significantly
+faster and memory-effcient version of \emph{XStARS}. It could produce marginally
+different results to "xstars" due to a different sampling strategy. See
+\code{\link[=xestars]{xestars()}} for more information on the methodology.
 \item "ebic" uses the \emph{extended Bayesian Information}
 \emph{Criterion} (\emph{eBIC}) selecting the network that minimizes it. \code{gamma} sets the
 wait given to the extended component, turning the model selection method to
@@ -100,10 +158,13 @@ the standard \emph{BIC} if set to 0.
 }
 \examples{
 cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+# Using eXtended Efficient StARS, takes less than five seconds
+sel_cg_xestars <- select_coglasso(cg, method = "xestars", verbose = FALSE)
 \donttest{
-# Using eXtended StARS, takes around 20 seconds
+# Using eXtended StARS, takes around a minute
 sel_cg_xstars <- select_coglasso(cg, method = "xstars", verbose = FALSE)
 }
 # Using eBIC
 sel_cg_xstars <- select_coglasso(cg, method = "ebic", verbose = FALSE)
+
 }
