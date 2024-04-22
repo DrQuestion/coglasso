@@ -5,8 +5,7 @@
 #' availble options that can be set for the argument `method` are  "xstars", 
 #' "xestars" and "ebic".
 #'
-#' `select_coglasso()` provides two model selection strategies: "xstars" and
-#' "ebic":
+#' `select_coglasso()` provides three model selection strategies:
 #' \itemize{
 #'   \item "xstars" uses *eXtended StARS* (*XStARS*) selecting the most stable, yet sparse
 #'     network. Stability is computed upon network estimation from multiple subsamples of the

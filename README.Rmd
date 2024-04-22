@@ -51,19 +51,20 @@ devtools::install_github("DrQuestion/coglasso")
 
 ## Usage
 
-Here follows an example on how to reconstruct a multi-omics network with *collaborative graphical lasso*. For a more exhaustive example we refer the user to the vignette `vignette("coglasso")`. The package provides example multi-omics data sets of different dimensions, here we will use `multi_omics_sd_small`. Please notice that the current version of the coglasso package expects multi-omics data sets with *two* "omic" layers, where the single layers are grouped by column. For example, in `multi_omics_sd_small` the first 14 columns represent transcript abundances, and the other 5 columns represent metabolite abundances. To default usage of `coglasso()` only needs the input dataset and the dimension of the first "omic" layer.
+Here follows an example on how to reconstruct and select a multi-omics network with *collaborative graphical lasso*. For a more exhaustive example we refer the user to the vignette `vignette("coglasso")`. The package provides example multi-omics data sets of different dimensions, here we will use `multi_omics_sd_small`. Please notice that the current version of the coglasso package expects multi-omics data sets with *two* "omic" layers, where the single layers are grouped by column. For example, in `multi_omics_sd_small` the first 14 columns represent transcript abundances, and the other 5 columns represent metabolite abundances. The function to perform both network estimation and network selection is `bs()`. The default usage of `bs()` only needs the input data set and the dimension of the first "omic" layer.
 
 ```r
 library(coglasso)
 
-cg <- coglasso(multi_omics_sd_small, pX = 14)
+sel_cg <- bs(multi_omics_sd_small, pX = 14)
 ```
 
-`coglasso()` explores several combinations of the hyperparameters characterizing *collaborative graphical lasso*. To select the combination yielding the best network according to the chosen model selection method, the package provides the function `select_coglasso()`. Among others, this function implements *eXtended Efficient StARS* (*XEStARS*), a significantly faster and memory-efficient version of *eXtended StARS* (*XStARS*, [Albanese, Kohlen and Behrouzi, 2024](#ref)). These are coglasso-adapted versions of the *StARS* selection algorithm ([Liu, Roeder and Wasserman, 2010](#references)) selecting the hyperparameter combination that yields the most stable, yet sparse network. *XEStARS* is the default option for the parameter `method`, so it is enough to call:
+`bs()` explores several combinations of the hyperparameters characterizing *collaborative graphical lasso*. Then, it selects the combination yielding the best network according to the chosen model selection method. Among others, this function implements *eXtended Efficient StARS* (*XEStARS*), a significantly faster and memory-efficient version of *eXtended StARS* (*XStARS*, [Albanese, Kohlen and Behrouzi, 2024](#ref)). These are coglasso-adapted versions of the *StARS* selection algorithm ([Liu, Roeder and Wasserman, 2010](#references)) selecting the hyperparameter combination that yields the most stable, yet sparse network. *XEStARS* is the default option for the parameter `method`, so it is enough to enjoy the comfort of the default behaviour and let the function do the rest. To access the selected network, in the form of its adjacency matrix (the matrix of connections), use:
 
 ```r
-sel_cg <- select_coglasso(cg)
+sel_cg$sel_adj
 ```
+
 
 ## References
 

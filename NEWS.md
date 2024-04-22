@@ -10,13 +10,23 @@ editor_options:
     more accurate `xstars()`. Made also some implementation improvements
     to `xstars()` that made it faster.
 
+-   Implemented `select_coglasso()` for handling all possible present
+    (and future) model selection methods from a single wrapping
+    function. For the moment it allows to perform model selection with
+    either *eXtended StARS*, *eXtended* *Efficient StARS* (see below),
+    or *eBIC*.
+
+-   Implemented `bs()` a single wrapping function to *build* the
+    multi-omics networks with `coglasso()` and *select* the best one
+    according to the preferred model selection method with
+    `select_coglasso()` in a single function call.
+
 -   Implemented `xestars()`, performing *eXtended Efficient StARS*, a
-    significantly faster and more memory-efficient version of *XStARS*.
-    \
-    **How much faster?** \
+    significantly faster and more memory-efficient version of *XStARS*.\
+    **How much faster?**\
     In our tests, `xestars()` runs 80-90% faster than `xstars()`, even
-    more in specific instances. \
-    **What features make `xestars()` faster?** \
+    more in specific instances.\
+    **What features make `xestars()` faster?**\
     First of all, the check for stability that in `xstars()` is
     performed after iterating throughout all the penalty parameters,
     here is implemented as a stopping criterion. Hence, less penalty
@@ -48,11 +58,6 @@ editor_options:
     faster, but also a fairer parameter selection, as they are all
     selected from the same subsamplings. This may lead to different
     selected hyperparameters between the older and the new methodology.
-
--   Implemented `select_coglasso()` for handling all possible present
-    (and future) model selection methods from a single wrapping
-    function. For the moment it allows to perform model selection with
-    either *eXtended StARS*, *eXtended* *Efficient StARS*, or *eBIC*.
 
 # coglasso 1.0.2
 

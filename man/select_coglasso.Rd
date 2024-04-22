@@ -137,8 +137,7 @@ availble options that can be set for the argument \code{method} are  "xstars",
 "xestars" and "ebic".
 }
 \details{
-\code{select_coglasso()} provides two model selection strategies: "xstars" and
-"ebic":
+\code{select_coglasso()} provides three model selection strategies:
 \itemize{
 \item "xstars" uses \emph{eXtended StARS} (\emph{XStARS}) selecting the most stable, yet sparse
 network. Stability is computed upon network estimation from multiple subsamples of the

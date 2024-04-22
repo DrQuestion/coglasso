@@ -35,33 +35,27 @@ This smaller version of `multi_omics_sd` has 19 variables, 14 genes and 5 metabo
 
 ## Multi-omics network reconstruction
 
-Our objective is to reconstruct a network from this data set using *collaborative graphical lasso*. To do so with the coglasso package, we mainly call two functions. First, we use `coglasso()` to estimate a network for every combination of hyperparameters we want to explore. Following this, we call `select_coglasso()`, setting `method` to "xstars" to select the best combination of hyperparameters using stability selection.
+Our objective is to reconstruct a network from this data set using *collaborative graphical lasso*. To do so with the coglasso package, we mainly call a function: `bs()`. This function first estimates a network for every combination of hyperparameters we want to explore, then it selects the best combination according to the chosen model selection method.
 
-The usual application of `coglasso()` requires to give an input data set to the argument `data`, the number of variables of the the first type to `pX`, and hyperparameter settings. Collaborative graphical lasso has three hyperparameters: $λ_w$, penalizing "within" same-type interactions, $λ_b$ penalizing "between" different-type interactions, and $c$, the weight of the collaborative term. In this vignette we choose to explore 15 possible penalty values for both "within" and "between" penalties, and three possible collaboration values. We do so by setting both `nlambda_w` and `nlambda_b` to 15, and by setting `nc` to 3. We also decide to restrict our search to a less extreme penalization, by setting a fixed maximum value for both penalties to 0.85, while by default it is often estimated to a higher value with a data-driven approach. Nevertheless, we also decide to focus our search to the sparse side of possible networks. We achieve this by setting to a fixed value the ratios between the smallest (least penalizing) and the largest (most penalizing) penalty explored. While the default value of these parameters is 0.1, we decide to set the minimum ratio to 0.6 for $λ_w$ and to 0.4 for $λ_b$. For further explanation on other arguments of `coglasso()` and how to use them, please see `help(coglasso)`.
+The usual application of `bs()` requires to give an input data set to the argument `data`, the number of variables of the the first type to `pX`, and hyperparameter settings. Collaborative graphical lasso has three hyperparameters: $λ_w$, penalizing "within" same-type interactions, $λ_b$ penalizing "between" different-type interactions, and $c$, the weight of the collaborative term. In this vignette we choose to explore 15 possible penalty values for both "within" and "between" penalties, and three possible collaboration values. We do so by setting both `nlambda_w` and `nlambda_b` to 15, and by setting `nc` to 3. We also decide to focus our search to the sparse side of possible "within" networks. We achieve this by setting to a fixed value the ratio between the smallest (least penalizing) and the largest (most penalizing) $λ_w$ explored. While the default value of these parameter is 0.1 for both $λ_w$ and $λ_b$, we decide to set the minimum ratio to 0.6 for $λ_w$.
+
+It is also possible to set options for the model selection procedure, if one does not want to enjoy the comfort of the default behaviour. To select the best combination of hyperparameters, we will set `method` to "xestars" (which is the default behaviour). This implements *eXtended Efficient StARS*, a significantly faster version of *eXtended StARS* (*XStARS*, [Albanese, Kohlen and Behrouzi, 2024](#ref)). *XEStARS* and *XStARS* are a coglasso-adapted version of *StARS*, the stability selection method developed by Liu, Roeder and Wasserman ([2010](#ref)). The suggested application of `bs()` uses the default options of the function. For further explanation on other selection methods available, and on other arguments of `bs()` and how to use them, please see `help(bs)`.
 
 ```{r}
-cg <- coglasso(multi_omics_sd_small,
+sel_cg <- bs(
+  multi_omics_sd_small,
   pX = 14,
   nlambda_w = 15,
   nlambda_b = 15,
   nc = 3,
-  lambda_w_max = 0.85,
-  lambda_b_max = 0.85,
   lambda_w_min_ratio = 0.6,
-  lambda_b_min_ratio = 0.4,
   verbose = FALSE
 )
 
 # To see the explored paramaters:
-cg$lambda_w
-cg$lambda_b
-cg$c
-```
-
-To select the best combination of hyperparameters, we will use `select_coglasso()`, setting `method` to "xestars" (which is the default behaviour). This function implements *eXtended Efficient StARS*, a significantly faster version of *eXtended StARS* (*XStARS*, [Albanese, Kohlen and Behrouzi, 2024](#ref)). *XEStARS* and *XStARS* are a coglasso-adapted version of *StARS*, the stability selection method developed by Liu, Roeder and Wasserman ([2010](#ref)). The suggested application of `select_coglasso()` uses the default options of the function, whose only required input is the object resulting from `coglasso()`.
-
-```{r}
-sel_cg <- select_coglasso(cg, verbose = FALSE)
+sel_cg$lambda_w
+sel_cg$lambda_b
+sel_cg$c
 
 # To see the selected parameters:
 sel_cg$sel_lambda_w
@@ -69,7 +63,7 @@ sel_cg$sel_lambda_b
 sel_cg$sel_c
 ```
 
-With this we have fastly selected the combination of hyperparameters yielding the most stable, yet sparse coglasso network. The adjacency matrix of the selected network is stored in the object `sel_cg$sel_adj`. We can use this matrix to display the selected network with the R package `igraph`.
+With this we have fast selected the combination of hyperparameters yielding the most stable, yet sparse coglasso network. The adjacency matrix of the selected network is stored in the object `sel_cg$sel_adj`. We can use this matrix to display the selected network with the R package `igraph`.
 
 ```{r}
 # To create the igraph object from the selected adjacency matrix:
@@ -93,10 +87,11 @@ plot(sel_graph2, layout = lo2)
 ```
 
 ## References {#ref}
-  Albanese, A., Kohlen, W., & Behrouzi, P. (2024). Collaborative graphical lasso (arXiv:2403.18602). *arXiv* https://doi.org/10.48550/arXiv.2403.18602
-  
-  Friedman, J., Hastie, T., & Tibshirani, R. (2008). Sparse inverse covariance estimation with the graphical lasso. *Biostatistics*, 9(3), 432–441. https://doi.org/10.1093/biostatistics/kxm045
-  
-  Gross, S. M., & Tibshirani, R. (2015). Collaborative regression. *Biostatistics*, 16(2), 326–338. https://doi.org/10.1093/biostatistics/kxu047
-  
-  Liu, H., Roeder, K., & Wasserman, L. (2010). Stability Approach to Regularization Selection (StARS) for High Dimensional Graphical Models (arXiv:1006.3316). *arXiv* https://doi.org/10.48550/arXiv.1006.3316
+
+Albanese, A., Kohlen, W., & Behrouzi, P. (2024). Collaborative graphical lasso (arXiv:2403.18602). *arXiv* <https://doi.org/10.48550/arXiv.2403.18602>
+
+Friedman, J., Hastie, T., & Tibshirani, R. (2008). Sparse inverse covariance estimation with the graphical lasso. *Biostatistics*, 9(3), 432–441. <https://doi.org/10.1093/biostatistics/kxm045>
+
+Gross, S. M., & Tibshirani, R. (2015). Collaborative regression. *Biostatistics*, 16(2), 326–338. <https://doi.org/10.1093/biostatistics/kxu047>
+
+Liu, H., Roeder, K., & Wasserman, L. (2010). Stability Approach to Regularization Selection (StARS) for High Dimensional Graphical Models (arXiv:1006.3316). *arXiv* <https://doi.org/10.48550/arXiv.1006.3316>
