@@ -59,6 +59,12 @@ editor_options:
     selected from the same subsamplings. This may lead to different
     selected hyperparameters between the older and the new methodology.
 
+-   Created the classes `coglasso` and `select_coglasso`, with related
+    `print()` methods. These former is returned when using `coglasso()`,
+    while the latter when using any function that performs model
+    selection as its final step (*i.e.* `bs()`,`select_coglasso()`, and
+    all the model selection functions).
+
 # coglasso 1.0.2
 
 -   Reformatted the Description field of DESCRIPTION file according to

@@ -18,7 +18,7 @@ select_coglasso(
 )
 }
 \arguments{
-\item{coglasso_obj}{The object returned by \code{coglasso()}.}
+\item{coglasso_obj}{The object of \code{S3} class \code{coglasso} returned by \code{coglasso()}.}
 
 \item{method}{The model selection method to select the best combination of
 hyperparameters. The available options are "xstars", "xestars" and "eBIC".
@@ -57,9 +57,10 @@ between 0 and 1. When set to 0 one has the standard \emph{BIC}. Defaults to 0.5.
 procedure on the console.}
 }
 \value{
-\code{select_coglasso()} returns a list containing the results of the
-selection procedure, built upon the list returned by \code{coglasso()}. Some
-output elements depend on the chosen method. \cr
+\code{select_coglasso()} returns an object of \code{S3} class \code{select_coglasso}
+containing the results of the
+selection procedure, built upon an object of \code{S3} class \code{coglasso}. Some
+output elements depend on the chosen model selection method. \cr
 These elements are returned by all methods:
 \itemize{
 \item ... are the same elements returned by \code{\link[=coglasso]{coglasso()}}.
@@ -72,6 +73,8 @@ stable sparse network.
 \item \code{sel_adj} is the adjacency matrix of the final selected network.
 \item \code{sel_density} is the density of the final selected network.
 \item \code{sel_icov} is the inverse covariance matrix of the final selected network.
+\item \code{call} is the matched call.
+\item \code{method} is the chosen model selection method.
 }
 These are the additional elements returned when choosing "xestars":
 \itemize{

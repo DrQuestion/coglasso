@@ -64,6 +64,9 @@ data set and the dimension of the first “omic” layer.
 library(coglasso)
 
 sel_cg <- bs(multi_omics_sd_small, pX = 14)
+
+# To see information about the network estimation and selection
+print(sel_cg)
 ```
 
 `bs()` explores several combinations of the hyperparameters

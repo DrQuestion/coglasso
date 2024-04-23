@@ -22,7 +22,7 @@
 #' parameter for which the best (\eqn{\lambda_w}, \eqn{\lambda_b}) couple yielded the most
 #' stable, yet sparse network.
 #'
-#' @param coglasso_obj The object returned by `coglasso()`.
+#' @param coglasso_obj The object of `S3` class `coglasso` returned by `coglasso()`.
 #' @param stars_thresh The threshold set for variability of the explored
 #'   networks at each iteration of the algorithm. The \eqn{\lambda_w} or the \eqn{\lambda_b}
 #'   associated to the most stable network before the threshold is overcome is
@@ -40,8 +40,9 @@
 #' @param verbose Print information regarding the progress of the selection
 #'   procedure on the console.
 #'
-#' @return `xstars()` returns a list containing the results of the
-#'   selection procedure, built upon the list returned by `coglasso()`.
+#' @return `xstars()` returns an object of `S3` class `select_coglasso`
+#'   containing the results of the
+#'   selection procedure, built upon the object of `S3` class `coglasso` returned by `coglasso()`.
 #' * ... are the same elements returned by [coglasso()].
 #' * `merge_lw` and `merge_lb` are lists with as many elements as the number of
 #'   \eqn{c} parameters explored. Every element is in turn a list of as many
@@ -76,6 +77,8 @@
 #' * `sel_adj` is the adjacency matrix of the final selected network.
 #' * `sel_density` is the density of the final selected network.
 #' * `sel_icov` is the inverse covariance matrix of the final selected network.
+#' * `call` is the matched call.
+#' * `method` is the chosen model selection method. Here, it is "xstars".
 #'
 #' @export
 #'
@@ -86,6 +89,8 @@
 #' sel_cg <- xstars(cg, verbose = FALSE)
 #' }
 xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NULL, rep_num = 20, max_iter = 10, verbose = TRUE) {
+  call <- match.call()
+  
   n <- nrow(coglasso_obj$data)
   d <- ncol(coglasso_obj$data)
   pX <- coglasso_obj$pX
@@ -294,6 +299,10 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
   if (!is.null(coglasso_obj$cov)) {
     coglasso_obj$sel_cov <- coglasso_obj$cov[[sel_hpars_combination]]
   }
+  coglasso_obj$method <- "xstars"
+  coglasso_obj$call <- call
+  
+  class(coglasso_obj) <- "select_coglasso"
   
   return(coglasso_obj)
 }
@@ -339,7 +348,7 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
 #' implemented. If set to TRUE and the "merged" matrixes traditionally returned 
 #' by both *StARS* and *XStARS* are not returned.
 #' 
-#' @param coglasso_obj The object returned by `coglasso()`.
+#' @param coglasso_obj The object of `S3` class `coglasso` returned by `coglasso()`.
 #' @param stars_thresh The threshold set for variability of the explored
 #'   networks at each iteration of the algorithm. The \eqn{\lambda_w} or the
 #'   \eqn{\lambda_b} associated to the most stable network before the threshold
@@ -363,8 +372,9 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
 #' @param verbose Print information regarding the progress of the selection
 #'   procedure on the console.
 #'
-#' @return `xestars()` returns a list containing the results of the selection
-#'   procedure, built upon the list returned by `coglasso()`.
+#' @return `xestars()` returns an object of `S3` class `select_coglasso` 
+#'   containing the results of the selection
+#'   procedure, built upon the object of `S3` class `coglasso` returned by `coglasso()`.
 #' * ... are the same elements returned by [coglasso()].
 #' * `opt_adj` is a list of the adjacency matrices finally selected for each
 #'   \eqn{c} parameter explored.
@@ -385,6 +395,8 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
 #' * `sel_adj` is the adjacency matrix of the final selected network.
 #' * `sel_density` is the density of the final selected network.
 #' * `sel_icov` is the inverse covariance matrix of the final selected network.
+#' * `call` is the matched call.
+#' * `method` is the chosen model selection method. Here, it is "xestars".
 #' * `merge_lw` and `merge_lb` are returned only if `light` is set to FALSE.
 #'   They are lists with as many elements as the number of
 #'   \eqn{c} parameters explored. Every element is a "merged" adjacency matrix,
@@ -403,6 +415,8 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
 #' sel_cg <- xestars(cg, verbose = FALSE)
 #' }
 xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NULL, rep_num = 20, max_iter = 10, old_sampling = FALSE, light = TRUE, verbose = TRUE) {
+  call <- match.call()
+  
   n <- nrow(coglasso_obj$data)
   d <- ncol(coglasso_obj$data)
   pX <- coglasso_obj$pX
@@ -700,6 +714,10 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
   if (!is.null(coglasso_obj$cov)) {
     coglasso_obj$sel_cov <- coglasso_obj$cov[[sel_hpars_combination]]
   }
+  coglasso_obj$method <- "xestars"
+  coglasso_obj$call <- call
+  
+  class(coglasso_obj) <- "select_coglasso"
   
   return(coglasso_obj)
 }

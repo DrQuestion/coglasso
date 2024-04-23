@@ -57,6 +57,9 @@ Here follows an example on how to reconstruct and select a multi-omics network w
 library(coglasso)
 
 sel_cg <- bs(multi_omics_sd_small, pX = 14)
+
+# To see information about the network estimation and selection
+print(sel_cg)
 ```
 
 `bs()` explores several combinations of the hyperparameters characterizing *collaborative graphical lasso*. Then, it selects the combination yielding the best network according to the chosen model selection method. Among others, this function implements *eXtended Efficient StARS* (*XEStARS*), a significantly faster and memory-efficient version of *eXtended StARS* (*XStARS*, [Albanese, Kohlen and Behrouzi, 2024](#ref)). These are coglasso-adapted versions of the *StARS* selection algorithm ([Liu, Roeder and Wasserman, 2010](#references)) selecting the hyperparameter combination that yields the most stable, yet sparse network. *XEStARS* is the default option for the parameter `method`, so it is enough to enjoy the comfort of the default behaviour and let the function do the rest. To access the selected network, in the form of its adjacency matrix (the matrix of connections), use:

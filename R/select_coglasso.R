@@ -30,9 +30,10 @@
 #' @param ebic_gamma The \eqn{\gamma} tuning parameter for *eBIC* selection, to set
 #'   between 0 and 1. When set to 0 one has the standard *BIC*. Defaults to 0.5.
 #'
-#' @return `select_coglasso()` returns a list containing the results of the
-#'   selection procedure, built upon the list returned by `coglasso()`. Some
-#'   output elements depend on the chosen method. \cr 
+#' @return `select_coglasso()` returns an object of `S3` class `select_coglasso`
+#'   containing the results of the
+#'   selection procedure, built upon an object of `S3` class `coglasso`. Some
+#'   output elements depend on the chosen model selection method. \cr 
 #'   These elements are returned by all methods:
 #' \itemize{
 #'   \item ... are the same elements returned by [coglasso()].
@@ -45,6 +46,8 @@
 #'   \item `sel_adj` is the adjacency matrix of the final selected network.
 #'   \item `sel_density` is the density of the final selected network.
 #'   \item `sel_icov` is the inverse covariance matrix of the final selected network.
+#'   \item `call` is the matched call.
+#'   \item `method` is the chosen model selection method.
 #' }
 #'   These are the additional elements returned when choosing "xestars":
 #' \itemize{
@@ -116,6 +119,7 @@
 #' sel_cg_xstars <- select_coglasso(cg, method = "ebic", verbose = FALSE)
 #' 
 select_coglasso <- function(coglasso_obj, method = "xestars", stars_thresh = 0.1, stars_subsample_ratio = NULL, rep_num = 20, max_iter = 10, old_sampling = FALSE, light = TRUE, ebic_gamma = 0.5, verbose = TRUE) {
+  call <- match.call()
   if ((method != "xestars") & (method != "xstars") & (method != "ebic")) {
     warning("Only available selection methods are \"xstars\", \"xestars\" and \"ebic\". Reverting to default selection method \"xestars\"")
     method <- "xestars"
@@ -150,12 +154,57 @@ select_coglasso <- function(coglasso_obj, method = "xestars", stars_thresh = 0.1
     coglasso_obj$sel_index_lw <- which(coglasso_obj$lambda_w == coglasso_obj$hpars[sel_combination, 2])
     coglasso_obj$sel_index_lb <- which(coglasso_obj$lambda_b == coglasso_obj$hpars[sel_combination, 3])
     coglasso_obj$sel_c <- coglasso_obj$c[coglasso_obj$sel_index_c]
-    coglasso_obj$sel_lambda_w <- coglasso_obj$c[coglasso_obj$sel_index_lw]
-    coglasso_obj$sel_lambda_b <- coglasso_obj$c[coglasso_obj$sel_index_lb]
+    coglasso_obj$sel_lambda_w <- coglasso_obj$lambda_w[coglasso_obj$sel_index_lw]
+    coglasso_obj$sel_lambda_b <- coglasso_obj$lambda_b[coglasso_obj$sel_index_lb]
     coglasso_obj$sel_adj <- coglasso_obj$path[[sel_combination]]
     coglasso_obj$sel_density <- coglasso_obj$density[sel_combination]
     coglasso_obj$sel_icov <- coglasso_obj$icov[[sel_combination]]
   }
+  coglasso_obj$call <- call
+  coglasso_obj$method <- method
+  
+  class(coglasso_obj) <- "select_coglasso"
   
   return(coglasso_obj)
+}
+
+
+#' Print function for the S3 class `select_coglasso`
+#'
+#' Print information on the selected networks and the explored hyperparameters 
+#' and see next suggested step
+#'
+#' @param sel_cg is the object of `S3` class `select_coglasso`.
+#' @param ... system required, not used.
+#' 
+#' @noRd
+#' @export
+print.select_coglasso <- function(sel_cg, ...){
+  sel_cg_name <- rlang::call_args(match.call())
+  cat("Selected network estimated with collaborative graphical lasso\n\n")
+  cat("The call was:\n", 
+      paste(deparse(sel_cg$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
+  cat("The model selection method was:\n", 
+      sel_cg$method, "\n", sep = "")
+  cat("The density of the selected network is:\n", 
+      sel_cg$sel_density, "\n\n", sep = "")
+  cat("The selected network has ", ncol(sel_cg$data), " nodes\n", sep = "")
+  # To modify once general |D| coglasso version is implemented:
+  cat("For each layer it has: ", sel_cg$pX, " and ", ncol(sel_cg$data)-sel_cg$pX, " nodes, respectively\n\n", sep = "")
+  cat("The selected value for lambda within is:\n", 
+      round(sel_cg$sel_lambda_w, 4), "\n", sep = "")
+  cat("The selected value for lambda between is:\n", 
+      round(sel_cg$sel_lambda_b, 4), "\n", sep = "")
+  cat("The selected value for c is:\n", 
+      round(sel_cg$sel_c, 4), "\n\n", sep = "")
+  cat("The total number of hyperparameter combinations explored was:\n", 
+      dim(sel_cg$hpars)[1], "\n", sep = "")
+  cat("The values explored for lambda within were:\n", 
+      paste(round(sel_cg$lambda_w, 4), collapse = ", "), "\n", sep = "")
+  cat("The values explored for lambda between were:\n", 
+      paste(round(sel_cg$lambda_b, 4), collapse = ", "), "\n", sep = "")
+  cat("The values explored for c were:\n", paste(round(sel_cg$c, 4), collapse = ", "), "\n\n",
+      sep = "")
+  cat("Plot the selected network with:\nplot(", sel_cg_name[[1]], ") ==> SOON AVAILABLE",
+      sep = "")
 }

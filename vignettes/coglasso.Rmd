@@ -52,15 +52,8 @@ sel_cg <- bs(
   verbose = FALSE
 )
 
-# To see the explored paramaters:
-sel_cg$lambda_w
-sel_cg$lambda_b
-sel_cg$c
-
-# To see the selected parameters:
-sel_cg$sel_lambda_w
-sel_cg$sel_lambda_b
-sel_cg$sel_c
+# To see information on the network estimation and selection:
+print(sel_cg)
 ```
 
 With this we have fast selected the combination of hyperparameters yielding the most stable, yet sparse coglasso network. The adjacency matrix of the selected network is stored in the object `sel_cg$sel_adj`. We can use this matrix to display the selected network with the R package `igraph`.

@@ -14,7 +14,7 @@ xstars(
 )
 }
 \arguments{
-\item{coglasso_obj}{The object returned by \code{coglasso()}.}
+\item{coglasso_obj}{The object of \code{S3} class \code{coglasso} returned by \code{coglasso()}.}
 
 \item{stars_thresh}{The threshold set for variability of the explored
 networks at each iteration of the algorithm. The \eqn{\lambda_w} or the \eqn{\lambda_b}
@@ -38,8 +38,9 @@ choose a new best \eqn{\lambda_w}. Defaults to 10.}
 procedure on the console.}
 }
 \value{
-\code{xstars()} returns a list containing the results of the
-selection procedure, built upon the list returned by \code{coglasso()}.
+\code{xstars()} returns an object of \code{S3} class \code{select_coglasso}
+containing the results of the
+selection procedure, built upon the object of \code{S3} class \code{coglasso} returned by \code{coglasso()}.
 \itemize{
 \item ... are the same elements returned by \code{\link[=coglasso]{coglasso()}}.
 \item \code{merge_lw} and \code{merge_lb} are lists with as many elements as the number of
@@ -75,6 +76,8 @@ sparse network.
 \item \code{sel_adj} is the adjacency matrix of the final selected network.
 \item \code{sel_density} is the density of the final selected network.
 \item \code{sel_icov} is the inverse covariance matrix of the final selected network.
+\item \code{call} is the matched call.
+\item \code{method} is the chosen model selection method. Here, it is "xstars".
 }
 }
 \description{

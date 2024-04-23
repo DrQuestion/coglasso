@@ -84,7 +84,8 @@ user.}
 console.}
 }
 \value{
-\code{coglasso()} returns a list containing several elements:
+\code{coglasso()} returns an object of \code{S3} class \code{coglasso}, that has the
+following elements:
 \itemize{
 \item \code{loglik} is a numerical vector containing the \eqn{log} likelihoods of all
 the estimated networks.
@@ -113,6 +114,7 @@ used.
 \item \code{pX} is the number of variables of the first data set.
 \item \code{cov} optional, returned when \code{cov_output} is TRUE, is a list containing
 the variance-covariance matrices of all the estimated networks.
+\item \code{call} is the matched call.
 }
 }
 \description{
