@@ -86,7 +86,7 @@ availble options that can be set for the argument <code>method</code> are  "xsta
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>coglasso_obj</dt>
-<dd><p>The object returned by <code><a href="coglasso.html">coglasso()</a></code>.</p></dd>
+<dd><p>The object of <code>S3</code> class <code>coglasso</code> returned by <code><a href="coglasso.html">coglasso()</a></code>.</p></dd>
 
 
 <dt>method</dt>
@@ -147,9 +147,12 @@ procedure on the console.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p><code>select_coglasso()</code> returns a list containing the results of the
-selection procedure, built upon the list returned by <code><a href="coglasso.html">coglasso()</a></code>. Some
-output elements depend on the chosen method. <br></p>
+<p><code>select_coglasso()</code> returns an object of <code>S3</code> class <code>select_coglasso</code></p>
+
+
+<p>containing the results of the
+selection procedure, built upon an object of <code>S3</code> class <code>coglasso</code>. Some
+output elements depend on the chosen model selection method. <br></p>
 
 
 <p>These elements are returned by all methods:</p><ul><li><p>... are the same elements returned by <code><a href="coglasso.html">coglasso()</a></code>.</p></li>
@@ -162,6 +165,8 @@ stable sparse network.</p></li>
 <li><p><code>sel_adj</code> is the adjacency matrix of the final selected network.</p></li>
 <li><p><code>sel_density</code> is the density of the final selected network.</p></li>
 <li><p><code>sel_icov</code> is the inverse covariance matrix of the final selected network.</p></li>
+<li><p><code>call</code> is the matched call.</p></li>
+<li><p><code>method</code> is the chosen model selection method.</p></li>
 </ul><p>These are the additional elements returned when choosing "xestars":</p><ul><li><p><code>opt_adj</code> is a list of the adjacency matrices finally selected for each
 \(c\) parameter explored.</p></li>
 <li><p><code>opt_variability</code> is a numerical vector containing the variabilities

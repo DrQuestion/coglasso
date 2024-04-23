@@ -182,7 +182,8 @@ console.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p><code>coglasso()</code> returns a list containing several elements:</p><ul><li><p><code>loglik</code> is a numerical vector containing the \(log\) likelihoods of all
+<p><code>coglasso()</code> returns an object of <code>S3</code> class <code>coglasso</code>, that has the
+following elements:</p><ul><li><p><code>loglik</code> is a numerical vector containing the \(log\) likelihoods of all
 the estimated networks.</p></li>
 <li><p><code>density</code> is a numerical vector containing a measure of the density of all
 the estimated networks.</p></li>
@@ -209,6 +210,7 @@ used.</p></li>
 <li><p><code>pX</code> is the number of variables of the first data set.</p></li>
 <li><p><code>cov</code> optional, returned when <code>cov_output</code> is TRUE, is a list containing
 the variance-covariance matrices of all the estimated networks.</p></li>
+<li><p><code>call</code> is the matched call.</p></li>
 </ul></div>
 
     <div class="section level2">

@@ -161,25 +161,40 @@ of <code><a href="../reference/bs.html">bs()</a></code> and how to use them, ple
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># To see the explored paramaters:</span></span>
-<span><span class="va">sel_cg</span><span class="op">$</span><span class="va">lambda_w</span></span>
-<span><span class="co">#&gt;  [1] 0.9136980 0.8809603 0.8493956 0.8189618 0.7896185 0.7613266 0.7340483</span></span>
-<span><span class="co">#&gt;  [8] 0.7077474 0.6823889 0.6579390 0.6343651 0.6116359 0.5897210 0.5685914</span></span>
-<span><span class="co">#&gt; [15] 0.5482188</span></span>
-<span><span class="va">sel_cg</span><span class="op">$</span><span class="va">lambda_b</span></span>
-<span><span class="co">#&gt;  [1] 0.9136980 0.7751292 0.6575754 0.5578494 0.4732476 0.4014762 0.3405895</span></span>
-<span><span class="co">#&gt;  [8] 0.2889367 0.2451174 0.2079436 0.1764075 0.1496540 0.1269579 0.1077039</span></span>
-<span><span class="co">#&gt; [15] 0.0913698</span></span>
-<span><span class="va">sel_cg</span><span class="op">$</span><span class="va">c</span></span>
-<span><span class="co">#&gt; [1] 10.000000  3.162278  1.000000</span></span>
-<span></span>
-<span><span class="co"># To see the selected parameters:</span></span>
-<span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_lambda_w</span></span>
-<span><span class="co">#&gt; [1] 0.8493956</span></span>
-<span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_lambda_b</span></span>
-<span><span class="co">#&gt; [1] 0.5578494</span></span>
-<span><span class="va">sel_cg</span><span class="op">$</span><span class="va">sel_c</span></span>
-<span><span class="co">#&gt; [1] 3.162278</span></span></code></pre></div>
+<span><span class="co"># To see information on the network estimation and selection:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sel_cg</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Selected network estimated with collaborative graphical lasso</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; The call was:</span></span>
+<span><span class="co">#&gt; bs(data = multi_omics_sd_small, pX = 14, nlambda_w = 15, nlambda_b = 15, </span></span>
+<span><span class="co">#&gt;     nc = 3, lambda_w_min_ratio = 0.6, verbose = FALSE)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; The model selection method was:</span></span>
+<span><span class="co">#&gt; xestars</span></span>
+<span><span class="co">#&gt; The density of the selected network is:</span></span>
+<span><span class="co">#&gt; 0.04678363</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; The selected network has 19 nodes</span></span>
+<span><span class="co">#&gt; For each layer it has: 14 and 5 nodes, respectively</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; The selected value for lambda within is:</span></span>
+<span><span class="co">#&gt; 0.8494</span></span>
+<span><span class="co">#&gt; The selected value for lambda between is:</span></span>
+<span><span class="co">#&gt; 0.5578</span></span>
+<span><span class="co">#&gt; The selected value for c is:</span></span>
+<span><span class="co">#&gt; 3.1623</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; The total number of hyperparameter combinations explored was:</span></span>
+<span><span class="co">#&gt; 675</span></span>
+<span><span class="co">#&gt; The values explored for lambda within were:</span></span>
+<span><span class="co">#&gt; 0.9137, 0.881, 0.8494, 0.819, 0.7896, 0.7613, 0.734, 0.7077, 0.6824, 0.6579, 0.6344, 0.6116, 0.5897, 0.5686, 0.5482</span></span>
+<span><span class="co">#&gt; The values explored for lambda between were:</span></span>
+<span><span class="co">#&gt; 0.9137, 0.7751, 0.6576, 0.5578, 0.4732, 0.4015, 0.3406, 0.2889, 0.2451, 0.2079, 0.1764, 0.1497, 0.127, 0.1077, 0.0914</span></span>
+<span><span class="co">#&gt; The values explored for c were:</span></span>
+<span><span class="co">#&gt; 10, 3.1623, 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Plot the selected network with:</span></span>
+<span><span class="co">#&gt; plot(sel_cg) ==&gt; SOON AVAILABLE</span></span></code></pre></div>
 <p>With this we have fast selected the combination of hyperparameters
 yielding the most stable, yet sparse coglasso network. The adjacency
 matrix of the selected network is stored in the object

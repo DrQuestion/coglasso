@@ -54,7 +54,7 @@ to select the best one according to the chosen criterion."><!-- mathjax --><scri
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Build multiple networks and select the best one from a multi-omics data set</h1>
-      <small class="dont-index">Source: <a href="https://github.com/DrQuestion/coglasso/blob/HEAD/R/coglasso.R" class="external-link"><code>R/coglasso.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/DrQuestion/coglasso/blob/HEAD/R/bs.R" class="external-link"><code>R/bs.R</code></a></small>
       <div class="d-none name"><code>bs.Rd</code></div>
     </div>
 
@@ -239,8 +239,9 @@ network selection processes.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p><code>bs()</code> returns a list containing several elements. The most
-important is arguably <code>sel_adj</code>, that is the adjacency matrix of the
+<p><code>bs()</code> returns an object of <code>S3</code> class <code>select_coglasso</code> containing
+several elements. The most
+important is arguably <code>sel_adj</code>, the adjacency matrix of the
 selected network. Some output elements depend on the chosen model selection
 method.<br></p>
 
@@ -279,6 +280,8 @@ stable sparse network.</p></li>
 <li><p><code>sel_adj</code> is the adjacency matrix of the final selected network.</p></li>
 <li><p><code>sel_density</code> is the density of the final selected network.</p></li>
 <li><p><code>sel_icov</code> is the inverse covariance matrix of the final selected network.</p></li>
+<li><p><code>call</code> is the matched call.</p></li>
+<li><p><code>method</code> is the chosen model selection method.</p></li>
 </ul><p>These are the additional elements returned when choosing "xestars":</p><ul><li><p><code>opt_adj</code> is a list of the adjacency matrices finally selected for each
 \(c\) parameter explored.</p></li>
 <li><p><code>opt_variability</code> is a numerical vector containing the variabilities
