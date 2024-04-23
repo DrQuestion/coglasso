@@ -174,36 +174,36 @@ select_coglasso <- function(coglasso_obj, method = "xestars", stars_thresh = 0.1
 #' Print information on the selected networks and the explored hyperparameters 
 #' and see next suggested step
 #'
-#' @param sel_cg is the object of `S3` class `select_coglasso`.
+#' @param x is the object of `S3` class `select_coglasso`.
 #' @param ... system required, not used.
 #' 
 #' @noRd
 #' @export
-print.select_coglasso <- function(sel_cg, ...){
+print.select_coglasso <- function(x, ...){
   sel_cg_name <- rlang::call_args(match.call())
   cat("Selected network estimated with collaborative graphical lasso\n\n")
   cat("The call was:\n", 
-      paste(deparse(sel_cg$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
+      paste(deparse(x$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
   cat("The model selection method was:\n", 
-      sel_cg$method, "\n", sep = "")
+      x$method, "\n", sep = "")
   cat("The density of the selected network is:\n", 
-      sel_cg$sel_density, "\n\n", sep = "")
-  cat("The selected network has ", ncol(sel_cg$data), " nodes\n", sep = "")
+      x$sel_density, "\n\n", sep = "")
+  cat("The selected network has ", ncol(x$data), " nodes\n", sep = "")
   # To modify once general |D| coglasso version is implemented:
-  cat("For each layer it has: ", sel_cg$pX, " and ", ncol(sel_cg$data)-sel_cg$pX, " nodes, respectively\n\n", sep = "")
+  cat("For each layer it has: ", x$pX, " and ", ncol(x$data)-x$pX, " nodes, respectively\n\n", sep = "")
   cat("The selected value for lambda within is:\n", 
-      round(sel_cg$sel_lambda_w, 4), "\n", sep = "")
+      round(x$sel_lambda_w, 4), "\n", sep = "")
   cat("The selected value for lambda between is:\n", 
-      round(sel_cg$sel_lambda_b, 4), "\n", sep = "")
+      round(x$sel_lambda_b, 4), "\n", sep = "")
   cat("The selected value for c is:\n", 
-      round(sel_cg$sel_c, 4), "\n\n", sep = "")
+      round(x$sel_c, 4), "\n\n", sep = "")
   cat("The total number of hyperparameter combinations explored was:\n", 
-      dim(sel_cg$hpars)[1], "\n", sep = "")
+      dim(x$hpars)[1], "\n", sep = "")
   cat("The values explored for lambda within were:\n", 
-      paste(round(sel_cg$lambda_w, 4), collapse = ", "), "\n", sep = "")
+      paste(round(x$lambda_w, 4), collapse = ", "), "\n", sep = "")
   cat("The values explored for lambda between were:\n", 
-      paste(round(sel_cg$lambda_b, 4), collapse = ", "), "\n", sep = "")
-  cat("The values explored for c were:\n", paste(round(sel_cg$c, 4), collapse = ", "), "\n\n",
+      paste(round(x$lambda_b, 4), collapse = ", "), "\n", sep = "")
+  cat("The values explored for c were:\n", paste(round(x$c, 4), collapse = ", "), "\n\n",
       sep = "")
   cat("Plot the selected network with:\nplot(", sel_cg_name[[1]], ") ==> SOON AVAILABLE",
       sep = "")

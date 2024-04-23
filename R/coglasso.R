@@ -132,28 +132,28 @@ coglasso <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, nlamb
 #' Print information on the estimated networks and the explored hyperparameters 
 #' and see next suggested step
 #'
-#' @param cg is an object of `S3` class `coglasso`.
+#' @param x is an object of `S3` class `coglasso`.
 #' @param ... system required, not used.
 #' 
 #' @noRd
 #' @export
-print.coglasso <- function(cg, ...){
-  cg_name <- rlang::call_args(match.call())
+print.coglasso <- function(x, ...){
+  x_name <- rlang::call_args(match.call())
   cat("Networks estimated with collaborative graphical lasso\n\n")
   cat("The call was:\n", 
-      paste(deparse(cg$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
+      paste(deparse(x$call), sep = "\n", collapse = "\n"), "\n\n", sep = "")
   cat("The total number of hyperparameter combinations explored was:\n", 
-      dim(cg$hpars)[1], "\n", sep = "")
+      dim(x$hpars)[1], "\n", sep = "")
   cat("The values explored for lambda within were:\n", 
-      paste(round(cg$lambda_w, 4), collapse = ", "), "\n", sep = "")
+      paste(round(x$lambda_w, 4), collapse = ", "), "\n", sep = "")
   cat("The values explored for lambda between were:\n", 
-      paste(round(cg$lambda_b, 4), collapse = ", "), "\n", sep = "")
-  cat("The values explored for c were:\n", paste(round(cg$c, 4), collapse = ", "), "\n\n",
+      paste(round(x$lambda_b, 4), collapse = ", "), "\n", sep = "")
+  cat("The values explored for c were:\n", paste(round(x$c, 4), collapse = ", "), "\n\n",
       sep = "")
-  cat("Networks have ", ncol(cg$data), " nodes\n", sep = "")
+  cat("Networks have ", ncol(x$data), " nodes\n", sep = "")
   # To modify once general |D| coglasso version is implemented:
-  cat("For each layer they have: ", cg$pX, " and ", ncol(cg$data)-cg$pX, " nodes, respectively\n\n", sep = "")
-  cat("Select the best network with:\nsel_cg <- select_coglasso(", cg_name[[1]], ")",
+  cat("For each layer they have: ", x$pX, " and ", ncol(x$data)-x$pX, " nodes, respectively\n\n", sep = "")
+  cat("Select the best network with:\nsel_cg <- select_coglasso(", x_name[[1]], ")",
       sep = "")
 }
 

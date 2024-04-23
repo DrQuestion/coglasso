@@ -129,7 +129,8 @@
 #' # number of hyperparameters to explore (to choose how extensively to explore 
 #' # the possible hyperparameters). Then, let the default behavior do the rest:
 #' 
-#' sel_mo_net <- bs(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+#' sel_mo_net <- bs(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3,
+#'                  nc = 3, verbose = FALSE)
 #' 
 bs <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, 
                nlambda_w = NULL, nlambda_b = NULL, nc = NULL, 
