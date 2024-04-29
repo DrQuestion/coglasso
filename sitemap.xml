@@ -34,10 +34,16 @@
     <loc>https://drquestion.github.io/coglasso/reference/coglasso.html</loc>
   </url>
   <url>
+    <loc>https://drquestion.github.io/coglasso/reference/get_network.html</loc>
+  </url>
+  <url>
     <loc>https://drquestion.github.io/coglasso/reference/index.html</loc>
   </url>
   <url>
     <loc>https://drquestion.github.io/coglasso/reference/multi_omics_sd.html</loc>
+  </url>
+  <url>
+    <loc>https://drquestion.github.io/coglasso/reference/plot.select_coglasso.html</loc>
   </url>
   <url>
     <loc>https://drquestion.github.io/coglasso/reference/select_coglasso.html</loc>

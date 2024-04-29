@@ -214,14 +214,14 @@ choose a new best \(\lambda_w\). Defaults to 10.</p></dd>
 
 
 <dt>old_sampling</dt>
-<dd><p>If set to TRUE <code><a href="xestars.html">xestars()</a></code> performs the same subsampling
-<code><a href="xstars.html">xstars()</a></code> would. Makes a difference with bigger data sets, where computing
+<dd><p>Perform the same subsampling <code><a href="xstars.html">xstars()</a></code> would if set to
+TRUE. Makes a difference with bigger data sets, where computing
 a correlation matrix could take significantly longer. Defaults to FALSE.</p></dd>
 
 
 <dt>light</dt>
-<dd><p>If set TRUE the "merged" matrixes recording average variability
-of each edge are not stored and the algorithm is more memory efficient.
+<dd><p>Do not store the "merged" matrixes recording average variability
+of each edge, making the algorithm more memory efficient, if set to TRUE.
 Defaults to TRUE.</p></dd>
 
 
@@ -348,7 +348,8 @@ selection methods, visit the help page of <code><a href="select_coglasso.html">s
 <span class="r-in"><span><span class="co"># number of hyperparameters to explore (to choose how extensively to explore </span></span></span>
 <span class="r-in"><span><span class="co"># the possible hyperparameters). Then, let the default behavior do the rest:</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">sel_mo_net</span> <span class="op">&lt;-</span> <span class="fu">bs</span><span class="op">(</span><span class="va">multi_omics_sd_micro</span>, pX <span class="op">=</span> <span class="fl">4</span>, nlambda_w <span class="op">=</span> <span class="fl">3</span>, nlambda_b <span class="op">=</span> <span class="fl">3</span>, nc <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sel_mo_net</span> <span class="op">&lt;-</span> <span class="fu">bs</span><span class="op">(</span><span class="va">multi_omics_sd_micro</span>, pX <span class="op">=</span> <span class="fl">4</span>, nlambda_w <span class="op">=</span> <span class="fl">3</span>, nlambda_b <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>                 nc <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
