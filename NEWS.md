@@ -60,10 +60,14 @@ editor_options:
     selected hyperparameters between the older and the new methodology.
 
 -   Created the classes `coglasso` and `select_coglasso`, with related
-    `print()` methods. These former is returned when using `coglasso()`,
-    while the latter when using any function that performs model
-    selection as its final step (*i.e.* `bs()`,`select_coglasso()`, and
-    all the model selection functions).
+    `print()` and `plot()` methods. These former is returned when using
+    `coglasso()`, while the latter when using any function that performs
+    model selection as its final step (*i.e.*
+    `bs()`,`select_coglasso()`, and all the model selection functions).
+
+-   Created a plotting module. Now every function of the package that
+    produces or selects a network generates an object that can be
+    directly be plotted with `plot()`.
 
 # coglasso 1.0.2
 

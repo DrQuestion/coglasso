@@ -110,12 +110,12 @@ setting. Defaults to 20.}
 \item{max_iter}{The greatest number of times the algorithm is allowed to
 choose a new best \eqn{\lambda_w}. Defaults to 10.}
 
-\item{old_sampling}{If set to TRUE \code{xestars()} performs the same subsampling
-\code{xstars()} would. Makes a difference with bigger data sets, where computing
+\item{old_sampling}{Perform the same subsampling \code{xstars()} would if set to
+TRUE. Makes a difference with bigger data sets, where computing
 a correlation matrix could take significantly longer. Defaults to FALSE.}
 
-\item{light}{If set TRUE the "merged" matrixes recording average variability
-of each edge are not stored and the algorithm is more memory efficient.
+\item{light}{Do not store the "merged" matrixes recording average variability
+of each edge, making the algorithm more memory efficient, if set to TRUE.
 Defaults to TRUE.}
 
 \item{ebic_gamma}{The \eqn{\gamma} tuning parameter for \emph{eBIC} selection, to set

@@ -3,6 +3,9 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom igraph E
+#' @importFrom igraph graph.adjacency
+#' @importFrom igraph V
 #' @importFrom lifecycle deprecated
 #' @importFrom Rcpp evalCpp
 #' @importFrom rlang call_args

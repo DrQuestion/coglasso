@@ -36,7 +36,7 @@
       10, 1
       
       Plot the selected network with:
-      plot(sel_cg) ==> SOON AVAILABLE
+      plot(sel_cg)
     Code
       sel_cg <- select_coglasso(cg, method = "xestars", rep_num = 3, verbose = FALSE)
       print(sel_cg)
@@ -72,7 +72,7 @@
       10, 1
       
       Plot the selected network with:
-      plot(sel_cg) ==> SOON AVAILABLE
+      plot(sel_cg)
     Code
       sel_cg <- xstars(cg, rep_num = 3, verbose = FALSE)
       print(sel_cg)
@@ -107,7 +107,7 @@
       10, 1
       
       Plot the selected network with:
-      plot(sel_cg) ==> SOON AVAILABLE
+      plot(sel_cg)
     Code
       sel_cg <- bs(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 2,
         rep_num = 3, verbose = FALSE)
@@ -144,5 +144,5 @@
       10, 1
       
       Plot the selected network with:
-      plot(sel_cg) ==> SOON AVAILABLE
+      plot(sel_cg)
 

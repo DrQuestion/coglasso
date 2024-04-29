@@ -132,8 +132,8 @@ coglasso <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, nlamb
 #' Print information on the estimated networks and the explored hyperparameters 
 #' and see next suggested step
 #'
-#' @param x is an object of `S3` class `coglasso`.
-#' @param ... system required, not used.
+#' @param x The object of `S3` class `coglasso`.
+#' @param ... System required, not used.
 #' 
 #' @noRd
 #' @export

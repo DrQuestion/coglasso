@@ -57,13 +57,14 @@ version of the coglasso package expects multi-omics data sets with *two*
 example, in `multi_omics_sd_small` the first 14 columns represent
 transcript abundances, and the other 5 columns represent metabolite
 abundances. The function to perform both network estimation and network
-selection is `bs()`. The default usage of `bs()` only needs the input
-data set and the dimension of the first “omic” layer.
+selection is `bs()`. The suggested usage of `bs()` only needs the input
+data set, the dimension of the first “omic” layer, and the number of
+values to explore for each hyperparameter.
 
 ``` r
 library(coglasso)
 
-sel_cg <- bs(multi_omics_sd_small, pX = 14)
+sel_cg <- bs(multi_omics_sd_small, pX = 14, nlambda_w = 15, nlambda_b = 15, nc = 5)
 
 # To see information about the network estimation and selection
 print(sel_cg)
@@ -80,12 +81,11 @@ of the *StARS* selection algorithm ([Liu, Roeder and Wasserman,
 2010](#references)) selecting the hyperparameter combination that yields
 the most stable, yet sparse network. *XEStARS* is the default option for
 the parameter `method`, so it is enough to enjoy the comfort of the
-default behaviour and let the function do the rest. To access the
-selected network, in the form of its adjacency matrix (the matrix of
-connections), use:
+default behaviour and let the function do the rest. To plot the selected
+network, use:
 
 ``` r
-sel_cg$sel_adj
+plot(sel_cg)
 ```
 
 ## References

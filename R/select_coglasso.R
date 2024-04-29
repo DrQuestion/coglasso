@@ -205,6 +205,6 @@ print.select_coglasso <- function(x, ...){
       paste(round(x$lambda_b, 4), collapse = ", "), "\n", sep = "")
   cat("The values explored for c were:\n", paste(round(x$c, 4), collapse = ", "), "\n\n",
       sep = "")
-  cat("Plot the selected network with:\nplot(", sel_cg_name[[1]], ") ==> SOON AVAILABLE",
+  cat("Plot the selected network with:\nplot(", sel_cg_name[[1]], ")",
       sep = "")
 }

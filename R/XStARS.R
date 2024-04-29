@@ -363,11 +363,11 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
 #'   setting. Defaults to 20.
 #' @param max_iter The greatest number of times the algorithm is allowed to
 #'   choose a new best \eqn{\lambda_w}. Defaults to 10.
-#' @param old_sampling If set to TRUE `xestars()` performs the same subsampling 
-#'   `xstars()` would. Makes a difference with bigger data sets, where computing
+#' @param old_sampling Perform the same subsampling `xstars()` would if set to 
+#'   TRUE. Makes a difference with bigger data sets, where computing
 #'   a correlation matrix could take significantly longer. Defaults to FALSE.
-#' @param light If set TRUE the "merged" matrixes recording average variability
-#'   of each edge are not stored and the algorithm is more memory efficient. 
+#' @param light Do not store the "merged" matrixes recording average variability
+#'   of each edge, making the algorithm more memory efficient, if set to TRUE. 
 #'   Defaults to TRUE.
 #' @param verbose Print information regarding the progress of the selection
 #'   procedure on the console.

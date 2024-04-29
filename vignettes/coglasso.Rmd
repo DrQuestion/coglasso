@@ -56,27 +56,10 @@ sel_cg <- bs(
 print(sel_cg)
 ```
 
-With this we have fast selected the combination of hyperparameters yielding the most stable, yet sparse coglasso network. The adjacency matrix of the selected network is stored in the object `sel_cg$sel_adj`. We can use this matrix to display the selected network with the R package `igraph`.
+With this we have fast selected the combination of hyperparameters yielding the most stable, yet sparse coglasso network. We can directly plot the selected network with:
 
 ```{r}
-# To create the igraph object from the selected adjacency matrix:
-sel_graph <- igraph::graph.adjacency(sel_cg$sel_adj, mode = "undirected")
-
-# Setting some graphical parameters and removing disconnected nodes from the graph
-igraph::V(sel_graph)$label <- colnames(multi_omics_sd_small)
-igraph::V(sel_graph)$color <- c(rep("#00ccff", 14), rep("#ff9999", 5))
-igraph::V(sel_graph)$frame.color <- c(rep("#002060", 14), rep("#800000", 5))
-igraph::V(sel_graph)$frame.width <- 2
-igraph::V(sel_graph)$size <- c(30)
-igraph::E(sel_graph)$width <- 2
-
-lo <- igraph::layout_with_fr(sel_graph)
-diconnected <- which(igraph::degree(sel_graph) == 0)
-sel_graph2 <- igraph::delete.vertices(sel_graph, diconnected)
-lo2 <- lo[-diconnected, ]
-
-# Plotting
-plot(sel_graph2, layout = lo2)
+plot(sel_cg)
 ```
 
 ## References {#ref}
