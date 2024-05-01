@@ -1,3 +1,8 @@
+test_that("warning raised when not implemented method is selected", {
+  cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 2, nlambda_b = 2, nc = 1, verbose = FALSE)
+  expect_warning(select_coglasso(cg, method = "aic", rep_num = 3, verbose = FALSE))
+})
+
 test_that("ebic selection works", {
   cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 2, verbose = FALSE)
   sel_cg_ebic <- select_coglasso(cg, method = "ebic", verbose = FALSE)

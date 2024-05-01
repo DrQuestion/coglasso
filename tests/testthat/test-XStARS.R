@@ -28,6 +28,8 @@ test_that("xestars works", {
   cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 2, verbose = FALSE)
   sel_cg <- xestars(cg, rep_num = 3, verbose = FALSE)
   expect_equal(c(sel_cg$sel_index_c, sel_cg$sel_index_lw, sel_cg$sel_index_lb), c(1,1,1))
+  sel_cg <- xestars(cg, rep_num = 3, light = FALSE, old_sampling = TRUE, verbose = FALSE)
+  expect_equal(c(sel_cg$sel_index_c, sel_cg$sel_index_lw, sel_cg$sel_index_lb), c(2,1,1))
 })
 
 test_that("Verbose mode of xestars works", {
