@@ -27,9 +27,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// co_glasso_D
+List co_glasso_D(Eigen::Map<Eigen::MatrixXd> S, Rcpp::IntegerVector p, Eigen::Map<Eigen::MatrixXd> hpars, bool scr, bool verbose, bool cov_output);
+RcppExport SEXP _coglasso_co_glasso_D(SEXP SSEXP, SEXP pSEXP, SEXP hparsSEXP, SEXP scrSEXP, SEXP verboseSEXP, SEXP cov_outputSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::Map<Eigen::MatrixXd> >::type S(SSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type p(pSEXP);
+    Rcpp::traits::input_parameter< Eigen::Map<Eigen::MatrixXd> >::type hpars(hparsSEXP);
+    Rcpp::traits::input_parameter< bool >::type scr(scrSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< bool >::type cov_output(cov_outputSEXP);
+    rcpp_result_gen = Rcpp::wrap(co_glasso_D(S, p, hpars, scr, verbose, cov_output));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_coglasso_co_glasso", (DL_FUNC) &_coglasso_co_glasso, 6},
+    {"_coglasso_co_glasso_D", (DL_FUNC) &_coglasso_co_glasso_D, 6},
     {NULL, NULL, 0}
 };
 

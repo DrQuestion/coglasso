@@ -5,3 +5,7 @@ co_glasso <- function(S, pX, hpars, scr, verbose, cov_output) {
     .Call(`_coglasso_co_glasso`, S, pX, hpars, scr, verbose, cov_output)
 }
 
+co_glasso_D <- function(S, p, hpars, scr, verbose, cov_output) {
+    .Call(`_coglasso_co_glasso_D`, S, p, hpars, scr, verbose, cov_output)
+}
+

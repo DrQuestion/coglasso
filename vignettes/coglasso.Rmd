@@ -24,7 +24,7 @@ Let us first attach coglasso.
 library(coglasso)
 ```
 
-We then choose the multi-omics data set to use. The coglasso package offers three alternative version of a transcriptomics and metabolomics data set. We will use `multi_omics_sd_small`. For further explanation about all the multi-omics data sets see `help(multi_omics_sd)`.
+We then choose the multi-omics data set to use. The coglasso package offers three alternative version of a transcriptomics and metabolomics data set. We will use `multi_omics_sd_small`. For further explanation about the available multi-omics data sets see `help(multi_omics_sd)`.
 
 ```{r}
 colnames(multi_omics_sd_small)
@@ -37,14 +37,14 @@ This smaller version of `multi_omics_sd` has 19 variables, 14 genes and 5 metabo
 
 Our objective is to reconstruct a network from this data set using *collaborative graphical lasso*. To do so with the coglasso package, we mainly call a function: `bs()`. This function first estimates a network for every combination of hyperparameters we want to explore, then it selects the best combination according to the chosen model selection method.
 
-The usual application of `bs()` requires to give an input data set to the argument `data`, the number of variables of the the first type to `pX`, and hyperparameter settings. Collaborative graphical lasso has three hyperparameters: $λ_w$, penalizing "within" same-type interactions, $λ_b$ penalizing "between" different-type interactions, and $c$, the weight of the collaborative term. In this vignette we choose to explore 15 possible penalty values for both "within" and "between" penalties, and three possible collaboration values. We do so by setting both `nlambda_w` and `nlambda_b` to 15, and by setting `nc` to 3. We also decide to focus our search to the sparse side of possible "within" networks. We achieve this by setting to a fixed value the ratio between the smallest (least penalizing) and the largest (most penalizing) $λ_w$ explored. While the default value of these parameter is 0.1 for both $λ_w$ and $λ_b$, we decide to set the minimum ratio to 0.6 for $λ_w$.
+The usual application of `bs()` requires to give an input data set to the argument `data`, the number of variables of the various omics layers `p`, and the hyperparameter settings. Collaborative graphical lasso has three hyperparameters: $λ_w$, penalizing "within" same-type interactions, $λ_b$ penalizing "between" different-type interactions, and $c$, the weight of the collaborative term. In this vignette we choose to explore 15 possible penalty values for both "within" and "between" penalties, and three possible collaboration values. We do so by setting both `nlambda_w` and `nlambda_b` to 15, and by setting `nc` to 3. We also decide to focus our search to the sparse side of possible "within" networks. We achieve this by setting to a fixed value the ratio between the smallest (least penalizing) and the largest (most penalizing) $λ_w$ explored. While the default value of these parameter is 0.1 for both $λ_w$ and $λ_b$, we decide to set the minimum ratio to 0.6 for $λ_w$.
 
 It is also possible to set options for the model selection procedure, if one does not want to enjoy the comfort of the default behaviour. To select the best combination of hyperparameters, we will set `method` to "xestars" (which is the default behaviour). This implements *eXtended Efficient StARS*, a significantly faster version of *eXtended StARS* (*XStARS*, [Albanese, Kohlen and Behrouzi, 2024](#ref)). *XEStARS* and *XStARS* are a coglasso-adapted version of *StARS*, the stability selection method developed by Liu, Roeder and Wasserman ([2010](#ref)). The suggested application of `bs()` uses the default options of the function. For further explanation on other selection methods available, and on other arguments of `bs()` and how to use them, please see `help(bs)`.
 
 ```{r}
 sel_cg <- bs(
   multi_omics_sd_small,
-  pX = 14,
+  p = c(14, 5),
   nlambda_w = 15,
   nlambda_b = 15,
   nc = 3,

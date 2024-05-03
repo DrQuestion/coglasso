@@ -21,7 +21,7 @@
 #' 
 #' @return `bs()` returns an object of `S3` class `select_coglasso` containing 
 #'   several elements. The most 
-#'   important is arguably `sel_adj`, the adjacency matrix of the 
+#'   important is probably `sel_adj`, the adjacency matrix of the 
 #'   selected network. Some output elements depend on the chosen model selection
 #'   method.\cr
 #'   These elements are always returned, and they are the result of network 
@@ -48,7 +48,9 @@
 #'   \item `lambda_w`, `lambda_b`, and `c` are numerical vectors with, 
 #'   respectively, all the \eqn{\lambda_w}, \eqn{\lambda_b}, and \eqn{c} values
 #'   `bs()` used.
-#'   \item `pX` is the number of variables of the first data set.
+#'   \item `p` is the vector with the number of variables for each omic layer of the 
+#'   data set.
+#'   \item `D` is the number of omics layers in the data set.
 #'   \item `cov` optional, returned when `cov_output` is TRUE, is a list containing
 #'   the variance-covariance matrices of all the estimated networks.
 #' }
@@ -125,14 +127,15 @@
 #' @export
 #'
 #' @examples
-#' # Typical usage: give the input data set, set the value for `pX` and the 
+#' # Suggested usage: give the input data set, set the values for `p` and the 
 #' # number of hyperparameters to explore (to choose how extensively to explore 
 #' # the possible hyperparameters). Then, let the default behavior do the rest:
 #' 
-#' sel_mo_net <- bs(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3,
-#'                  nc = 3, verbose = FALSE)
+#' sel_mo_net <- bs(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, 
+#'                  nlambda_b = 3, nc = 3, verbose = FALSE)
 #' 
-bs <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, 
+bs <- function(data, p = NULL, pX = lifecycle::deprecated(), 
+               lambda_w = NULL, lambda_b = NULL, c = NULL, 
                nlambda_w = NULL, nlambda_b = NULL, nc = NULL, 
                lambda_w_max = NULL, lambda_b_max = NULL, c_max = NULL, 
                lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL, 
@@ -141,12 +144,18 @@ bs <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL,
                max_iter = 10, old_sampling = FALSE, light = TRUE, 
                ebic_gamma = 0.5, verbose = TRUE){
   
+  if (lifecycle::is_present(pX)) {
+    lifecycle::deprecate_warn("1.1.0", "bs(pX)", "bs(p)")
+    p <- pX
+  }
+  
   call <- match.call()
   
-  cg <- coglasso(data = data, pX = pX, lambda_w = lambda_w, lambda_b = lambda_b,
-                 c = c, nlambda_w = nlambda_w, nlambda_b = nlambda_b, nc = nc, 
-                 lambda_w_max = lambda_w_max, lambda_b_max = lambda_b_max, 
-                 c_max = c_max, lambda_w_min_ratio = lambda_w_min_ratio, 
+  cg <- coglasso(data = data, p = p, pX = pX, lambda_w = lambda_w, 
+                 lambda_b = lambda_b, c = c, nlambda_w = nlambda_w, 
+                 nlambda_b = nlambda_b, nc = nc, lambda_w_max = lambda_w_max, 
+                 lambda_b_max = lambda_b_max, c_max = c_max, 
+                 lambda_w_min_ratio = lambda_w_min_ratio, 
                  lambda_b_min_ratio = lambda_b_min_ratio, 
                  c_min_ratio = c_min_ratio, cov_output = cov_output, 
                  verbose = verbose)

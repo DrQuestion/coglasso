@@ -7,7 +7,8 @@
 \usage{
 bs(
   data,
-  pX,
+  p = NULL,
+  pX = lifecycle::deprecated(),
   lambda_w = NULL,
   lambda_b = NULL,
   c = NULL,
@@ -37,8 +38,14 @@ bs(
 should be variables. Variables should be grouped by their assay (e.g.
 transcripts first, then metabolites). \code{data} is a required parameter.}
 
-\item{pX}{The number of variables of the first data set (e.g. the number of
-transcripts). \code{pX} is a required parameter.}
+\item{p}{A vector with with the number of variables for each omic layer of the
+data set (e.g. the number of transcripts, metabolites etc.), in the same
+order the layers have in the data set. If given a single number,
+\code{coglasso()} assumes that the total of data sets is two, and that the
+number given is the dimension of the first one.}
+
+\item{pX}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} \code{pX} is no longer supported.
+Please use \code{p}.}
 
 \item{lambda_w}{A vector of values for the parameter \eqn{\lambda_w}, the
 penalization parameter for the "within" interactions. Overrides
@@ -127,7 +134,7 @@ network selection processes.}
 \value{
 \code{bs()} returns an object of \code{S3} class \code{select_coglasso} containing
 several elements. The most
-important is arguably \code{sel_adj}, the adjacency matrix of the
+important is probably \code{sel_adj}, the adjacency matrix of the
 selected network. Some output elements depend on the chosen model selection
 method.\cr
 These elements are always returned, and they are the result of network
@@ -154,7 +161,9 @@ being the key to sort rows.
 \item \code{lambda_w}, \code{lambda_b}, and \code{c} are numerical vectors with,
 respectively, all the \eqn{\lambda_w}, \eqn{\lambda_b}, and \eqn{c} values
 \code{bs()} used.
-\item \code{pX} is the number of variables of the first data set.
+\item \code{p} is the vector with the number of variables for each omic layer of the
+data set.
+\item \code{D} is the number of omics layers in the data set.
 \item \code{cov} optional, returned when \code{cov_output} is TRUE, is a list containing
 the variance-covariance matrices of all the estimated networks.
 }
@@ -245,11 +254,11 @@ selection method. The three availble options that can be set for the argument
 selection methods, visit the help page of \code{\link[=select_coglasso]{select_coglasso()}}.
 }
 \examples{
-# Typical usage: give the input data set, set the value for `pX` and the 
+# Suggested usage: give the input data set, set the values for `p` and the 
 # number of hyperparameters to explore (to choose how extensively to explore 
 # the possible hyperparameters). Then, let the default behavior do the rest:
 
-sel_mo_net <- bs(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3,
-                 nc = 3, verbose = FALSE)
+sel_mo_net <- bs(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, 
+                 nlambda_b = 3, nc = 3, verbose = FALSE)
 
 }

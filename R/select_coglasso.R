@@ -108,7 +108,7 @@
 #' @export
 #'
 #' @examples
-#' cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+#' cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
 #' # Using eXtended Efficient StARS, takes less than five seconds
 #' sel_cg_xestars <- select_coglasso(cg, method = "xestars", verbose = FALSE)
 #' \donttest{
@@ -116,7 +116,7 @@
 #' sel_cg_xstars <- select_coglasso(cg, method = "xstars", verbose = FALSE)
 #' }
 #' # Using eBIC
-#' sel_cg_xstars <- select_coglasso(cg, method = "ebic", verbose = FALSE)
+#' sel_cg_ebic <- select_coglasso(cg, method = "ebic", verbose = FALSE)
 #' 
 select_coglasso <- function(coglasso_obj, method = "xestars", stars_thresh = 0.1, stars_subsample_ratio = NULL, rep_num = 20, max_iter = 10, old_sampling = FALSE, light = TRUE, ebic_gamma = 0.5, verbose = TRUE) {
   call <- match.call()
@@ -138,8 +138,8 @@ select_coglasso <- function(coglasso_obj, method = "xestars", stars_thresh = 0.1
     }
     
     n <- nrow(coglasso_obj$data)
-    d <- ncol(coglasso_obj$data)
-    coglasso_obj$ebic_scores <- -n * coglasso_obj$loglik + log(n) * coglasso_obj$df + 4 * ebic_gamma * log(d) * coglasso_obj$df
+    p_tot <- ncol(coglasso_obj$data)
+    coglasso_obj$ebic_scores <- -n * coglasso_obj$loglik + log(n) * coglasso_obj$df + 4 * ebic_gamma * log(p_tot) * coglasso_obj$df
     
     if (verbose) {
       mes <- "Selecting best Lambda_w/Lambda_b combination for all c values with \"ebic\"....done"
@@ -150,7 +150,7 @@ select_coglasso <- function(coglasso_obj, method = "xestars", stars_thresh = 0.1
 
     sel_combination <- which.min(coglasso_obj$ebic_scores)
     sel_alpha <- coglasso_obj$hpars[sel_combination, 1]
-    coglasso_obj$sel_index_c <- which(sort(unique(coglasso_obj$hpars[, 1])) == sel_alpha)
+    coglasso_obj$sel_index_c <- which(coglasso_obj$c == coglasso_obj$hpars[sel_combination, 4])
     coglasso_obj$sel_index_lw <- which(coglasso_obj$lambda_w == coglasso_obj$hpars[sel_combination, 2])
     coglasso_obj$sel_index_lb <- which(coglasso_obj$lambda_b == coglasso_obj$hpars[sel_combination, 3])
     coglasso_obj$sel_c <- coglasso_obj$c[coglasso_obj$sel_index_c]
@@ -188,9 +188,9 @@ print.select_coglasso <- function(x, ...){
       x$method, "\n", sep = "")
   cat("The density of the selected network is:\n", 
       x$sel_density, "\n\n", sep = "")
-  cat("The selected network has ", ncol(x$data), " nodes\n", sep = "")
-  # To modify once general |D| coglasso version is implemented:
-  cat("For each layer it has: ", x$pX, " and ", ncol(x$data)-x$pX, " nodes, respectively\n\n", sep = "")
+  cat("Networks are made of ", x$D, " omics layers, for a total of ", ncol(x$data), " nodes\n", sep = "")
+  mes <- paste(x$p[-length(x$p)], collapse = ", ")
+  cat("For each layer they have: ", mes, " and ", x$p[length(x$p)], " nodes, respectively\n\n", sep = "")
   cat("The selected value for lambda within is:\n", 
       round(x$sel_lambda_w, 4), "\n", sep = "")
   cat("The selected value for lambda between is:\n", 

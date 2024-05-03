@@ -51,20 +51,20 @@ Here follows an example on how to reconstruct and select a multi-omics
 network with *collaborative graphical lasso*. For a more exhaustive
 example we refer the user to the vignette `vignette("coglasso")`. The
 package provides example multi-omics data sets of different dimensions,
-here we will use `multi_omics_sd_small`. Please notice that the current
-version of the coglasso package expects multi-omics data sets with *two*
-“omic” layers, where the single layers are grouped by column. For
-example, in `multi_omics_sd_small` the first 14 columns represent
-transcript abundances, and the other 5 columns represent metabolite
-abundances. The function to perform both network estimation and network
-selection is `bs()`. The suggested usage of `bs()` only needs the input
-data set, the dimension of the first “omic” layer, and the number of
-values to explore for each hyperparameter.
+here we will use `multi_omics_sd_small`. The current version of the
+coglasso package accepts multi-omics data sets with *multiple* “omic”
+layers, where the single layers are grouped by column. For example, in
+`multi_omics_sd_small` the first 14 columns represent transcript
+abundances, and the other 5 columns represent metabolite abundances. The
+function to perform both network estimation and network selection is
+`bs()`. The suggested usage of `bs()` only needs the input data set, the
+dimensions of the “omic” layers, and the number of values to explore for
+each hyperparameter.
 
 ``` r
 library(coglasso)
 
-sel_cg <- bs(multi_omics_sd_small, pX = 14, nlambda_w = 15, nlambda_b = 15, nc = 5)
+sel_cg <- bs(multi_omics_sd_small, pX = c(14, 5), nlambda_w = 15, nlambda_b = 15, nc = 5)
 
 # To see information about the network estimation and selection
 print(sel_cg)

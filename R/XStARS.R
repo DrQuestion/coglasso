@@ -83,7 +83,7 @@
 #' @export
 #'
 #' @examples
-#' cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+#' cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
 #' \donttest{
 #' # Takes around one minute
 #' sel_cg <- xstars(cg, verbose = FALSE)
@@ -92,8 +92,9 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
   call <- match.call()
   
   n <- nrow(coglasso_obj$data)
-  d <- ncol(coglasso_obj$data)
-  pX <- coglasso_obj$pX
+  p_tot <- ncol(coglasso_obj$data)
+  p <- coglasso_obj$p
+  D <- coglasso_obj$D
   n_lambda_w <- length(coglasso_obj$lambda_w)
   n_lambda_b <- length(coglasso_obj$lambda_b)
   n_c <- length(coglasso_obj$c)
@@ -122,7 +123,8 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
       flush.console()
     }
     
-    alpha <- 1 / (1 + coglasso_obj$c[i])
+    c <- coglasso_obj$c[i]
+    alpha <- 1 / (c * (D - 1) + 1)
     
     lw_sel <- -1
     lb_sel <- coglasso_obj$lambda_b[n_lambda_b]
@@ -133,7 +135,7 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
     while (!converged & num_iter < max_iter) {
       if (select_lw) {
         coglasso_obj$merge_lw[[i]] <- list()
-        for (j in 1:n_lambda_w) coglasso_obj$merge_lw[[i]][[j]] <- Matrix::Matrix(0, d, d)
+        for (j in 1:n_lambda_w) coglasso_obj$merge_lw[[i]][[j]] <- Matrix::Matrix(0, p_tot, p_tot)
         
         real_rep.num <- rep(0, n_lambda_w)
         
@@ -147,8 +149,8 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
           ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
           
           corr_matrix <- cor(scale(coglasso_obj$data[ind.sample, ]))
-          hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w)), nrow = n_lambda_w, ncol = 3)
-          tmp <- co_glasso(corr_matrix, pX, hpars, FALSE, FALSE, FALSE)
+          hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w), rep(c, n_lambda_w)), nrow = n_lambda_w, ncol = 4)
+          tmp <- co_glasso_D(corr_matrix, p, hpars, FALSE, FALSE, FALSE)
           
           convergence <- tmp$convergence
           tmp <- tmp$path
@@ -167,7 +169,7 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
         for (j in 1:n_lambda_w) {
           coglasso_obj$merge_lw[[i]][[j]] <- coglasso_obj$merge_lw[[i]][[j]] / real_rep.num[j]
           coglasso_obj$variability_lw[[i]][j] <- 4 * sum(coglasso_obj$merge_lw[[i]][[j]] *
-                                                           (1 - coglasso_obj$merge_lw[[i]][[j]])) / (d * (d - 1))
+                                                           (1 - coglasso_obj$merge_lw[[i]][[j]])) / (p_tot * (p_tot - 1))
         }
         
         index_lw <- max(which.max(coglasso_obj$variability_lw[[i]] >=
@@ -191,7 +193,7 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
         }
       } else {
         coglasso_obj$merge_lb[[i]] <- list()
-        for (j in 1:n_lambda_b) coglasso_obj$merge_lb[[i]][[j]] <- Matrix::Matrix(0, d, d)
+        for (j in 1:n_lambda_b) coglasso_obj$merge_lb[[i]][[j]] <- Matrix::Matrix(0, p_tot, p_tot)
         
         real_rep.num <- rep(0, n_lambda_b)
         
@@ -205,8 +207,8 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
           ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
           
           corr_matrix <- cor(scale(coglasso_obj$data[ind.sample, ]))
-          hpars <- matrix(c(rep(alpha, n_lambda_b), coglasso_obj$lambda_b, rep(lw_sel, n_lambda_b)), nrow = n_lambda_b, ncol = 3)
-          tmp <- co_glasso(corr_matrix, pX, hpars, FALSE, FALSE, FALSE)
+          hpars <- matrix(c(rep(alpha, n_lambda_b), coglasso_obj$lambda_b, rep(lw_sel, n_lambda_b), rep(c, n_lambda_b)), nrow = n_lambda_b, ncol = 4)
+          tmp <- co_glasso_D(corr_matrix, p, hpars, FALSE, FALSE, FALSE)
           
           convergence <- tmp$convergence
           tmp <- tmp$path
@@ -225,7 +227,7 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
         for (j in 1:n_lambda_b) {
           coglasso_obj$merge_lb[[i]][[j]] <- coglasso_obj$merge_lb[[i]][[j]] / real_rep.num[j]
           coglasso_obj$variability_lb[[i]][j] <- 4 * sum(coglasso_obj$merge_lb[[i]][[j]] *
-                                                           (1 - coglasso_obj$merge_lb[[i]][[j]])) / (d * (d - 1))
+                                                           (1 - coglasso_obj$merge_lb[[i]][[j]])) / (p_tot * (p_tot - 1))
         }
         
         index_lb <- max(which.max(coglasso_obj$variability_lb[[i]] >=
@@ -274,7 +276,8 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
     coglasso_obj$opt_lambda_b[i] <- coglasso_obj$lambda_b[index_lb]
     opt_hpars_combination <- which(coglasso_obj$hpars[, 1] == alpha &
                                      coglasso_obj$hpars[, 2] == coglasso_obj$opt_lambda_w[i] &
-                                     coglasso_obj$hpars[, 3] == coglasso_obj$opt_lambda_b[i])
+                                     coglasso_obj$hpars[, 3] == coglasso_obj$opt_lambda_b[i] &
+                                     coglasso_obj$hpars[, 4] == c)
     coglasso_obj$opt_adj[[i]] <- coglasso_obj$path[[opt_hpars_combination]]
     colnames(coglasso_obj$opt_adj[[i]]) <- colnames(coglasso_obj$data)
     row.names(coglasso_obj$opt_adj[[i]]) <- colnames(coglasso_obj$data)
@@ -291,9 +294,10 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
   coglasso_obj$sel_lambda_b <- coglasso_obj$lambda_b[coglasso_obj$sel_index_lb]
   coglasso_obj$sel_c <- coglasso_obj$c[coglasso_obj$sel_index_c]
   coglasso_obj$sel_adj <- coglasso_obj$opt_adj[[coglasso_obj$sel_index_c]]
-  sel_hpars_combination <- which(coglasso_obj$hpars[, 1] == 1 / (1 + coglasso_obj$sel_c) &
+  sel_hpars_combination <- which(coglasso_obj$hpars[, 1] == 1 / (coglasso_obj$sel_c * (D - 1) +1) &
                                    coglasso_obj$hpars[, 2] == coglasso_obj$sel_lambda_w &
-                                   coglasso_obj$hpars[, 3] == coglasso_obj$sel_lambda_b)
+                                   coglasso_obj$hpars[, 3] == coglasso_obj$sel_lambda_b &
+                                   coglasso_obj$hpars[, 4] == coglasso_obj$sel_c)
   coglasso_obj$sel_density <- coglasso_obj$density[sel_hpars_combination]
   coglasso_obj$sel_icov <- coglasso_obj$icov[[sel_hpars_combination]]
   if (!is.null(coglasso_obj$cov)) {
@@ -409,7 +413,7 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
 #' @export
 #'
 #' @examples
-#' cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+#' cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
 #' \donttest{
 #' # Takes less than five seconds
 #' sel_cg <- xestars(cg, verbose = FALSE)
@@ -418,8 +422,9 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
   call <- match.call()
   
   n <- nrow(coglasso_obj$data)
-  d <- ncol(coglasso_obj$data)
-  pX <- coglasso_obj$pX
+  p_tot <- ncol(coglasso_obj$data)
+  p <- coglasso_obj$p
+  D <- coglasso_obj$D
   n_lambda_w <- length(coglasso_obj$lambda_w)
   n_lambda_b <- length(coglasso_obj$lambda_b)
   n_c <- length(coglasso_obj$c)
@@ -459,7 +464,8 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
       flush.console()
     }
     
-    alpha <- 1 / (1 + coglasso_obj$c[i])
+    c <- coglasso_obj$c[i]
+    alpha <- 1 / (c * (D - 1) + 1)
     
     lw_sel <- -1
     lb_sel <- coglasso_obj$lambda_b[n_lambda_b]
@@ -486,9 +492,9 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
             flush.console()
           }
           real_rep.num <- 0
-          merge_tmp <- rep(0, d*d)
+          merge_tmp <- rep(0, p_tot*p_tot)
           for (k in 1:rep_num) {
-            tmp <- co_glasso(corr_matrixes[[k]], pX, t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel))), FALSE, FALSE, FALSE)
+            tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel, c))), FALSE, FALSE, FALSE)
             convergence <- tmp$convergence[1]
             tmp <- as.vector(tmp$path[[1]])
             if (convergence == 1) {
@@ -500,7 +506,7 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
           gc()
           
           merge_tmp <- merge_tmp / real_rep.num
-          variability_tmp <- 4 * sum(merge_tmp * (1 - merge_tmp)) / (d * (d - 1))
+          variability_tmp <- 4 * sum(merge_tmp * (1 - merge_tmp)) / (p_tot * (p_tot - 1))
           
           # Find way to deal with when real_rep.num is 0 (no convergence at all)
           if (variability_tmp >= stars_thresh) {
@@ -583,9 +589,9 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
             flush.console()
           }
           real_rep.num <- 0
-          merge_tmp <- rep(0, d*d)
+          merge_tmp <- rep(0, p_tot*p_tot)
           for (k in 1:rep_num) {
-            tmp <- co_glasso(corr_matrixes[[k]], pX, t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j]))), FALSE, FALSE, FALSE)
+            tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j], c))), FALSE, FALSE, FALSE)
             convergence <- tmp$convergence[1]
             tmp <- as.vector(tmp$path[[1]])
             if (convergence == 1) {
@@ -597,7 +603,7 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
           gc()
           
           merge_tmp <- merge_tmp / real_rep.num
-          variability_tmp <- 4 * sum(merge_tmp * (1 - merge_tmp)) / (d * (d - 1))
+          variability_tmp <- 4 * sum(merge_tmp * (1 - merge_tmp)) / (p_tot * (p_tot - 1))
           
           if (variability_tmp >= stars_thresh) {
             index_lb <- max(j - 1, 1)
@@ -689,7 +695,8 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
     coglasso_obj$opt_lambda_b[i] <- coglasso_obj$lambda_b[index_lb]
     opt_hpars_combination <- which(coglasso_obj$hpars[, 1] == alpha &
                                      coglasso_obj$hpars[, 2] == coglasso_obj$opt_lambda_w[i] &
-                                     coglasso_obj$hpars[, 3] == coglasso_obj$opt_lambda_b[i])
+                                     coglasso_obj$hpars[, 3] == coglasso_obj$opt_lambda_b[i] &
+                                     coglasso_obj$hpars[, 4] == c)
     coglasso_obj$opt_adj[[i]] <- coglasso_obj$path[[opt_hpars_combination]]
     colnames(coglasso_obj$opt_adj[[i]]) <- colnames(coglasso_obj$data)
     row.names(coglasso_obj$opt_adj[[i]]) <- colnames(coglasso_obj$data)
@@ -706,9 +713,10 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
   coglasso_obj$sel_lambda_b <- coglasso_obj$lambda_b[coglasso_obj$sel_index_lb]
   coglasso_obj$sel_c <- coglasso_obj$c[coglasso_obj$sel_index_c]
   coglasso_obj$sel_adj <- coglasso_obj$opt_adj[[coglasso_obj$sel_index_c]]
-  sel_hpars_combination <- which(coglasso_obj$hpars[, 1] == 1 / (1 + coglasso_obj$sel_c) &
+  sel_hpars_combination <- which(coglasso_obj$hpars[, 1] ==  1 / (coglasso_obj$sel_c * (D - 1) + 1) &
                                    coglasso_obj$hpars[, 2] == coglasso_obj$sel_lambda_w &
-                                   coglasso_obj$hpars[, 3] == coglasso_obj$sel_lambda_b)
+                                   coglasso_obj$hpars[, 3] == coglasso_obj$sel_lambda_b &
+                                   coglasso_obj$hpars[, 4] == coglasso_obj$sel_c)
   coglasso_obj$sel_density <- coglasso_obj$density[sel_hpars_combination]
   coglasso_obj$sel_icov <- coglasso_obj$icov[[sel_hpars_combination]]
   if (!is.null(coglasso_obj$cov)) {
@@ -735,7 +743,7 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
 #' @export
 #' 
 #' @examples
-#' cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+#' cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
 #' \donttest{
 #' # Deprecated, use xstars() instead. Takes around one minute
 #' sel_cg <- stars_coglasso(cg, verbose = FALSE)

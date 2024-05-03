@@ -68,13 +68,13 @@ selected network. If the selection method was "ebic", and you want to extract
 a different network than the selected one, specify all indexes.
 Otherwise, if the objective is to extract the optimal network for a specific
 \eqn{c} value different than the selected one, set \code{index_c} to your chosen
-one. Also here it is possible to slect a specific non-optimal network by
+one. Also here it is possible to extract a specific non-optimal network by
 setting all the indexes to the chosen ones.
 }
 \examples{
 
 \donttest{
-sel_cg <- bs(multi_omics_sd_small, pX = 14, nlambda_w = 15, nlambda_b = 15,
+sel_cg <- bs(multi_omics_sd_small, p = c(14, 5), nlambda_w = 15, nlambda_b = 15,
              nc = 3, lambda_w_min_ratio = 0.6, verbose = FALSE)
 plot(sel_cg)
 }

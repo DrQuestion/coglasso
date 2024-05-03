@@ -125,7 +125,7 @@ implemented. If set to TRUE and the "merged" matrixes traditionally returned
 by both \emph{StARS} and \emph{XStARS} are not returned.
 }
 \examples{
-cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
 \donttest{
 # Takes less than five seconds
 sel_cg <- xestars(cg, verbose = FALSE)

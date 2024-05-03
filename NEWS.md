@@ -69,6 +69,17 @@ editor_options:
     produces or selects a network generates an object that can be
     directly be plotted with `plot()`.
 
+-   Implemented a **new version** of the *collaborative graphical lasso*
+    algorithm, now able to accept **more than two omics layers**. These
+    new version, called *general \|D\|* version, is perfectly compatible
+    with and as time consuming as the previous one when only two layers
+    are given as input.
+
+-   Began the deprecation process of the argument `pX` of the functions
+    `coglasso()` and `bs()`, substituted by the argument `p`, that can
+    take a vector with the dimensions of multiple omics layer, as now
+    the package accepts more than two omics layers.
+
 # coglasso 1.0.2
 
 -   Reformatted the Description field of DESCRIPTION file according to

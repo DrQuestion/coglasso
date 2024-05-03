@@ -1,8 +1,8 @@
 #' Extract a `coglasso` network
 #' 
 #' `get_network()` extracts the selected network from a `select_coglasso` object,
-#'  or a different specific one from either a `select_coglasso` or a `coglasso` 
-#'  object when specifying the optional parameters. 
+#' or a different specific one from either a `select_coglasso` or a `coglasso` 
+#' object when specifying the optional parameters. 
 #' 
 #' If the input is a `coglasso` object, it is necessary to specify all the
 #' indexes to extract a selected network. \cr
@@ -11,7 +11,7 @@
 #' a different network than the selected one, specify all indexes. 
 #' Otherwise, if the objective is to extract the optimal network for a specific 
 #' \eqn{c} value different than the selected one, set `index_c` to your chosen 
-#' one. Also here it is possible to slect a specific non-optimal network by 
+#' one. Also here it is possible to extract a specific non-optimal network by 
 #' setting all the indexes to the chosen ones.
 #' 
 #' @encoding UTF-8
@@ -33,7 +33,7 @@
 #'
 #' @examples
 #' \donttest{
-#' sel_cg <- bs(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3,
+#' sel_cg <- bs(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3,
 #'                  nc = 3, verbose = FALSE)
 #' sel_net <- get_network(sel_cg)
 #' # Could even plot the selected network with plot(sel_net), but then it would
@@ -47,10 +47,13 @@ get_network <- function(sel_cg_obj, index_c=NULL, index_lw=NULL, index_lb=NULL){
     stop('If input object is of class "coglasso" please select which network to extract. See help(get_network).')
   }
   else if (inherits(sel_cg_obj, "coglasso")) {
-    alpha <- 1 / (1 + sel_cg_obj$c[index_c])
+    c <- sel_cg_obj$c[index_c]
+    D <- sel_cg_obj$D
+    alpha <- 1 / (c * (D - 1) + 1)
     index_network <- which(sel_cg_obj$hpars[, 1] == alpha &
                              sel_cg_obj$hpars[, 2] == sel_cg_obj$lambda_w[index_lw] &
-                             sel_cg_obj$hpars[, 3] == sel_cg_obj$lambda_b[index_lb])
+                             sel_cg_obj$hpars[, 3] == sel_cg_obj$lambda_b[index_lb] &
+                             sel_cg_obj$hpars[, 4] == c)
     network <- igraph::graph.adjacency(sel_cg_obj$path[[index_network]], mode = "undirected")
     igraph::V(network)$label <- colnames(sel_cg_obj$data)
     return(network)
@@ -65,10 +68,13 @@ get_network <- function(sel_cg_obj, index_c=NULL, index_lw=NULL, index_lb=NULL){
     stop('If an index_lw, an index_lb, or an index_c is specified, the others must be specified too.')
   }
   else if (sel_cg_obj$method=="ebic") {
-    alpha <- 1 / (1 + sel_cg_obj$c[index_c])
+    c <- sel_cg_obj$c[index_c]
+    D <- sel_cg_obj$D
+    alpha <- 1 / (c * (D - 1) + 1)
     index_network <- which(sel_cg_obj$hpars[, 1] == alpha &
                              sel_cg_obj$hpars[, 2] == sel_cg_obj$lambda_w[index_lw] &
-                             sel_cg_obj$hpars[, 3] == sel_cg_obj$lambda_b[index_lb])
+                             sel_cg_obj$hpars[, 3] == sel_cg_obj$lambda_b[index_lb] &
+                             sel_cg_obj$hpars[, 4] == c)
     network <- igraph::graph.adjacency(sel_cg_obj$path[[index_network]], mode = "undirected")
     igraph::V(network)$label <- colnames(sel_cg_obj$data)
     return(network)
@@ -82,10 +88,13 @@ get_network <- function(sel_cg_obj, index_c=NULL, index_lw=NULL, index_lb=NULL){
     else if (is.null(index_lw) | is.null(index_lb)) {
       stop('If an index_lw or an index_lb is specified, the other must be specified too.')
     }
-    alpha <- 1 / (1 + sel_cg_obj$c[index_c])
+    c <- sel_cg_obj$c[index_c]
+    D <- sel_cg_obj$D
+    alpha <- 1 / (c * (D - 1) + 1)
     index_network <- which(sel_cg_obj$hpars[, 1] == alpha &
-                                sel_cg_obj$hpars[, 2] == sel_cg_obj$lambda_w[index_lw] &
-                                sel_cg_obj$hpars[, 3] == sel_cg_obj$lambda_b[index_lb])
+                             sel_cg_obj$hpars[, 2] == sel_cg_obj$lambda_w[index_lw] &
+                             sel_cg_obj$hpars[, 3] == sel_cg_obj$lambda_b[index_lb] &
+                             sel_cg_obj$hpars[, 4] == c)
     network <- igraph::graph.adjacency(sel_cg_obj$path[[index_network]], mode = "undirected")
     igraph::V(network)$label <- colnames(sel_cg_obj$data)
     return(network)

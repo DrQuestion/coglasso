@@ -8,8 +8,13 @@
 #' @param data The input multi-omics data set. Rows should be samples, columns
 #'   should be variables. Variables should be grouped by their assay (e.g.
 #'   transcripts first, then metabolites). `data` is a required parameter.
-#' @param pX The number of variables of the first data set (e.g. the number of
-#'   transcripts). `pX` is a required parameter.
+#' @param p A vector with with the number of variables for each omic layer of the 
+#'   data set (e.g. the number of transcripts, metabolites etc.), in the same 
+#'   order the layers have in the data set. If given a single number, 
+#'   `coglasso()` assumes that the total of data sets is two, and that the 
+#'   number given is the dimension of the first one.
+#' @param pX `r lifecycle::badge("deprecated")` `pX` is no longer supported. 
+#'   Please use `p`.
 #' @param lambda_w A vector of values for the parameter \eqn{\lambda_w}, the
 #'   penalization parameter for the "within" interactions. Overrides
 #'   `nlambda_w`.
@@ -74,7 +79,9 @@
 #'   used.
 #' * `c` is a numerical vector with all the \eqn{c} values `coglasso()`
 #'   used.
-#' * `pX` is the number of variables of the first data set.
+#' * `p` is the vector with the number of variables for each omic layer of the 
+#'   data set.
+#' * `D` is the number of omics layers in the data set.
 #' * `cov` optional, returned when `cov_output` is TRUE, is a list containing
 #'   the variance-covariance matrices of all the estimated networks.
 #' * `call` is the matched call.
@@ -83,19 +90,35 @@
 #'
 #' @examples
 #' # Typical usage: set the number of hyperparameters to explore
-#' cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+#' cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
 #' \donttest{
 #' # Model selection using eXtended Efficient StARS, takes less than five seconds
 #' sel_cg_xestars <- select_coglasso(cg, method = "xestars", verbose = FALSE)
 #' }
 #' 
-coglasso <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, nlambda_w = NULL, nlambda_b = NULL, nc = NULL, lambda_w_max = NULL, lambda_b_max = NULL, c_max = NULL, lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL, c_min_ratio = NULL, cov_output = FALSE, verbose = TRUE) {
+coglasso <- function(data, p = NULL, pX = lifecycle::deprecated(), lambda_w = NULL, lambda_b = NULL, c = NULL, nlambda_w = NULL, nlambda_b = NULL, nc = NULL, lambda_w_max = NULL, lambda_b_max = NULL, c_max = NULL, lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL, c_min_ratio = NULL, cov_output = FALSE, verbose = TRUE) {
   call <- match.call()
+  
+  if (lifecycle::is_present(pX)) {
+    lifecycle::deprecate_warn("1.1.0", "coglasso(pX)", "coglasso(p)")
+    p <- pX
+  }
+  
   original_data <- data
   data <- as.matrix(data)
   gcinfo(FALSE)
   n <- nrow(data)
-  p <- ncol(data)
+  p_tot <- ncol(data)
+  
+  if (is.null(p) && is.null(pX)) {
+    stop("Please specify the dimension of the data sets.")
+  }
+  if (length(p)==1) {
+    p <- c(p, p_tot - p)
+  }
+  
+  D <- length(p)
+  
   cov.input <- isSymmetric(data)
   if (cov.input) {
     if (verbose) cat("The input is identified as the covariance matrix.\n")
@@ -106,20 +129,22 @@ coglasso <- function(data, pX, lambda_w = NULL, lambda_b = NULL, c = NULL, nlamb
   }
   rm(data)
   gc()
-
+  
   hpars <- gen_hpars(
-    S = S, p = p, lambda_w = lambda_w, lambda_b = lambda_b, c = c, nlambda_w = nlambda_w, nlambda_b = nlambda_b, nc = nc, lambda_w_max = lambda_w_max, lambda_b_max = lambda_b_max, c_max = c_max,
+    S = S, p_tot = p_tot, D = D, lambda_w = lambda_w, lambda_b = lambda_b, c = c, nlambda_w = nlambda_w, nlambda_b = nlambda_b, nc = nc, lambda_w_max = lambda_w_max, lambda_b_max = lambda_b_max, c_max = c_max,
     lambda_w_min_ratio = lambda_w_min_ratio, lambda_b_min_ratio = lambda_b_min_ratio, c_min_ratio = c_min_ratio
   )
-
-  cg <- co_glasso(S, pX, hpars[[1]], FALSE, verbose, cov_output)
-
+  
+  cg <- co_glasso_D(S, p, hpars[[1]], FALSE, verbose, cov_output)
+  
   cg$data <- original_data
   cg$hpars <- hpars[[1]]
   cg$lambda_w <- hpars[[2]]
   cg$lambda_b <- hpars[[3]]
   cg$c <- hpars[[4]]
-  cg$pX <- pX
+  # Modify for |D|:
+  cg$p <- p
+  cg$D <- D
   cg$call <- call
   
   class(cg) <- "coglasso"
@@ -150,9 +175,9 @@ print.coglasso <- function(x, ...){
       paste(round(x$lambda_b, 4), collapse = ", "), "\n", sep = "")
   cat("The values explored for c were:\n", paste(round(x$c, 4), collapse = ", "), "\n\n",
       sep = "")
-  cat("Networks have ", ncol(x$data), " nodes\n", sep = "")
-  # To modify once general |D| coglasso version is implemented:
-  cat("For each layer they have: ", x$pX, " and ", ncol(x$data)-x$pX, " nodes, respectively\n\n", sep = "")
+  cat("Networks are made of ", x$D, " omics layers, for a total of ", ncol(x$data), " nodes\n", sep = "")
+  mes <- paste(x$p[-length(x$p)], collapse = ", ")
+  cat("For each layer they have: ", mes, " and ", x$p[length(x$p)], " nodes, respectively\n\n", sep = "")
   cat("Select the best network with:\nsel_cg <- select_coglasso(", x_name[[1]], ")",
       sep = "")
 }
@@ -163,8 +188,8 @@ print.coglasso <- function(x, ...){
 #'
 #' @inherit coglasso
 #' @param S The empirical Pearson's correlation matrix of the multi-omics data set.
-#' @param p The total number of variables in the multi-omics data set.
-#' @param getc Parameter for testing purposes. If TRUE, the returned table contains a column with *c* values rather than *\alpha* values.
+#' @param p_tot The total number of variables in the multi-omics data set.
+#' @param D The number of omics layers in the data set.
 #'
 #' @return
 #' `gen_hpars()` returns a list of four elements:
@@ -174,15 +199,17 @@ print.coglasso <- function(x, ...){
 #' * A numerical vector with all the generated \eqn{c}.
 #' 
 #' @noRd
-gen_hpars <- function(S = NULL, p = NULL, lambda_w = NULL, lambda_b = NULL, c = NULL,
+gen_hpars <- function(S = NULL, p_tot = NULL, D = NULL, lambda_w = NULL, lambda_b = NULL, c = NULL,
                       nlambda_w = NULL, nlambda_b = NULL, nc = NULL, 
                       lambda_w_max = NULL, lambda_b_max = NULL, c_max = NULL, 
                       lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL,
-                      c_min_ratio = NULL, getc = NULL) {
+                      c_min_ratio = NULL) {
+  # Modify alpha generation based on |D|
+  # Add a fourth column containing c --> delete getc as an option
   if (!is.null(lambda_w)) nlambda_w <- length(lambda_w)
   if (!is.null(lambda_b)) nlambda_b <- length(lambda_b)
   if (!is.null(c)) nalpha <- length(c)
-
+  
   if (is.null(lambda_w)) {
     if (is.null(nlambda_w)) {
       nlambda_w <- 8
@@ -191,7 +218,7 @@ gen_hpars <- function(S = NULL, p = NULL, lambda_w = NULL, lambda_b = NULL, c = 
       lambda_w_min_ratio <- 0.1
     }
     if (is.null(lambda_w_max)) {
-      lambda_w_max <- max(max(S - diag(p)), -min(S - diag(p)))
+      lambda_w_max <- max(max(S - diag(p_tot)), -min(S - diag(p_tot)))
     }
     lambda_w_min <- lambda_w_min_ratio * lambda_w_max
     lambda_w <- exp(seq(log(lambda_w_max), log(lambda_w_min), length = nlambda_w))
@@ -204,7 +231,7 @@ gen_hpars <- function(S = NULL, p = NULL, lambda_w = NULL, lambda_b = NULL, c = 
       lambda_b_min_ratio <- 0.1
     }
     if (is.null(lambda_b_max)) {
-      lambda_b_max <- max(max(S - diag(p)), -min(S - diag(p)))
+      lambda_b_max <- max(max(S - diag(p_tot)), -min(S - diag(p_tot)))
     }
     lambda_b_min <- lambda_b_min_ratio * lambda_b_max
     lambda_b <- exp(seq(log(lambda_b_max), log(lambda_b_min), length = nlambda_b))
@@ -222,33 +249,26 @@ gen_hpars <- function(S = NULL, p = NULL, lambda_w = NULL, lambda_b = NULL, c = 
     c.min <- c_min_ratio * c_max
     c <- exp(seq(log(c_max), log(c.min), length = nc))
   }
-
+  
   hpars <- vector(mode = "list", length = 4)
-
-  if (is.null(getc)) {
-    alpha <- 1 / (1 + c)
-    hpars_table <- expand.grid(alpha, lambda_w, lambda_b)
-    key <- hpars_table[, 1] * (hpars_table[, 2] + hpars_table[, 3])
-    hpars_table <- cbind(hpars_table, key)
-    hpars_table <- hpars_table[order(hpars_table$key, decreasing = T), ]
-  } else {
-    hpars_table <- expand.grid(c, lambda_w, lambda_b)
-    key <- hpars_table[, 1] * (hpars_table[, 2] + hpars_table[, 3])
-    hpars_table <- cbind(hpars_table, key)
-    hpars_table <- hpars_table[order(hpars_table$key, decreasing = F), ]
-  }
-
-  hpars_table <- hpars_table[, c(1, 2, 3)]
+  
+  alpha <- 1 / (c * (D - 1) +1)
+  ac <- cbind(alpha, c)
+  hpars_table <- expand.grid(alpha, lambda_w, lambda_b)
+  hpars_table$id <- 1:nrow(hpars_table)
+  hpars_table <- merge(hpars_table, ac, by = 1)
+  hpars_table <- hpars_table[order(hpars_table$id), ]
+  key <- hpars_table[, 1] * (hpars_table[, 2] + hpars_table[, 3])
+  hpars_table <- cbind(hpars_table, key)
+  hpars_table <- hpars_table[order(hpars_table$key, decreasing = T), ]
+  hpars_table <- hpars_table[, c(1, 2, 3, 5)]
+  
   hpars[[1]] <- as.matrix(hpars_table)
-  if (is.null(getc)) {
-    colnames(hpars[[1]]) <- c("alpha", "lambda_w", "lambda_b")
-  } else {
-    colnames(hpars[[1]]) <- c("c", "lambda_w", "lambda_b")
-  }
+  colnames(hpars[[1]]) <- c("alpha", "lambda_w", "lambda_b", "c")
   rownames(hpars[[1]]) <- seq(1:nrow(hpars[[1]]))
   hpars[[2]] <- lambda_w
   hpars[[3]] <- lambda_b
   hpars[[4]] <- c
-
+  
   hpars
 }

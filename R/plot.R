@@ -26,7 +26,7 @@
 #' @examples
 #' 
 #' \donttest{
-#' sel_cg <- bs(multi_omics_sd_small, pX = 14, nlambda_w = 15, nlambda_b = 15,
+#' sel_cg <- bs(multi_omics_sd_small, p = c(14, 5), nlambda_w = 15, nlambda_b = 15,
 #'              nc = 3, lambda_w_min_ratio = 0.6, verbose = FALSE)
 #' plot(sel_cg)
 #' }
@@ -37,12 +37,23 @@ plot.select_coglasso <- function(x, index_c=NULL, index_lw=NULL, index_lb=NULL, 
   if (!node_labels) {
     igraph::V(sel_network)$label <- NA
   }
-  # Modify once general |D| is implemented:
-  num_datasets <- 2
-  fillsframes <- get_fillsframes(num_datasets)
-  igraph::V(sel_network)$color <- c(rep(fillsframes[[1]][1], x$pX), rep(fillsframes[[1]][2], ncol(x$data)-x$pX))
-  igraph::V(sel_network)$frame.color <- c(rep(fillsframes[[2]][1], x$pX), rep(fillsframes[[2]][2], ncol(x$data)-x$pX))
-  igraph::V(sel_network)$label.color <- c(rep(fillsframes[[2]][1], x$pX), rep(fillsframes[[2]][2], ncol(x$data)-x$pX))
+  
+  p <- x$p
+  p_tot <- ncol(x$data)
+  D <- x$D
+  fillsframes <- get_fillsframes(D)
+  igraph::V(sel_network)$color <- rep(0, p_tot)
+  igraph::V(sel_network)$frame.color <- rep(0, p_tot)
+  igraph::V(sel_network)$label.color <- rep(0, p_tot)
+  i <- 1
+  for (j in 1:p_tot){
+    if (j > sum(p[1:i])) {
+      i <- i + 1
+    }
+    igraph::V(sel_network)$color[j] <- fillsframes[[1]][i]
+    igraph::V(sel_network)$frame.color[j] <- fillsframes[[2]][i]
+    igraph::V(sel_network)$label.color[j] <- fillsframes[[2]][i]
+  }
   
   lo <- igraph::layout_with_fr(sel_network)
   if (hide_isolated) {
@@ -69,12 +80,23 @@ plot.coglasso <- function(x, index_c, index_lw, index_lb, node_labels = TRUE, hi
   if (!node_labels) {
     igraph::V(sel_network)$label <- NA
   }
-  # Modify once general |D| is implemented:
-  num_datasets <- 2
-  fillsframes <- get_fillsframes(num_datasets)
-  igraph::V(sel_network)$color <- c(rep(fillsframes[[1]][1], x$pX), rep(fillsframes[[1]][2], ncol(x$data)-x$pX))
-  igraph::V(sel_network)$frame.color <- c(rep(fillsframes[[2]][1], x$pX), rep(fillsframes[[2]][2], ncol(x$data)-x$pX))
-  igraph::V(sel_network)$label.color <- c(rep(fillsframes[[2]][1], x$pX), rep(fillsframes[[2]][2], ncol(x$data)-x$pX))
+  
+  p <- x$p
+  p_tot <- ncol(x$data)
+  D <- x$D
+  fillsframes <- get_fillsframes(D)
+  igraph::V(sel_network)$color <- rep(0, p_tot)
+  igraph::V(sel_network)$frame.color <- rep(0, p_tot)
+  igraph::V(sel_network)$label.color <- rep(0, p_tot)
+  i <- 1
+  for (j in 1:p_tot){
+    if (j > sum(p[1:i])) {
+      i <- i + 1
+    }
+    igraph::V(sel_network)$color[j] <- fillsframes[[1]][i]
+    igraph::V(sel_network)$frame.color[j] <- fillsframes[[2]][i]
+    igraph::V(sel_network)$label.color[j] <- fillsframes[[2]][i]
+  }
   
   lo <- igraph::layout_with_fr(sel_network)
   if (hide_isolated) {

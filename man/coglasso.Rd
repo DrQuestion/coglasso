@@ -7,7 +7,8 @@
 \usage{
 coglasso(
   data,
-  pX,
+  p = NULL,
+  pX = lifecycle::deprecated(),
   lambda_w = NULL,
   lambda_b = NULL,
   c = NULL,
@@ -29,8 +30,14 @@ coglasso(
 should be variables. Variables should be grouped by their assay (e.g.
 transcripts first, then metabolites). \code{data} is a required parameter.}
 
-\item{pX}{The number of variables of the first data set (e.g. the number of
-transcripts). \code{pX} is a required parameter.}
+\item{p}{A vector with with the number of variables for each omic layer of the
+data set (e.g. the number of transcripts, metabolites etc.), in the same
+order the layers have in the data set. If given a single number,
+\code{coglasso()} assumes that the total of data sets is two, and that the
+number given is the dimension of the first one.}
+
+\item{pX}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} \code{pX} is no longer supported.
+Please use \code{p}.}
 
 \item{lambda_w}{A vector of values for the parameter \eqn{\lambda_w}, the
 penalization parameter for the "within" interactions. Overrides
@@ -111,7 +118,9 @@ used.
 used.
 \item \code{c} is a numerical vector with all the \eqn{c} values \code{coglasso()}
 used.
-\item \code{pX} is the number of variables of the first data set.
+\item \code{p} is the vector with the number of variables for each omic layer of the
+data set.
+\item \code{D} is the number of omics layers in the data set.
 \item \code{cov} optional, returned when \code{cov_output} is TRUE, is a list containing
 the variance-covariance matrices of all the estimated networks.
 \item \code{call} is the matched call.
@@ -124,7 +133,7 @@ the hyperparameters \eqn{\lambda_w}, \eqn{\lambda_b} and \eqn{c}.
 }
 \examples{
 # Typical usage: set the number of hyperparameters to explore
-cg <- coglasso(multi_omics_sd_micro, pX = 4, nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
 \donttest{
 # Model selection using eXtended Efficient StARS, takes less than five seconds
 sel_cg_xestars <- select_coglasso(cg, method = "xestars", verbose = FALSE)
