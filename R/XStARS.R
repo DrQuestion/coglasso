@@ -83,7 +83,8 @@
 #' @export
 #'
 #' @examples
-#' cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+#' cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, 
+#'                nlambda_b = 3, nc = 3, verbose = FALSE)
 #' \donttest{
 #' # Takes around one minute
 #' sel_cg <- xstars(cg, verbose = FALSE)
@@ -413,7 +414,8 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
 #' @export
 #'
 #' @examples
-#' cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+#' cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, 
+#'                nlambda_b = 3, nc = 3, verbose = FALSE)
 #' \donttest{
 #' # Takes less than five seconds
 #' sel_cg <- xestars(cg, verbose = FALSE)
@@ -743,7 +745,8 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
 #' @export
 #' 
 #' @examples
-#' cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+#' cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, 
+#'                nlambda_b = 3, nc = 3, verbose = FALSE)
 #' \donttest{
 #' # Deprecated, use xstars() instead. Takes around one minute
 #' sel_cg <- stars_coglasso(cg, verbose = FALSE)

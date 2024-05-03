@@ -21,7 +21,8 @@ does not reflect properly the method it implements. The new function will
 also allow new memory-lighter and faster possibilities.
 }
 \examples{
-cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, 
+               nlambda_b = 3, nc = 3, verbose = FALSE)
 \donttest{
 # Deprecated, use xstars() instead. Takes around one minute
 sel_cg <- stars_coglasso(cg, verbose = FALSE)

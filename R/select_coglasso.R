@@ -108,7 +108,8 @@
 #' @export
 #'
 #' @examples
-#' cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+#' cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, 
+#'                nlambda_b = 3, nc = 3, verbose = FALSE)
 #' # Using eXtended Efficient StARS, takes less than five seconds
 #' sel_cg_xestars <- select_coglasso(cg, method = "xestars", verbose = FALSE)
 #' \donttest{

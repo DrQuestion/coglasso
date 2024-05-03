@@ -103,7 +103,8 @@ parameter for which the best (\eqn{\lambda_w}, \eqn{\lambda_b}) couple yielded t
 stable, yet sparse network.
 }
 \examples{
-cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, nlambda_b = 3, nc = 3, verbose = FALSE)
+cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, 
+               nlambda_b = 3, nc = 3, verbose = FALSE)
 \donttest{
 # Takes around one minute
 sel_cg <- xstars(cg, verbose = FALSE)
