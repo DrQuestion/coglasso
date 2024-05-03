@@ -235,7 +235,8 @@ the standard <em>BIC</em> if set to 0.</p></li>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="coglasso.html">coglasso</a></span><span class="op">(</span><span class="va">multi_omics_sd_micro</span>, pX <span class="op">=</span> <span class="fl">4</span>, nlambda_w <span class="op">=</span> <span class="fl">3</span>, nlambda_b <span class="op">=</span> <span class="fl">3</span>, nc <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="coglasso.html">coglasso</a></span><span class="op">(</span><span class="va">multi_omics_sd_micro</span>, p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">2</span><span class="op">)</span>, nlambda_w <span class="op">=</span> <span class="fl">3</span>, </span></span>
+<span class="r-in"><span>               nlambda_b <span class="op">=</span> <span class="fl">3</span>, nc <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Using eXtended Efficient StARS, takes less than five seconds</span></span></span>
 <span class="r-in"><span><span class="va">sel_cg_xestars</span> <span class="op">&lt;-</span> <span class="fu">select_coglasso</span><span class="op">(</span><span class="va">cg</span>, method <span class="op">=</span> <span class="st">"xestars"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
@@ -243,7 +244,7 @@ the standard <em>BIC</em> if set to 0.</p></li>
 <span class="r-in"><span><span class="va">sel_cg_xstars</span> <span class="op">&lt;-</span> <span class="fu">select_coglasso</span><span class="op">(</span><span class="va">cg</span>, method <span class="op">=</span> <span class="st">"xstars"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span><span class="co"># Using eBIC</span></span></span>
-<span class="r-in"><span><span class="va">sel_cg_xstars</span> <span class="op">&lt;-</span> <span class="fu">select_coglasso</span><span class="op">(</span><span class="va">cg</span>, method <span class="op">=</span> <span class="st">"ebic"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sel_cg_ebic</span> <span class="op">&lt;-</span> <span class="fu">select_coglasso</span><span class="op">(</span><span class="va">cg</span>, method <span class="op">=</span> <span class="st">"ebic"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

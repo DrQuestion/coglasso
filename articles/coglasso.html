@@ -98,7 +98,7 @@ Tibshirani, 2008</a>) and <em>collaborative regression</em> (<a href="#ref">Gros
 <p>We then choose the multi-omics data set to use. The coglasso package
 offers three alternative version of a transcriptomics and metabolomics
 data set. We will use <code>multi_omics_sd_small</code>. For further
-explanation about all the multi-omics data sets see
+explanation about the available multi-omics data sets see
 <code><a href="../reference/multi_omics_sd.html">help(multi_omics_sd)</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">multi_omics_sd_small</span><span class="op">)</span></span>
@@ -123,8 +123,8 @@ want to explore, then it selects the best combination according to the
 chosen model selection method.</p>
 <p>The usual application of <code><a href="../reference/bs.html">bs()</a></code> requires to give an input
 data set to the argument <code>data</code>, the number of variables of
-the the first type to <code>pX</code>, and hyperparameter settings.
-Collaborative graphical lasso has three hyperparameters: <span class="math inline">\(λ_w\)</span>, penalizing “within” same-type
+the various omics layers <code>p</code>, and the hyperparameter
+settings. Collaborative graphical lasso has three hyperparameters: <span class="math inline">\(λ_w\)</span>, penalizing “within” same-type
 interactions, <span class="math inline">\(λ_b\)</span> penalizing
 “between” different-type interactions, and <span class="math inline">\(c\)</span>, the weight of the collaborative term.
 In this vignette we choose to explore 15 possible penalty values for
@@ -153,7 +153,7 @@ of <code><a href="../reference/bs.html">bs()</a></code> and how to use them, ple
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sel_cg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bs.html">bs</a></span><span class="op">(</span></span>
 <span>  <span class="va">multi_omics_sd_small</span>,</span>
-<span>  pX <span class="op">=</span> <span class="fl">14</span>,</span>
+<span>  p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="fl">5</span><span class="op">)</span>,</span>
 <span>  nlambda_w <span class="op">=</span> <span class="fl">15</span>,</span>
 <span>  nlambda_b <span class="op">=</span> <span class="fl">15</span>,</span>
 <span>  nc <span class="op">=</span> <span class="fl">3</span>,</span>
@@ -166,16 +166,16 @@ of <code><a href="../reference/bs.html">bs()</a></code> and how to use them, ple
 <span><span class="co">#&gt; Selected network estimated with collaborative graphical lasso</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; The call was:</span></span>
-<span><span class="co">#&gt; bs(data = multi_omics_sd_small, pX = 14, nlambda_w = 15, nlambda_b = 15, </span></span>
-<span><span class="co">#&gt;     nc = 3, lambda_w_min_ratio = 0.6, verbose = FALSE)</span></span>
+<span><span class="co">#&gt; bs(data = multi_omics_sd_small, p = c(14, 5), nlambda_w = 15, </span></span>
+<span><span class="co">#&gt;     nlambda_b = 15, nc = 3, lambda_w_min_ratio = 0.6, verbose = FALSE)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; The model selection method was:</span></span>
 <span><span class="co">#&gt; xestars</span></span>
 <span><span class="co">#&gt; The density of the selected network is:</span></span>
 <span><span class="co">#&gt; 0.04678363</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; The selected network has 19 nodes</span></span>
-<span><span class="co">#&gt; For each layer it has: 14 and 5 nodes, respectively</span></span>
+<span><span class="co">#&gt; Networks are made of 2 omics layers, for a total of 19 nodes</span></span>
+<span><span class="co">#&gt; For each layer they have: 14 and 5 nodes, respectively</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; The selected value for lambda within is:</span></span>
 <span><span class="co">#&gt; 0.8494</span></span>

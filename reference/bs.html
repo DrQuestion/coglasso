@@ -68,7 +68,8 @@ to select the best one according to the chosen criterion.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bs</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
-<span>  <span class="va">pX</span>,</span>
+<span>  p <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pX <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  lambda_w <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lambda_b <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  c <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -102,9 +103,17 @@ should be variables. Variables should be grouped by their assay (e.g.
 transcripts first, then metabolites). <code>data</code> is a required parameter.</p></dd>
 
 
+<dt>p</dt>
+<dd><p>A vector with with the number of variables for each omic layer of the
+data set (e.g. the number of transcripts, metabolites etc.), in the same
+order the layers have in the data set. If given a single number,
+<code><a href="coglasso.html">coglasso()</a></code> assumes that the total of data sets is two, and that the
+number given is the dimension of the first one.</p></dd>
+
+
 <dt>pX</dt>
-<dd><p>The number of variables of the first data set (e.g. the number of
-transcripts). <code>pX</code> is a required parameter.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> <code>pX</code> is no longer supported.
+Please use <code>p</code>.</p></dd>
 
 
 <dt>lambda_w</dt>
@@ -241,7 +250,7 @@ network selection processes.</p></dd>
 
 <p><code>bs()</code> returns an object of <code>S3</code> class <code>select_coglasso</code> containing
 several elements. The most
-important is arguably <code>sel_adj</code>, the adjacency matrix of the
+important is probably <code>sel_adj</code>, the adjacency matrix of the
 selected network. Some output elements depend on the chosen model selection
 method.<br></p>
 
@@ -268,7 +277,9 @@ being the key to sort rows.</p></li>
 <li><p><code>lambda_w</code>, <code>lambda_b</code>, and <code>c</code> are numerical vectors with,
 respectively, all the \(\lambda_w\), \(\lambda_b\), and \(c\) values
 <code>bs()</code> used.</p></li>
-<li><p><code>pX</code> is the number of variables of the first data set.</p></li>
+<li><p><code>p</code> is the vector with the number of variables for each omic layer of the
+data set.</p></li>
+<li><p><code>D</code> is the number of omics layers in the data set.</p></li>
 <li><p><code>cov</code> optional, returned when <code>cov_output</code> is TRUE, is a list containing
 the variance-covariance matrices of all the estimated networks.</p></li>
 </ul><p>These elements are returned by all selection methods available:</p><ul><li><p><code>sel_index_c</code>, <code>sel_index_lw</code> and <code>sel_index_lb</code> are the indexes of the
@@ -344,12 +355,12 @@ selection methods, visit the help page of <code><a href="select_coglasso.html">s
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Typical usage: give the input data set, set the value for `pX` and the </span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Suggested usage: give the input data set, set the values for `p` and the </span></span></span>
 <span class="r-in"><span><span class="co"># number of hyperparameters to explore (to choose how extensively to explore </span></span></span>
 <span class="r-in"><span><span class="co"># the possible hyperparameters). Then, let the default behavior do the rest:</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">sel_mo_net</span> <span class="op">&lt;-</span> <span class="fu">bs</span><span class="op">(</span><span class="va">multi_omics_sd_micro</span>, pX <span class="op">=</span> <span class="fl">4</span>, nlambda_w <span class="op">=</span> <span class="fl">3</span>, nlambda_b <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>                 nc <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sel_mo_net</span> <span class="op">&lt;-</span> <span class="fu">bs</span><span class="op">(</span><span class="va">multi_omics_sd_micro</span>, p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">2</span><span class="op">)</span>, nlambda_w <span class="op">=</span> <span class="fl">3</span>, </span></span>
+<span class="r-in"><span>                 nlambda_b <span class="op">=</span> <span class="fl">3</span>, nc <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
