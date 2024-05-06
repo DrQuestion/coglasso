@@ -136,7 +136,12 @@ coglasso <- function(data, p = NULL, pX = lifecycle::deprecated(), lambda_w = NU
     lambda_w_min_ratio = lambda_w_min_ratio, lambda_b_min_ratio = lambda_b_min_ratio, c_min_ratio = c_min_ratio
   )
   
-  cg <- co_glasso_D(S, p, hpars[[1]], FALSE, verbose, cov_output)
+  if (D == 2) {
+    cg <- co_glasso(S, p[1], hpars[[1]][, -4], FALSE, verbose, cov_output)
+  }
+  else {
+    cg <- co_glasso_D(S, p, hpars[[1]], FALSE, verbose, cov_output)
+  }
   
   cg$data <- original_data
   cg$hpars <- hpars[[1]]

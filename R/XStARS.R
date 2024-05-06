@@ -150,8 +150,14 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
           ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
           
           corr_matrix <- cor(scale(coglasso_obj$data[ind.sample, ]))
-          hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w), rep(c, n_lambda_w)), nrow = n_lambda_w, ncol = 4)
-          tmp <- co_glasso_D(corr_matrix, p, hpars, FALSE, FALSE, FALSE)
+          if (coglasso_obj$D == 2) {
+            hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w)), nrow = n_lambda_w, ncol = 3)
+            tmp <- co_glasso(corr_matrix, p[1], hpars, FALSE, FALSE, FALSE)
+          }
+          else {
+            hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w), rep(c, n_lambda_w)), nrow = n_lambda_w, ncol = 4)
+            tmp <- co_glasso_D(corr_matrix, p, hpars, FALSE, FALSE, FALSE)
+          }
           
           convergence <- tmp$convergence
           tmp <- tmp$path
@@ -208,8 +214,14 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
           ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
           
           corr_matrix <- cor(scale(coglasso_obj$data[ind.sample, ]))
-          hpars <- matrix(c(rep(alpha, n_lambda_b), coglasso_obj$lambda_b, rep(lw_sel, n_lambda_b), rep(c, n_lambda_b)), nrow = n_lambda_b, ncol = 4)
-          tmp <- co_glasso_D(corr_matrix, p, hpars, FALSE, FALSE, FALSE)
+          if (coglasso_obj$D == 2) {
+            hpars <- matrix(c(rep(alpha, n_lambda_b), coglasso_obj$lambda_b, rep(lw_sel, n_lambda_b)), nrow = n_lambda_b, ncol = 3)
+            tmp <- co_glasso(corr_matrix, p[1], hpars, FALSE, FALSE, FALSE)
+          }
+          else {
+            hpars <- matrix(c(rep(alpha, n_lambda_b), coglasso_obj$lambda_b, rep(lw_sel, n_lambda_b), rep(c, n_lambda_b)), nrow = n_lambda_b, ncol = 4)
+            tmp <- co_glasso_D(corr_matrix, p, hpars, FALSE, FALSE, FALSE)
+          }
           
           convergence <- tmp$convergence
           tmp <- tmp$path
@@ -496,7 +508,12 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
           real_rep.num <- 0
           merge_tmp <- rep(0, p_tot*p_tot)
           for (k in 1:rep_num) {
-            tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel, c))), FALSE, FALSE, FALSE)
+            if (coglasso_obj$D == 2) {
+              tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel))), FALSE, FALSE, FALSE)
+            }
+            else {
+              tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel, c))), FALSE, FALSE, FALSE)
+            }
             convergence <- tmp$convergence[1]
             tmp <- as.vector(tmp$path[[1]])
             if (convergence == 1) {
@@ -593,7 +610,12 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
           real_rep.num <- 0
           merge_tmp <- rep(0, p_tot*p_tot)
           for (k in 1:rep_num) {
-            tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j], c))), FALSE, FALSE, FALSE)
+            if (coglasso_obj$D == 2) {
+              tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j]))), FALSE, FALSE, FALSE)
+            }
+            else {
+              tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j], c))), FALSE, FALSE, FALSE)
+            }
             convergence <- tmp$convergence[1]
             tmp <- as.vector(tmp$path[[1]])
             if (convergence == 1) {
