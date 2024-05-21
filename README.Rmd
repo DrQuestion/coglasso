@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# coglasso - Collaborative Graphical Lasso
+# coglasso - Collaborative Graphical Lasso <a href="https://drquestion.github.io/coglasso/"><img src="man/figures/logo.png" align="right" height="138" alt="coglasso website" /></a>
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/DrQuestion/coglasso/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/DrQuestion/coglasso/actions/workflows/R-CMD-check.yaml)
