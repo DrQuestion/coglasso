@@ -448,7 +448,8 @@ void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, Rc
                                 r = r - W(j, rss_idx) * T(rss_idx, i);
                             }
                             else {
-                                r = r + ic * ialpha * W(j, rss_idx) * T(rss_idx, i);
+                                // r = r + ic * ialpha * W(j, rss_idx) * T(rss_idx, i);
+                                r = r - ialpha * W(j, rss_idx) * T(rss_idx, i);
                             }
                         }
 
@@ -549,7 +550,8 @@ void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, Rc
                                     r = r - W(w_idx, rss_idx) * T(rss_idx, i);
                                 }
                                 else {
-                                    r = r + ic * ialpha * W(w_idx, rss_idx) * T(rss_idx, i);
+                                    r = r - ialpha * W(w_idx, rss_idx) * T(rss_idx, i);
+                                    // r = r + ic * ialpha * W(w_idx, rss_idx) * T(rss_idx, i);
                                 }
                             }
 

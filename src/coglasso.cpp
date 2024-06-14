@@ -429,7 +429,8 @@ void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, in
                                     r = r - W(j, rss_idx) * T(rss_idx, i);
                                 }
                                 else {
-                                    r = r + (1 - ialpha) * W(j, rss_idx) * T(rss_idx, i);
+                                    // r = r + (1 - ialpha) * W(j, rss_idx) * T(rss_idx, i);
+                                    r = r - ialpha * W(j, rss_idx) * T(rss_idx, i);
                                 }
                                 
                             }
@@ -439,7 +440,7 @@ void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, in
                             {
                                 rss_idx = idx_a(k, i);
                                 if (rss_idx < pX) {
-                                    r = r + (1 - ialpha) * W(j, rss_idx) * T(rss_idx, i);
+                                    r = r - ialpha * W(j, rss_idx) * T(rss_idx, i);
                                 }
                                 else {
                                     r = r - W(j, rss_idx) * T(rss_idx, i);
@@ -527,7 +528,8 @@ void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, in
                                         r = r - W(w_idx, rss_idx) * T(rss_idx, i);
                                     }
                                     else {
-                                        r = r + (1 - ialpha) * W(w_idx, rss_idx) * T(rss_idx, i);
+                                        // r = r + (1 - ialpha) * W(w_idx, rss_idx) * T(rss_idx, i);
+                                        r = r - ialpha * W(w_idx, rss_idx) * T(rss_idx, i);
                                     }
                                 }
                             }
@@ -537,7 +539,8 @@ void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, in
                                 {
                                     rss_idx = idx_a(k, i);
                                     if (rss_idx < pX) {
-                                        r = r + (1 - ialpha) * W(w_idx, rss_idx) * T(rss_idx, i);
+                                        // r = r + (1 - ialpha) * W(w_idx, rss_idx) * T(rss_idx, i);
+                                        r = r - ialpha * W(w_idx, rss_idx) * T(rss_idx, i);
                                     }
                                     else {
                                         r = r - W(w_idx, rss_idx) * T(rss_idx, i);

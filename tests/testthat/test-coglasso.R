@@ -104,3 +104,7 @@ test_that("print.coglasso works", {
     print(cg)
   })
 })
+
+test_that("General |D| implementation works", {
+  expect_no_error(coglasso(multi_omics_sd_micro, p = c(2,2,2), nlambda_w = 3, nlambda_b = 3, nc = 2, verbose = FALSE))
+})
