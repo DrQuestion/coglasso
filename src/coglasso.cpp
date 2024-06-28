@@ -86,6 +86,7 @@ List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd
                 if (break_flag > 1) break;
                 // should I use alpha*S (or maybe just lambda) since I'll be subtracting from alpha*S?
                 if (alpha * S(row_i, col_i) > Lambda_star_ij(row_i, col_i) or alpha * S(row_i, col_i) < -Lambda_star_ij(row_i, col_i)) break_flag++;
+                // if (S(row_i, col_i) > Lambda_star_ij(row_i, col_i) or S(row_i, col_i) < -Lambda_star_ij(row_i, col_i)) break_flag++;
             }
             if (break_flag > 1) z.push_back(row_i);
         }

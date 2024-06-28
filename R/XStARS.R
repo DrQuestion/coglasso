@@ -452,6 +452,8 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
     coglasso_obj$merge_lw <- vector(mode = "list", length = n_c)
     coglasso_obj$merge_lb <- vector(mode = "list", length = n_c)
   }
+  coglasso_obj$variability_lw <- vector(mode = "list", length = n_c)
+  coglasso_obj$variability_lb <- vector(mode = "list", length = n_c)
   
   coglasso_obj$opt_adj <- vector(mode = "list", length = n_c)
   coglasso_obj$opt_variability <- rep(0, n_c)
@@ -459,6 +461,7 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
   coglasso_obj$opt_index_lb <- rep(0, n_c)
   coglasso_obj$opt_lambda_w <- rep(0, n_c)
   coglasso_obj$opt_lambda_b <- rep(0, n_c)
+  
   
   # Create the same samples of indexes for the whole set of iterations,
   # cancelled when `old_sampling` is true
@@ -487,6 +490,9 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
     converged <- FALSE
     select_lw <- TRUE
     
+    coglasso_obj$variability_lw[[i]] <- rep(0, n_lambda_w)
+    coglasso_obj$variability_lb[[i]] <- rep(0, n_lambda_b)
+    
     while (!converged & num_iter < max_iter) {
       if (select_lw) {
         # Consider breaking in a one-dimensional sub-function returning a lambda estars
@@ -514,9 +520,9 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
             else {
               tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel, c))), FALSE, FALSE, FALSE)
             }
-            convergence <- tmp$convergence[1]
+            nexploded <- tmp$nexploded[1]
             tmp <- as.vector(tmp$path[[1]])
-            if (convergence == 1) {
+            if (nexploded == 0) {
               real_rep.num <- real_rep.num + 1
               merge_tmp <- merge_tmp + tmp
             }
@@ -527,7 +533,15 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
           merge_tmp <- merge_tmp / real_rep.num
           variability_tmp <- 4 * sum(merge_tmp * (1 - merge_tmp)) / (p_tot * (p_tot - 1))
           
-          # Find way to deal with when real_rep.num is 0 (no convergence at all)
+          coglasso_obj$variability_lw[[i]][j] <- variability_tmp
+          
+          # print("/n")
+          # print("/n")
+          # print(coglasso_obj$lambda_w[j])
+          # print(variability_tmp)
+          # print("/n")
+          # print("/n")
+          
           if (variability_tmp >= stars_thresh) {
             index_lw <- max(j - 1, 1)
             tmp_lw <- coglasso_obj$lambda_w[[index_lw]]
@@ -616,9 +630,9 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
             else {
               tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j], c))), FALSE, FALSE, FALSE)
             }
-            convergence <- tmp$convergence[1]
+            nexploded <- tmp$nexploded[1]
             tmp <- as.vector(tmp$path[[1]])
-            if (convergence == 1) {
+            if (nexploded == 0) {
               real_rep.num <- real_rep.num + 1
               merge_tmp <- merge_tmp + tmp
             }
@@ -628,6 +642,15 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
           
           merge_tmp <- merge_tmp / real_rep.num
           variability_tmp <- 4 * sum(merge_tmp * (1 - merge_tmp)) / (p_tot * (p_tot - 1))
+          
+          coglasso_obj$variability_lb[[i]][j] <- variability_tmp
+          
+          # print("/n")
+          # print("/n")
+          # print(coglasso_obj$lambda_b[j])
+          # print(variability_tmp)
+          # print("/n")
+          # print("/n")
           
           if (variability_tmp >= stars_thresh) {
             index_lb <- max(j - 1, 1)
