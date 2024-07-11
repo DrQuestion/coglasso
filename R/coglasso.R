@@ -137,10 +137,10 @@ coglasso <- function(data, p = NULL, pX = lifecycle::deprecated(), lambda_w = NU
   )
   
   if (D == 2) {
-    cg <- co_glasso(S, p[1], hpars[[1]][, -4], FALSE, verbose, cov_output)
+    cg <- co_glasso(S, p[1], matrix(hpars[[1]][, -4], ncol = 3), FALSE, verbose, cov_output)
   }
   else {
-    cg <- co_glasso_D(S, p, hpars[[1]], FALSE, verbose, cov_output)
+    cg <- co_glasso_D(S, p, matrix(hpars[[1]][, -4], ncol = 4), FALSE, verbose, cov_output)
   }
   
   cg$data <- original_data
