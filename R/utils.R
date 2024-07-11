@@ -55,13 +55,17 @@ get_network <- function(sel_cg_obj, index_c=NULL, index_lw=NULL, index_lb=NULL){
                              sel_cg_obj$hpars[, 3] == sel_cg_obj$lambda_b[index_lb] &
                              sel_cg_obj$hpars[, 4] == c)
     network <- igraph::graph.adjacency(sel_cg_obj$path[[index_network]], mode = "undirected")
-    igraph::V(network)$label <- colnames(sel_cg_obj$data)
+    if (colnames(sel_cg_obj$data)) {
+      igraph::V(network)$label <- colnames(sel_cg_obj$data)
+    }
     return(network)
   }
   # Dealing with selection method "ebic"
   if (sel_cg_obj$method=="ebic" & is.null(index_lw) & is.null(index_lb) & is.null(index_c)){
     network <- igraph::graph.adjacency(sel_cg_obj$sel_adj, mode = "undirected")
-    igraph::V(network)$label <- colnames(sel_cg_obj$data)
+    if (colnames(sel_cg_obj$data)) {
+      igraph::V(network)$label <- colnames(sel_cg_obj$data)
+    }
     return(network)
   }
   else if (sel_cg_obj$method=="ebic" & (is.null(index_lw) | is.null(index_lb) | is.null(index_c))) {
@@ -76,7 +80,9 @@ get_network <- function(sel_cg_obj, index_c=NULL, index_lw=NULL, index_lb=NULL){
                              sel_cg_obj$hpars[, 3] == sel_cg_obj$lambda_b[index_lb] &
                              sel_cg_obj$hpars[, 4] == c)
     network <- igraph::graph.adjacency(sel_cg_obj$path[[index_network]], mode = "undirected")
-    igraph::V(network)$label <- colnames(sel_cg_obj$data)
+    if (colnames(sel_cg_obj$data)) {
+      igraph::V(network)$label <- colnames(sel_cg_obj$data)
+    }
     return(network)
   }
   # Dealing with remaining cases
@@ -96,10 +102,14 @@ get_network <- function(sel_cg_obj, index_c=NULL, index_lw=NULL, index_lb=NULL){
                              sel_cg_obj$hpars[, 3] == sel_cg_obj$lambda_b[index_lb] &
                              sel_cg_obj$hpars[, 4] == c)
     network <- igraph::graph.adjacency(sel_cg_obj$path[[index_network]], mode = "undirected")
-    igraph::V(network)$label <- colnames(sel_cg_obj$data)
+    if (colnames(sel_cg_obj$data)) {
+      igraph::V(network)$label <- colnames(sel_cg_obj$data)
+    }
     return(network)
   }
   network <- igraph::graph.adjacency(sel_cg_obj$sel_adj, mode = "undirected")
-  igraph::V(network)$label <- colnames(sel_cg_obj$data)
+  if (colnames(sel_cg_obj$data)) {
+    igraph::V(network)$label <- colnames(sel_cg_obj$data)
+  }
   return(network)
 }
