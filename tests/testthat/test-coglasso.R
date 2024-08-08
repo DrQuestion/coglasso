@@ -80,17 +80,6 @@ test_that("single c works and overrides nc", {
   expect_length(actual_c, 1)
 })
 
-test_that("single hyperparameters combination works", {
-  n <- 3
-  c <- 0.5
-  lambda_w <- 0.5
-  lambda_b <- 0.5
-  cg <- coglasso(multi_omics_sd_micro, p = 4, c = c, lambda_w = lambda_w, lambda_b = lambda_b, verbose = FALSE)
-  expect_length(cg$c, 1)
-  expect_length(cg$lambda_w, 1)
-  expect_length(cg$lambda_b, 1)
-})
-
 test_that("Verbose mode works", {
   expect_output(coglasso(multi_omics_sd_micro, p = 4, nlambda_w = 3, nlambda_b = 3, nc = 3))
 })

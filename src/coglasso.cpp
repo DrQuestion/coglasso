@@ -8,7 +8,7 @@ using namespace Eigen;
 //[[Rcpp::depends(RcppEigen)]]
 //[[Rcpp::plugins(openmp)]
 
-void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, int pX, int p, double ialpha, Eigen::MatrixXd& Lambda_star, int& df, int& converged, bool scr, unsigned int index);
+void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, int pX, int p, double ialpha, double ic, Eigen::MatrixXd& Lambda_star, int& df, int& converged, bool scr, unsigned int index);
 
 //[[Rcpp::export]]
 List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd> hpars, bool scr, bool verbose, bool cov_output)
@@ -58,6 +58,7 @@ List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd
         double alpha = hpars(i, 0);
         double lambda_w = hpars(i, 1);
         double lambda_b = hpars(i, 2);
+        double c = hpars(i, 3);
 
         // Matrix of lambda_w and lambda_b multiplied by alpha is built here
         MatrixXd Lambda_star_ij(p, p);
@@ -175,7 +176,7 @@ List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd
                     Rcout << "\rConducting the collaborative graphical lasso (coglasso) wtih lossless screening....in progress: " << floor(100 * (1. - (1. * i / nhpars))) << "%";
             }
 
-            coglasso_sub(sub_S, sub_W, sub_T, pX, p, alpha, Lambda_star_ij, sub_df, converged, scr, i);
+            coglasso_sub(sub_S, sub_W, sub_T, pX, p, alpha, c, Lambda_star_ij, sub_df, converged, scr, i);
             zero_sol = false;
         }
 
@@ -285,7 +286,7 @@ List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd
 //      used in the current coglasso implementation;
 // index is the index of the current combination of hyperparameters (that goes from number of combinations to 0).
 //
-void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, int pX, int p, double ialpha, Eigen::MatrixXd& Lambda_star, int& df, int& converged, bool scr, unsigned int index)
+void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, int pX, int p, double ialpha, double ic, Eigen::MatrixXd& Lambda_star, int& df, int& converged, bool scr, unsigned int index)
 {
     int i, j, k; //initialize indices
     int rss_idx, w_idx;
@@ -431,7 +432,7 @@ void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, in
                                 }
                                 else {
                                     // r = r + (1 - ialpha) * W(j, rss_idx) * T(rss_idx, i);
-                                    r = r - ialpha * W(j, rss_idx) * T(rss_idx, i);
+                                    r = r - ialpha * (1 - ic) * W(j, rss_idx) * T(rss_idx, i);
                                 }
                                 
                             }
@@ -441,7 +442,7 @@ void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, in
                             {
                                 rss_idx = idx_a(k, i);
                                 if (rss_idx < pX) {
-                                    r = r - ialpha * W(j, rss_idx) * T(rss_idx, i);
+                                    r = r - ialpha * (1 - ic) * W(j, rss_idx) * T(rss_idx, i);
                                 }
                                 else {
                                     r = r - W(j, rss_idx) * T(rss_idx, i);
@@ -530,7 +531,7 @@ void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, in
                                     }
                                     else {
                                         // r = r + (1 - ialpha) * W(w_idx, rss_idx) * T(rss_idx, i);
-                                        r = r - ialpha * W(w_idx, rss_idx) * T(rss_idx, i);
+                                        r = r - ialpha * (1 - ic) * W(w_idx, rss_idx) * T(rss_idx, i);
                                     }
                                 }
                             }
@@ -541,7 +542,7 @@ void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, in
                                     rss_idx = idx_a(k, i);
                                     if (rss_idx < pX) {
                                         // r = r + (1 - ialpha) * W(w_idx, rss_idx) * T(rss_idx, i);
-                                        r = r - ialpha * W(w_idx, rss_idx) * T(rss_idx, i);
+                                        r = r - ialpha * (1 - ic) * W(w_idx, rss_idx) * T(rss_idx, i);
                                     }
                                     else {
                                         r = r - W(w_idx, rss_idx) * T(rss_idx, i);
