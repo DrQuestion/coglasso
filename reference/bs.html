@@ -65,7 +65,9 @@ to select the best one according to the chosen criterion.</p>
 <span>  lambda_w_min_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lambda_b_min_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  c_min_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  icov_guess <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cov_output <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  lock_lambdas <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"xestars"</span>,</span>
 <span>  stars_thresh <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  stars_subsample_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -171,8 +173,18 @@ greatest generated \(c\). Defaults to 0.1. Ignored when <code>c</code> is set by
 user.</p></dd>
 
 
+<dt id="arg-icov-guess">icov_guess<a class="anchor" aria-label="anchor" href="#arg-icov-guess"></a></dt>
+<dd><p>Use a predetermined inverse covariance matrix as an initial
+guess for the network estimation.</p></dd>
+
+
 <dt id="arg-cov-output">cov_output<a class="anchor" aria-label="anchor" href="#arg-cov-output"></a></dt>
 <dd><p>Add the estimated variance-covariance matrix to the output.</p></dd>
+
+
+<dt id="arg-lock-lambdas">lock_lambdas<a class="anchor" aria-label="anchor" href="#arg-lock-lambdas"></a></dt>
+<dd><p>Set \(\lambda_w = \lambda_b\). Force a single lambda
+parameter for both "within" and "between" interactions.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
@@ -354,7 +366,7 @@ selection methods, visit the help page of <code><a href="select_coglasso.html">s
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer></div>

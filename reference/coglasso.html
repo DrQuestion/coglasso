@@ -65,7 +65,9 @@ the hyperparameters \(\lambda_w\), \(\lambda_b\) and \(c\).</p>
 <span>  lambda_w_min_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lambda_b_min_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  c_min_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  icov_guess <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cov_output <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  lock_lambdas <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -163,8 +165,18 @@ greatest generated \(c\). Defaults to 0.1. Ignored when <code>c</code> is set by
 user.</p></dd>
 
 
+<dt id="arg-icov-guess">icov_guess<a class="anchor" aria-label="anchor" href="#arg-icov-guess"></a></dt>
+<dd><p>Use a predetermined inverse covariance matrix as an initial
+guess for the network estimation.</p></dd>
+
+
 <dt id="arg-cov-output">cov_output<a class="anchor" aria-label="anchor" href="#arg-cov-output"></a></dt>
 <dd><p>Add the estimated variance-covariance matrix to the output.</p></dd>
+
+
+<dt id="arg-lock-lambdas">lock_lambdas<a class="anchor" aria-label="anchor" href="#arg-lock-lambdas"></a></dt>
+<dd><p>Set \(\lambda_w = \lambda_b\). Force a single lambda
+parameter for both "within" and "between" interactions.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -202,6 +214,9 @@ used.</p></li>
 <li><p><code>p</code> is the vector with the number of variables for each omic layer of the
 data set.</p></li>
 <li><p><code>D</code> is the number of omics layers in the data set.</p></li>
+<li><p><code>icov_guess</code> optional, returned when <code>icov_guess</code> is given. It is the
+predetermined inverse covariance matrix  given by the user as an initial
+guess for the network estimation.</p></li>
 <li><p><code>cov</code> optional, returned when <code>cov_output</code> is TRUE, is a list containing
 the variance-covariance matrices of all the estimated networks.</p></li>
 <li><p><code>call</code> is the matched call.</p></li>
@@ -228,7 +243,7 @@ the variance-covariance matrices of all the estimated networks.</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer></div>
