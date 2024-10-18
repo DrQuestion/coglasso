@@ -16,7 +16,7 @@
       The values explored for lambda within were:
       0.8743, 0.2765, 0.0874
       The values explored for lambda between were:
-      0.8743, 0.2765, 0.0874
+      0.4816, 0.1523, 0.0482
       The values explored for c were:
       10, 1
       

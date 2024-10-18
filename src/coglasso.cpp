@@ -11,7 +11,7 @@ using namespace Eigen;
 void coglasso_sub(Eigen::MatrixXd& S, Eigen::MatrixXd& W, Eigen::MatrixXd& T, int pX, int p, double ialpha, double ic, Eigen::MatrixXd& Lambda_star, int& df, int& converged, bool scr, unsigned int index);
 
 //[[Rcpp::export]]
-List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd> hpars, bool scr, bool verbose, bool cov_output)
+List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd> hpars, Eigen::Map<Eigen::MatrixXd> T_guess, bool scr, bool verbose, bool cov_output)
 {
   // Caller function, initiates what must be initiated and calls the main algorithm for 
   // every combination of hyperparameters.
@@ -127,8 +127,8 @@ List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd
                 if (zero_sol) {
                     // maybe initialize W to alpha * S?
                     sub_W(ii, jj) = S(ii, jj);
-                    sub_T(ii, jj) = ii == jj ? 1 : 0;
-                }
+                    sub_T(ii, jj) = ii == jj ? 1 : T_guess(ii, jj);
+                  }
                 else {
                     sub_W(ii, jj) = (*(tmp_cov_p.back()))(ii, jj);
                     sub_T(ii, jj) = (*(tmp_icov_p.back()))(ii, jj);
@@ -173,7 +173,7 @@ List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd
                 if (scr)
                     Rcout << "\rConducting the collaborative graphical lasso (coglasso) wtih lossy screening....in progress: " << floor(100 * (1. - (1. * i / nhpars))) << "%";
                 if (!scr)
-                    Rcout << "\rConducting the collaborative graphical lasso (coglasso) wtih lossless screening....in progress: " << floor(100 * (1. - (1. * i / nhpars))) << "%";
+                    Rcout << "\rConducting the collaborative graphical lasso (coglasso)....in progress: " << floor(100 * (1. - (1. * i / nhpars))) << "%";
             }
 
             coglasso_sub(sub_S, sub_W, sub_T, pX, p, alpha, c, Lambda_star_ij, sub_df, converged, scr, i);

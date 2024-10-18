@@ -116,6 +116,13 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
   coglasso_obj$opt_lambda_w <- rep(0, n_c)
   coglasso_obj$opt_lambda_b <- rep(0, n_c)
   
+  if (is.null(coglasso_obj$icov_guess)) {
+    icov_guess <- matrix(0, p_tot, p_tot)
+  }
+  else {
+    icov_guess <- coglasso_obj$icov_guess
+  }
+  
   for (i in 1:n_c) {
     if (verbose) {
       mes <- paste(c("Selecting best Lambda_w/Lambda_b combination for all c values with \"xstars\"....in progress:", floor(100 * i / n_c), "%"), collapse = "")
@@ -154,7 +161,7 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
             #hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w)), nrow = n_lambda_w, ncol = 3)
             hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w), rep(c, n_lambda_w)), nrow = n_lambda_w, ncol = 4)
             #print(hpars)
-            tmp <- co_glasso(corr_matrix, p[1], hpars, FALSE, FALSE, FALSE)
+            tmp <- co_glasso(corr_matrix, p[1], hpars, icov_guess, FALSE, FALSE, FALSE)
           }
           else {
             hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w), rep(c, n_lambda_w)), nrow = n_lambda_w, ncol = 4)
@@ -219,7 +226,7 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
           if (coglasso_obj$D == 2) {
             #hpars <- matrix(c(rep(alpha, n_lambda_b), coglasso_obj$lambda_b, rep(lw_sel, n_lambda_b)), nrow = n_lambda_b, ncol = 3)
             hpars <- matrix(c(rep(alpha, n_lambda_b), coglasso_obj$lambda_b, rep(lw_sel, n_lambda_b), rep(c, n_lambda_w)), nrow = n_lambda_b, ncol = 4)
-            tmp <- co_glasso(corr_matrix, p[1], hpars, FALSE, FALSE, FALSE)
+            tmp <- co_glasso(corr_matrix, p[1], hpars, icov_guess, FALSE, FALSE, FALSE)
           }
           else {
             hpars <- matrix(c(rep(alpha, n_lambda_b), coglasso_obj$lambda_b, rep(lw_sel, n_lambda_b), rep(c, n_lambda_b)), nrow = n_lambda_b, ncol = 4)
@@ -476,6 +483,13 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
     }
   }
   
+  if (is.null(coglasso_obj$icov_guess)) {
+    icov_guess <- matrix(0, p_tot, p_tot)
+  }
+  else {
+    icov_guess <- coglasso_obj$icov_guess
+  }
+  
   for (i in 1:n_c) {
     if (verbose) {
       mes <- paste(c("Selecting best Lambda_w/Lambda_b combination for all c values with \"xestars\"....in progress:", floor(100 * i / n_c), "%"), collapse = "")
@@ -519,7 +533,7 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
           for (k in 1:rep_num) {
             if (coglasso_obj$D == 2) {
               #tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel))), FALSE, FALSE, FALSE)
-              tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel, c))), FALSE, FALSE, FALSE)
+              tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel, c))), icov_guess, FALSE, FALSE, FALSE)
             }
             else {
               tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel, c))), FALSE, FALSE, FALSE)
@@ -630,7 +644,7 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
           for (k in 1:rep_num) {
             if (coglasso_obj$D == 2) {
               #tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j]))), FALSE, FALSE, FALSE)
-              tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j], c))), FALSE, FALSE, FALSE)
+              tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j], c))), icov_guess, FALSE, FALSE, FALSE)
             }
             else {
               tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j], c))), FALSE, FALSE, FALSE)

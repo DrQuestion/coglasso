@@ -21,7 +21,9 @@ coglasso(
   lambda_w_min_ratio = NULL,
   lambda_b_min_ratio = NULL,
   c_min_ratio = NULL,
+  icov_guess = NULL,
   cov_output = FALSE,
+  lock_lambdas = FALSE,
   verbose = TRUE
 )
 }
@@ -85,7 +87,13 @@ over the greatest generated \eqn{\lambda_b}. Defaults to 0.1. Ignored when
 greatest generated \eqn{c}. Defaults to 0.1. Ignored when \code{c} is set by the
 user.}
 
+\item{icov_guess}{Use a predetermined inverse covariance matrix as an initial
+guess for the network estimation.}
+
 \item{cov_output}{Add the estimated variance-covariance matrix to the output.}
+
+\item{lock_lambdas}{Set \eqn{\lambda_w = \lambda_b}. Force a single lambda
+parameter for both "within" and "between" interactions.}
 
 \item{verbose}{Print information regarding current \code{coglasso} run on the
 console.}
@@ -121,6 +129,9 @@ used.
 \item \code{p} is the vector with the number of variables for each omic layer of the
 data set.
 \item \code{D} is the number of omics layers in the data set.
+\item \code{icov_guess} optional, returned when \code{icov_guess} is given. It is the
+predetermined inverse covariance matrix  given by the user as an initial
+guess for the network estimation.
 \item \code{cov} optional, returned when \code{cov_output} is TRUE, is a list containing
 the variance-covariance matrices of all the estimated networks.
 \item \code{call} is the matched call.

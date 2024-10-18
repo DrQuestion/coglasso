@@ -105,6 +105,11 @@ test_that("print.coglasso works", {
   })
 })
 
-test_that("General |D| implementation works", {
-  expect_no_error(coglasso(multi_omics_sd_micro, p = c(2,2,2), nlambda_w = 3, nlambda_b = 3, nc = 2, verbose = FALSE))
+test_that("General |D| implementation works for c = 0", {
+  expect_no_error(coglasso(multi_omics_sd_micro, p = c(2,2,2), nlambda_w = 3, nlambda_b = 3, c = 0, verbose = FALSE))
+})
+
+test_that("Mode lock_lambdas works", {
+  cg <- coglasso(multi_omics_sd_micro, p = 4, nlambda_w = 3, nc = 1, lock_lambdas = TRUE, verbose = FALSE)
+  expect_equal(dim(cg$hpars)[1], 3)
 })

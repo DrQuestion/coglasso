@@ -49,7 +49,11 @@
 #' @param c_min_ratio The ratio of the smallest generated \eqn{c} over the
 #'   greatest generated \eqn{c}. Defaults to 0.1. Ignored when `c` is set by the
 #'   user.
+#' @param icov_guess Use a predetermined inverse covariance matrix as an initial
+#'   guess for the network estimation.
 #' @param cov_output Add the estimated variance-covariance matrix to the output.
+#' @param lock_lambdas Set \eqn{\lambda_w = \lambda_b}. Force a single lambda 
+#'   parameter for both "within" and "between" interactions.
 #' @param verbose Print information regarding current `coglasso` run on the
 #'   console.
 #'
@@ -82,6 +86,9 @@
 #' * `p` is the vector with the number of variables for each omic layer of the 
 #'   data set.
 #' * `D` is the number of omics layers in the data set.
+#' * `icov_guess` optional, returned when `icov_guess` is given. It is the 
+#'   predetermined inverse covariance matrix  given by the user as an initial 
+#'   guess for the network estimation.
 #' * `cov` optional, returned when `cov_output` is TRUE, is a list containing
 #'   the variance-covariance matrices of all the estimated networks.
 #' * `call` is the matched call.
@@ -97,7 +104,7 @@
 #' sel_cg_xestars <- select_coglasso(cg, method = "xestars", verbose = FALSE)
 #' }
 #' 
-coglasso <- function(data, p = NULL, pX = lifecycle::deprecated(), lambda_w = NULL, lambda_b = NULL, c = NULL, nlambda_w = NULL, nlambda_b = NULL, nc = NULL, lambda_w_max = NULL, lambda_b_max = NULL, c_max = NULL, lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL, c_min_ratio = NULL, cov_output = FALSE, verbose = TRUE) {
+coglasso <- function(data, p = NULL, pX = lifecycle::deprecated(), lambda_w = NULL, lambda_b = NULL, c = NULL, nlambda_w = NULL, nlambda_b = NULL, nc = NULL, lambda_w_max = NULL, lambda_b_max = NULL, c_max = NULL, lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL, c_min_ratio = NULL, icov_guess = NULL, cov_output = FALSE, lock_lambdas = FALSE, verbose = TRUE) {
   call <- match.call()
   
   if (lifecycle::is_present(pX)) {
@@ -118,6 +125,11 @@ coglasso <- function(data, p = NULL, pX = lifecycle::deprecated(), lambda_w = NU
     p <- c(p, p_tot - p)
   }
   
+  if (is.null(icov_guess)) {
+    icov_guess_null <- TRUE
+    icov_guess <- matrix(0, p_tot, p_tot)
+  }
+  
   D <- length(p)
   
   cov.input <- isSymmetric(data)
@@ -132,17 +144,20 @@ coglasso <- function(data, p = NULL, pX = lifecycle::deprecated(), lambda_w = NU
   gc()
   
   hpars <- gen_hpars(
-    S = S, p_tot = p_tot, D = D, lambda_w = lambda_w, lambda_b = lambda_b, c = c, nlambda_w = nlambda_w, nlambda_b = nlambda_b, nc = nc, lambda_w_max = lambda_w_max, lambda_b_max = lambda_b_max, c_max = c_max,
-    lambda_w_min_ratio = lambda_w_min_ratio, lambda_b_min_ratio = lambda_b_min_ratio, c_min_ratio = c_min_ratio
+    S = S, p = p, D = D, lambda_w = lambda_w, lambda_b = lambda_b, c = c, nlambda_w = nlambda_w, nlambda_b = nlambda_b, nc = nc, lambda_w_max = lambda_w_max, lambda_b_max = lambda_b_max, c_max = c_max,
+    lambda_w_min_ratio = lambda_w_min_ratio, lambda_b_min_ratio = lambda_b_min_ratio, c_min_ratio = c_min_ratio, lock_lambdas = lock_lambdas 
   )
   
   if (D == 2) {
-    cg <- co_glasso(S, p[1], matrix(hpars[[1]], ncol = 4), FALSE, verbose, cov_output)
+    cg <- co_glasso(S, p[1], matrix(hpars[[1]], ncol = 4), icov_guess, FALSE, verbose, cov_output)
   }
   else {
     cg <- co_glasso_D(S, p, matrix(hpars[[1]], ncol = 4), FALSE, verbose, cov_output)
   }
   
+  if (!icov_guess_null) {
+    cg$icov_guess <- icov_guess
+  }
   cg$data <- original_data
   cg$hpars <- hpars[[1]]
   cg$lambda_w <- hpars[[2]]
@@ -194,7 +209,6 @@ print.coglasso <- function(x, ...){
 #'
 #' @inherit coglasso
 #' @param S The empirical Pearson's correlation matrix of the multi-omics data set.
-#' @param p_tot The total number of variables in the multi-omics data set.
 #' @param D The number of omics layers in the data set.
 #'
 #' @return
@@ -205,16 +219,61 @@ print.coglasso <- function(x, ...){
 #' * A numerical vector with all the generated \eqn{c}.
 #' 
 #' @noRd
-gen_hpars <- function(S = NULL, p_tot = NULL, D = NULL, lambda_w = NULL, lambda_b = NULL, c = NULL,
+gen_hpars <- function(S = NULL, p = NULL, D = NULL, lambda_w = NULL, lambda_b = NULL, c = NULL,
                       nlambda_w = NULL, nlambda_b = NULL, nc = NULL, 
                       lambda_w_max = NULL, lambda_b_max = NULL, c_max = NULL, 
                       lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL,
-                      c_min_ratio = NULL) {
+                      c_min_ratio = NULL, lock_lambdas = FALSE) {
   # Modify alpha generation based on |D|
   # Add a fourth column containing c --> delete getc as an option
   if (!is.null(lambda_w)) nlambda_w <- length(lambda_w)
   if (!is.null(lambda_b)) nlambda_b <- length(lambda_b)
-  if (!is.null(c)) nalpha <- length(c)
+  if (!is.null(c)) nc <- length(c)
+  
+  p_tot <- sum(p)
+  
+  if (lock_lambdas) {
+    condition1 <- !is.null(lambda_w) & !is.null(lambda_b)
+    condition2 <- !is.null(nlambda_w) & !is.null(nlambda_b) 
+    condition3 <- !is.null(lambda_w) & !is.null(nlambda_b)
+    condition4 <- !is.null(nlambda_w) & !is.null(lambda_b)
+    
+    if (condition1) {
+      if(lambda_w != lambda_b) {
+        stop("Cannot lock lambda if different values are given for lambda_w and 
+             lambda_b. Please either provide values for only one of the two 
+             arguments or provide the same values")
+      } 
+    }
+    else if (condition2 | condition3 | condition4) {
+      if (nlambda_w != nlambda_b) {
+        stop("Cannot lock lambda if the amount of values to explore for the two 
+             lambdas differs. Please either provide values for only one of the 
+             two arguments or provide coherent values")
+      }
+    }
+    
+    if (!is.null(lambda_w)) {
+      lambda_b <- lambda_w
+    }
+    else if (!is.null(lambda_b)) {
+      lambda_w <- lambda_b
+    }
+    else if (!is.null(nlambda_w)) {
+      nlambda_b <- nlambda_w
+    }
+    else if (!is.null(nlambda_b)) {
+      nlambda_w <- nlambda_b
+    }
+  }
+  
+  p_i <- 1
+  S_diag_blocks <- matrix(0, p_tot, p_tot)
+  for (i in 1:length(p)) {
+    coords <- seq(p_i, p[i] + p_i - 1)
+    S_diag_blocks[coords, coords] <- S[coords, coords]
+    p_i <- p_i + p[i]
+  }
   
   if (is.null(lambda_w)) {
     if (is.null(nlambda_w)) {
@@ -224,7 +283,8 @@ gen_hpars <- function(S = NULL, p_tot = NULL, D = NULL, lambda_w = NULL, lambda_
       lambda_w_min_ratio <- 0.1
     }
     if (is.null(lambda_w_max)) {
-      lambda_w_max <- max(max(S - diag(p_tot)), -min(S - diag(p_tot)))
+      lambda_w_max <- max(max(S_diag_blocks - diag(p_tot)), 
+                          -min(S_diag_blocks - diag(p_tot)))
     }
     lambda_w_min <- lambda_w_min_ratio * lambda_w_max
     lambda_w <- exp(seq(log(lambda_w_max), log(lambda_w_min), length = nlambda_w))
@@ -237,7 +297,7 @@ gen_hpars <- function(S = NULL, p_tot = NULL, D = NULL, lambda_w = NULL, lambda_
       lambda_b_min_ratio <- 0.1
     }
     if (is.null(lambda_b_max)) {
-      lambda_b_max <- max(max(S - diag(p_tot)), -min(S - diag(p_tot)))
+      lambda_b_max <- max(max(S - S_diag_blocks), -min(S - S_diag_blocks))
     }
     lambda_b_min <- lambda_b_min_ratio * lambda_b_max
     lambda_b <- exp(seq(log(lambda_b_max), log(lambda_b_min), length = nlambda_b))
@@ -260,7 +320,13 @@ gen_hpars <- function(S = NULL, p_tot = NULL, D = NULL, lambda_w = NULL, lambda_
   
   alpha <- 1 / (c * (D - 1) +1)
   ac <- cbind(alpha, c)
-  hpars_table <- expand.grid(alpha, lambda_w, lambda_b)
+  if (lock_lambdas) {
+    hpars_table <- expand.grid(alpha, lambda_w)
+    hpars_table <- cbind(hpars_table, hpars_table[, 2])
+  }
+  else {
+    hpars_table <- expand.grid(alpha, lambda_w, lambda_b)
+  }
   hpars_table$id <- 1:nrow(hpars_table)
   hpars_table <- merge(hpars_table, ac, by = 1)
   hpars_table <- hpars_table[order(hpars_table$id), ]

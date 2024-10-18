@@ -58,7 +58,7 @@ plot.select_coglasso <- function(x, index_c=NULL, index_lw=NULL, index_lb=NULL, 
   lo <- igraph::layout_with_fr(sel_network)
   if (hide_isolated) {
     disconnected <- which(igraph::degree(sel_network) == 0)
-    sel_network <- igraph::delete.vertices(sel_network, disconnected)
+    sel_network <- igraph::delete_vertices(sel_network, disconnected)
     if (length(disconnected)) {
       lo <- lo[-disconnected, ]
     }
@@ -101,7 +101,7 @@ plot.coglasso <- function(x, index_c, index_lw, index_lb, node_labels = TRUE, hi
   lo <- igraph::layout_with_fr(sel_network)
   if (hide_isolated) {
     disconnected <- which(igraph::degree(sel_network) == 0)
-    sel_network <- igraph::delete.vertices(sel_network, disconnected)
+    sel_network <- igraph::delete_vertices(sel_network, disconnected)
     if (length(disconnected)) {
       lo <- lo[-disconnected, ]
     }

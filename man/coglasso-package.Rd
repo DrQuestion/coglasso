@@ -3,7 +3,6 @@
 \docType{package}
 \name{coglasso-package}
 \alias{coglasso-package}
-\alias{_PACKAGE}
 \title{coglasso: Collaborative Graphical Lasso - Multi-Omics Network Reconstruction}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}

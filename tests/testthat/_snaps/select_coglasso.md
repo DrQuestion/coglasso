@@ -22,7 +22,7 @@
       The selected value for lambda within is:
       0.0874
       The selected value for lambda between is:
-      0.8743
+      0.4816
       The selected value for c is:
       1
       
@@ -31,7 +31,7 @@
       The values explored for lambda within were:
       0.8743, 0.2765, 0.0874
       The values explored for lambda between were:
-      0.8743, 0.2765, 0.0874
+      0.4816, 0.1523, 0.0482
       The values explored for c were:
       10, 1
       
@@ -58,7 +58,7 @@
       The selected value for lambda within is:
       0.8743
       The selected value for lambda between is:
-      0.8743
+      0.4816
       The selected value for c is:
       10
       
@@ -67,7 +67,7 @@
       The values explored for lambda within were:
       0.8743, 0.2765, 0.0874
       The values explored for lambda between were:
-      0.8743, 0.2765, 0.0874
+      0.4816, 0.1523, 0.0482
       The values explored for c were:
       10, 1
       
@@ -93,16 +93,16 @@
       The selected value for lambda within is:
       0.8743
       The selected value for lambda between is:
-      0.8743
+      0.4816
       The selected value for c is:
-      10
+      1
       
       The total number of hyperparameter combinations explored was:
       18
       The values explored for lambda within were:
       0.8743, 0.2765, 0.0874
       The values explored for lambda between were:
-      0.8743, 0.2765, 0.0874
+      0.4816, 0.1523, 0.0482
       The values explored for c were:
       10, 1
       
@@ -130,7 +130,7 @@
       The selected value for lambda within is:
       0.8743
       The selected value for lambda between is:
-      0.8743
+      0.4816
       The selected value for c is:
       10
       
@@ -139,7 +139,7 @@
       The values explored for lambda within were:
       0.8743, 0.2765, 0.0874
       The values explored for lambda between were:
-      0.8743, 0.2765, 0.0874
+      0.4816, 0.1523, 0.0482
       The values explored for c were:
       10, 1
       

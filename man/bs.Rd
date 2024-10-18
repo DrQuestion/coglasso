@@ -21,7 +21,9 @@ bs(
   lambda_w_min_ratio = NULL,
   lambda_b_min_ratio = NULL,
   c_min_ratio = NULL,
+  icov_guess = NULL,
   cov_output = FALSE,
+  lock_lambdas = FALSE,
   method = "xestars",
   stars_thresh = 0.1,
   stars_subsample_ratio = NULL,
@@ -93,7 +95,13 @@ over the greatest generated \eqn{\lambda_b}. Defaults to 0.1. Ignored when
 greatest generated \eqn{c}. Defaults to 0.1. Ignored when \code{c} is set by the
 user.}
 
+\item{icov_guess}{Use a predetermined inverse covariance matrix as an initial
+guess for the network estimation.}
+
 \item{cov_output}{Add the estimated variance-covariance matrix to the output.}
+
+\item{lock_lambdas}{Set \eqn{\lambda_w = \lambda_b}. Force a single lambda
+parameter for both "within" and "between" interactions.}
 
 \item{method}{The model selection method to select the best combination of
 hyperparameters. The available options are "xstars", "xestars" and "eBIC".

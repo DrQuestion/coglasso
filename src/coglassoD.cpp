@@ -183,7 +183,7 @@ List co_glasso_D(Eigen::Map<Eigen::MatrixXd> S, Rcpp::IntegerVector p, Eigen::Ma
                 if (scr)
                     Rcout << "\rConducting the collaborative graphical lasso (coglasso) wtih lossy screening....in progress: " << floor(100 * (1. - (1. * i / nhpars))) << "%";
                 if (!scr)
-                    Rcout << "\rConducting the collaborative graphical lasso (coglasso) wtih lossless screening....in progress: " << floor(100 * (1. - (1. * i / nhpars))) << "%";
+                    Rcout << "\rConducting the collaborative graphical lasso (coglasso)....in progress: " << floor(100 * (1. - (1. * i / nhpars))) << "%";
             }
 
             coglasso_sub(sub_S, sub_W, sub_T, p, p_tot, alpha, c, Lambda_star_ij, sub_df, converged, scr, i);

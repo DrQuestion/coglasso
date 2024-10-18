@@ -12,18 +12,19 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // co_glasso
-List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd> hpars, bool scr, bool verbose, bool cov_output);
-RcppExport SEXP _coglasso_co_glasso(SEXP SSEXP, SEXP pXSEXP, SEXP hparsSEXP, SEXP scrSEXP, SEXP verboseSEXP, SEXP cov_outputSEXP) {
+List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd> hpars, Eigen::Map<Eigen::MatrixXd> T_guess, bool scr, bool verbose, bool cov_output);
+RcppExport SEXP _coglasso_co_glasso(SEXP SSEXP, SEXP pXSEXP, SEXP hparsSEXP, SEXP T_guessSEXP, SEXP scrSEXP, SEXP verboseSEXP, SEXP cov_outputSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Eigen::Map<Eigen::MatrixXd> >::type S(SSEXP);
     Rcpp::traits::input_parameter< int >::type pX(pXSEXP);
     Rcpp::traits::input_parameter< Eigen::Map<Eigen::MatrixXd> >::type hpars(hparsSEXP);
+    Rcpp::traits::input_parameter< Eigen::Map<Eigen::MatrixXd> >::type T_guess(T_guessSEXP);
     Rcpp::traits::input_parameter< bool >::type scr(scrSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< bool >::type cov_output(cov_outputSEXP);
-    rcpp_result_gen = Rcpp::wrap(co_glasso(S, pX, hpars, scr, verbose, cov_output));
+    rcpp_result_gen = Rcpp::wrap(co_glasso(S, pX, hpars, T_guess, scr, verbose, cov_output));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -45,7 +46,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_coglasso_co_glasso", (DL_FUNC) &_coglasso_co_glasso, 6},
+    {"_coglasso_co_glasso", (DL_FUNC) &_coglasso_co_glasso, 7},
     {"_coglasso_co_glasso_D", (DL_FUNC) &_coglasso_co_glasso_D, 6},
     {NULL, NULL, 0}
 };

@@ -139,10 +139,11 @@ bs <- function(data, p = NULL, pX = lifecycle::deprecated(),
                nlambda_w = NULL, nlambda_b = NULL, nc = NULL, 
                lambda_w_max = NULL, lambda_b_max = NULL, c_max = NULL, 
                lambda_w_min_ratio = NULL, lambda_b_min_ratio = NULL, 
-               c_min_ratio = NULL, cov_output = FALSE, method = "xestars", 
-               stars_thresh = 0.1, stars_subsample_ratio = NULL, rep_num = 20, 
-               max_iter = 10, old_sampling = FALSE, light = TRUE, 
-               ebic_gamma = 0.5, verbose = TRUE){
+               c_min_ratio = NULL, icov_guess = NULL, cov_output = FALSE, 
+               lock_lambdas = FALSE, method = "xestars", stars_thresh = 0.1, 
+               stars_subsample_ratio = NULL, rep_num = 20, max_iter = 10,
+               old_sampling = FALSE, light = TRUE, ebic_gamma = 0.5, 
+               verbose = TRUE){
   
   if (lifecycle::is_present(pX)) {
     lifecycle::deprecate_warn("1.1.0", "bs(pX)", "bs(p)")
@@ -157,7 +158,8 @@ bs <- function(data, p = NULL, pX = lifecycle::deprecated(),
                  lambda_b_max = lambda_b_max, c_max = c_max, 
                  lambda_w_min_ratio = lambda_w_min_ratio, 
                  lambda_b_min_ratio = lambda_b_min_ratio, 
-                 c_min_ratio = c_min_ratio, cov_output = cov_output, 
+                 c_min_ratio = c_min_ratio, icov_guess = icov_guess, 
+                 cov_output = cov_output, lock_lambdas = lock_lambdas, 
                  verbose = verbose)
   
   cg <- select_coglasso(cg, method = method, stars_thresh = stars_thresh, 
