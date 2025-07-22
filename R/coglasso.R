@@ -313,7 +313,7 @@ gen_hpars <- function(S = NULL, p = NULL, D = NULL, lambda_w = NULL, lambda_b = 
       c_max <- 10
     }
     c.min <- c_min_ratio * c_max
-    c <- exp(seq(log(c_max), log(c.min), length = nc))
+    c <- exp(seq(log(c.min), log(c_max), length = nc))
   }
   
   hpars <- vector(mode = "list", length = 4)

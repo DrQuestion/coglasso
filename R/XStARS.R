@@ -225,11 +225,11 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
           corr_matrix <- cor(scale(coglasso_obj$data[ind.sample, ]))
           if (coglasso_obj$D == 2) {
             #hpars <- matrix(c(rep(alpha, n_lambda_b), coglasso_obj$lambda_b, rep(lw_sel, n_lambda_b)), nrow = n_lambda_b, ncol = 3)
-            hpars <- matrix(c(rep(alpha, n_lambda_b), coglasso_obj$lambda_b, rep(lw_sel, n_lambda_b), rep(c, n_lambda_w)), nrow = n_lambda_b, ncol = 4)
+            hpars <- matrix(c(rep(alpha, n_lambda_b), rep(lw_sel, n_lambda_b), coglasso_obj$lambda_b, rep(c, n_lambda_w)), nrow = n_lambda_b, ncol = 4)
             tmp <- co_glasso(corr_matrix, p[1], hpars, icov_guess, FALSE, FALSE, FALSE)
           }
           else {
-            hpars <- matrix(c(rep(alpha, n_lambda_b), coglasso_obj$lambda_b, rep(lw_sel, n_lambda_b), rep(c, n_lambda_b)), nrow = n_lambda_b, ncol = 4)
+            hpars <- matrix(c(rep(alpha, n_lambda_b), rep(lw_sel, n_lambda_b), coglasso_obj$lambda_b, rep(c, n_lambda_b)), nrow = n_lambda_b, ncol = 4)
             tmp <- co_glasso_D(corr_matrix, p, hpars, FALSE, FALSE, FALSE)
           }
           
