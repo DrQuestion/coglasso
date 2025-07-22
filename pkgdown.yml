@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   coglasso: coglasso.html
   manuscript: manuscript.html
-last_built: 2025-07-01T15:47Z
+last_built: 2025-07-22T13:44Z
 urls:
   reference: https://drquestion.github.io/coglasso/reference
   article: https://drquestion.github.io/coglasso/articles
