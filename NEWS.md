@@ -10,6 +10,12 @@ editor_options:
     more accurate `xstars()`. Made also some implementation improvements
     to `xstars()` that made it faster.
 
+-   Corrected major bug in `xstars()`, as the selection of `lambda_b`
+    was never really happening, and we were selecting `lambda_w` twice,
+    instead. This will lead to inevitable backward incompatibilities, at
+    least of the results of the previous version of `xstars()`, that
+    will not be reproducible.
+
 -   Implemented `select_coglasso()` for handling all possible present
     (and future) model selection methods from a single wrapping
     function. For the moment it allows to perform model selection with
@@ -52,7 +58,7 @@ editor_options:
     **The impressive increase in speed and more memory-efficiency comes
     with some minor costs.\
     First of all, some objects returned by `xstars()` are not returned
-    if not explecetely requested, and in general they come in a smaller
+    if not explicitly requested, and in general they come in a smaller
     amount (see question above).\
     Second, the different sampling strategy may guarantee not only a
     faster, but also a fairer parameter selection, as they are all
@@ -69,16 +75,33 @@ editor_options:
     produces or selects a network generates an object that can be
     directly be plotted with `plot()`.
 
--   Implemented a **new version** of the *collaborative graphical lasso*
-    algorithm, now able to accept **more than two omics layers**. These
-    new version, called *general \|D\|* version, is perfectly compatible
-    with and as time consuming as the previous one when only two layers
-    are given as input.
+-   Began the implementation of a **new version** of the *collaborative
+    graphical lasso* algorithm, now able to accept **more than two omics
+    layers**. This new version, called *general \|D\|* version, provides
+    the same results for two omics layers, but it is slightly slower, so
+    the *general \|D\|* algorithm will only be used when necessary. The
+    current version has convergence issues for most values of `c`.
+    Hopefully this will be fixed before the 2.0 release.
 
 -   Began the deprecation process of the argument `pX` of the functions
     `coglasso()` and `bs()`, substituted by the argument `p`, that can
     take a vector with the dimensions of multiple omics layer, as now
     the package accepts more than two omics layers.
+
+-   Added a logo to the package, but it will be changed to a white
+    background.
+
+-   Smaller functional bugs have been corrected.
+
+-   A new parameter for `coglasso()`, `lock_lambdas`, has been
+    introduced to simulate the single penalty parameter-beahavior of the
+    original *glasso*. It is currently chiefly for testing purposes, so
+    we have not implemented any selection procedure for it, yet.
+
+-   Changed the generation procedures for `lambda_w` and `lambda_b`: the
+    maximum values will be, respectively, the highest *within* Pearson's
+    correlation value and the highest *between* Pearson's correlation
+    value.
 
 # coglasso 1.0.2
 

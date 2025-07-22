@@ -33,7 +33,7 @@
       The values explored for lambda between were:
       0.4816, 0.1523, 0.0482
       The values explored for c were:
-      10, 1
+      1, 10
       
       Plot the selected network with:
       plot(sel_cg)
@@ -60,7 +60,7 @@
       The selected value for lambda between is:
       0.4816
       The selected value for c is:
-      10
+      1
       
       The total number of hyperparameter combinations explored was:
       18
@@ -69,7 +69,7 @@
       The values explored for lambda between were:
       0.4816, 0.1523, 0.0482
       The values explored for c were:
-      10, 1
+      1, 10
       
       Plot the selected network with:
       plot(sel_cg)
@@ -95,7 +95,7 @@
       The selected value for lambda between is:
       0.4816
       The selected value for c is:
-      1
+      10
       
       The total number of hyperparameter combinations explored was:
       18
@@ -104,7 +104,7 @@
       The values explored for lambda between were:
       0.4816, 0.1523, 0.0482
       The values explored for c were:
-      10, 1
+      1, 10
       
       Plot the selected network with:
       plot(sel_cg)
@@ -132,7 +132,7 @@
       The selected value for lambda between is:
       0.4816
       The selected value for c is:
-      10
+      1
       
       The total number of hyperparameter combinations explored was:
       18
@@ -141,7 +141,7 @@
       The values explored for lambda between were:
       0.4816, 0.1523, 0.0482
       The values explored for c were:
-      10, 1
+      1, 10
       
       Plot the selected network with:
       plot(sel_cg)

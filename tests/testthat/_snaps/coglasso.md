@@ -18,7 +18,7 @@
       The values explored for lambda between were:
       0.4816, 0.1523, 0.0482
       The values explored for c were:
-      10, 1
+      1, 10
       
       Networks are made of 2 omics layers, for a total of 6 nodes
       For each layer they have: 4 and 2 nodes, respectively

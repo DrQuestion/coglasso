@@ -11,7 +11,7 @@ test_that("warning raised when not implemented method is selected", {
 test_that("ebic selection works", {
   cg <- coglasso(multi_omics_sd_micro, p = 4, nlambda_w = 3, nlambda_b = 3, nc = 2, verbose = FALSE)
   sel_cg_ebic <- select_coglasso(cg, method = "ebic", verbose = FALSE)
-  expect_equal(c(sel_cg_ebic$sel_index_lw, sel_cg_ebic$sel_index_lb, sel_cg_ebic$sel_index_c), c(3,1,2))
+  expect_equal(c(sel_cg_ebic$sel_index_lw, sel_cg_ebic$sel_index_lb, sel_cg_ebic$sel_index_c), c(3,1,1))
 })
 
 test_that("Verbose mode works", {
