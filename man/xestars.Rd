@@ -11,7 +11,6 @@ xestars(
   rep_num = 20,
   max_iter = 10,
   old_sampling = FALSE,
-  light = TRUE,
   verbose = TRUE
 )
 }
@@ -40,10 +39,6 @@ choose a new best \eqn{\lambda_w}. Defaults to 10.}
 TRUE. Makes a difference with bigger data sets, where computing
 a correlation matrix could take significantly longer. Defaults to FALSE.}
 
-\item{light}{Do not store the "merged" matrixes recording average variability
-of each edge, making the algorithm more memory efficient, if set to TRUE.
-Defaults to TRUE.}
-
 \item{verbose}{Print information regarding the progress of the selection
 procedure on the console.}
 }
@@ -53,16 +48,16 @@ containing the results of the selection
 procedure, built upon the object of \code{S3} class \code{coglasso} returned by \code{coglasso()}.
 \itemize{
 \item ... are the same elements returned by \code{\link[=coglasso]{coglasso()}}.
-\item \code{opt_adj} is a list of the adjacency matrices finally selected for each
-\eqn{c} parameter explored.
-\item \code{opt_variability} is a numerical vector containing the variabilities
-associated to the adjacency matrices in \code{opt_adj}.
-\item \code{opt_index_lw} and \code{opt_index_lb} are integer vectors containing the
-index of the selected \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each
-\eqn{c} parameters explored.
-\item \code{opt_lambda_w} and \code{opt_lambda_b} are vectors containing the selected
-\eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each \eqn{c} parameters
-explored.
+\item \code{merge} is the "merged" adjacency matrix, the average of all the adjacency
+matrices estimated across all the different subsamples for the selected
+combination of \eqn{\lambda_w}, \eqn{\lambda_b}, and \eqn{c} values in the
+last path explored before convergence. Each entry is a measure of how
+recurrent the corresponding edge is across the subsamples.
+\item \code{variability_lw}, \code{variability_lb} and \code{variability_c} are numeric vectors
+of as many items as the number of \eqn{\lambda_w}, \eqn{\lambda_b}, and
+\eqn{c} values explored. Each item is the variability of the network
+estimated for the corresponding hyperparameter value, keeping the other two
+hyperparameters fixed to their selected value.
 \item \code{sel_index_c}, \code{sel_index_lw} and \code{sel_index_lb} are the indexes of the
 final selected parameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b}
 leading to the most stable sparse network.
@@ -70,18 +65,14 @@ leading to the most stable sparse network.
 parameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b} leading to the most
 stable sparse network.
 \item \code{sel_adj} is the adjacency matrix of the final selected network.
+\item \code{sel_variability} is the variability of the final selected network.
 \item \code{sel_density} is the density of the final selected network.
 \item \code{sel_icov} is the inverse covariance matrix of the final selected network.
+\item \code{sel_cov} optional, given only when \code{coglasso()} was called with
+\code{cov_output = TRUE}. It is the covariance matrix associated with  the final
+selected network.
 \item \code{call} is the matched call.
 \item \code{method} is the chosen model selection method. Here, it is "xestars".
-\item \code{merge_lw} and \code{merge_lb} are returned only if \code{light} is set to FALSE.
-They are lists with as many elements as the number of
-\eqn{c} parameters explored. Every element is a "merged" adjacency matrix,
-the average of all the adjacency matrices estimated  for those specific
-\eqn{c} and the selected \eqn{\lambda_w} (or \eqn{\lambda_b}) values
-across all the subsampling in the last path explored before convergence,
-the one when the final combination of \eqn{\lambda_w} and \eqn{\lambda_b}
-is selected for the given \eqn{c} value.
 }
 }
 \description{
@@ -99,30 +90,32 @@ times (\code{rep_num}), and with a fixed proportion of the total number of sampl
 published by Liu, H. \emph{et al.} (2010): Stability Approach to Regularization
 Selection (StARS). \emph{StARS} was developed for network estimation regulated by
 a single penalty parameter, while \emph{collaborative graphical lasso} needs to
-explore three different hyperparameters. In particular, two of these are
-penalty parameters with a direct influence on network sparsity, hence on
-stability. For every \eqn{c} parameter, \code{xestars()} explores one of the two
-penalty parameters (\eqn{\lambda_w} or \eqn{\lambda_b}), keeping the other
-one fixed at its previous best estimate, using the normal, one-dimentional
-\emph{StARS} approach, until finding the best couple. What makes it more efficient
-than \code{xstars()} is that the stability check that in the original algorithm
-(even in the original \emph{StARS}) is performed for every \eqn{\lambda_w} or
-\eqn{\lambda_b} value, is implemented here as a \emph{stopping criterion}. This
-reduces sensibly the number of iterations before convergence. It then selects
-the \eqn{c} parameter for which the best (\eqn{\lambda_w}, \eqn{\lambda_b})
-couple yielded the most stable, yet sparse network. \cr
+explore three different hyperparameters. These all have, to different
+degree, a direct influence on network sparsity, hence on
+stability. For every
+iteration, \code{xstars()} explores one of the three parameters (\eqn{\lambda_w},
+\eqn{\lambda_b}, or \eqn{c}), keeping the other ones fixed at their previous
+selected estimate, using the normal, one-dimentional \emph{StARS} approach, until
+finding the best combination of the three. What makes it more efficient
+than \code{xstars()} is the different way that the stability check is implemented
+in the two algorithms. In \code{xstars()} (and even in the original \emph{StARS}), the
+stability check is performed, for example, for every \eqn{\lambda_w} value
+(or \eqn{\lambda_b}, or \eqn{c}), until all values are explored, and then it
+when the algorithm selects the one yielding the most stable, yet sparse
+network, and only then switching to the selection of the following
+hyperparameter. In \code{xestars()}, the stability check becomes a \emph{stopping criterion}.
+The moment that the stability threshold is passed, the value of the
+hyperparameter currently being selected is fixed, and the switch to the next
+one happens immediately, without exploring the whole landscape. This reduces
+sensibly the number of iterations before convergence to a final network. \cr
 The original \emph{XStARS} computes a new subsampling for every time the algorithm
-switches from optimizing the two\eqn{\lambda_w} and \eqn{\lambda_b}, and for
-every \eqn{c}. This does not allow to compare the hyperparameters on an equal
-ground, and can slow the selection down with bigger data set or a larger
-hyperparameter space. To allow a fairer (and faster) comparison among
-different optimizations, the \code{old_sampling} parameter has been implemented.
-If set to TRUE, the subsampling is the same one \code{xstars()} would perform.
-Otherwise the subsampling is performed at the beginning of the algorithm once
-and for all its iterations. \cr
-To allow \code{xestars()} to be more memory light, the \code{light} parameter has been
-implemented. If set to TRUE and the "merged" matrixes traditionally returned
-by both \emph{StARS} and \emph{XStARS} are not returned.
+switches from optimizing \eqn{\lambda_w}, \eqn{\lambda_b}, or \eqn{c}. This
+does not allow to compare the hyperparameters on an equal ground, and can
+slow the selection down with bigger data set or a larger hyperparameter
+space. To allow a similar subsampling to \code{xstars()}, the \code{old_sampling}
+parameter has been implemented. If set to TRUE, the subsampling is similar to
+the one \code{xstars()} would perform. Otherwise, the subsampling is performed at
+the beginning of the algorithm once and for all its iterations.
 }
 \examples{
 cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, 

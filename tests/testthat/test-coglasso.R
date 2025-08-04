@@ -53,10 +53,9 @@ test_that("lambda_b_min_ratio works", {
 
 test_that("c_min_ratio works", {
   n <- 3
-  c_min_ratio <- 0.2
-  actual_min_c <- min(coglasso(multi_omics_sd_micro, p = 4, nlambda_w = n, nlambda_b = n, nc = n, c_min_ratio = c_min_ratio, verbose = FALSE)$c)
-  actual_max_c <- max(coglasso(multi_omics_sd_micro, p = 4, nlambda_w = n, nlambda_b = n, nc = n, c_min_ratio = c_min_ratio, verbose = FALSE)$c)
-  expect_equal(actual_min_c/actual_max_c, c_min_ratio)
+  c_min <- 0.2
+  actual_min_c <- min(coglasso(multi_omics_sd_micro, p = 4, nlambda_w = n, nlambda_b = n, nc = n, c_min = c_min, verbose = FALSE)$c)
+  expect_equal(actual_min_c, c_min)
 })
 
 test_that("single lambda_w works and overrides nlambda_w", {

@@ -34,7 +34,7 @@ object when specifying the optional parameters.
 }
 \details{
 If the input is a \code{coglasso} object, it is necessary to specify all the
-indexes to extract a selected network. \cr
+indexes to extract the chosen network. \cr
 If the input is a \code{select_coglasso} object, it extracts by default the
 selected network. If the selection method was "ebic", and you want to extract
 a different network than the selected one, specify all indexes.

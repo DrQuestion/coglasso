@@ -13,14 +13,13 @@
 #' published by Liu, H. *et al.* (2010): Stability Approach to Regularization
 #' Selection (StARS). *StARS* was developed for network estimation regulated by
 #' a single penalty parameter, while *collaborative graphical lasso* needs to
-#' explore three different hyperparameters. In particular, two of these are
-#' penalty parameters with a direct influence on network sparsity, hence on
-#' stability. For every \eqn{c} parameter, `xstars()` explores one of
-#' the two penalty parameters (\eqn{\lambda_w} or \eqn{\lambda_b}), keeping the other one
-#' fixed at its previous best estimate, using the normal, one-dimentional
-#' *StARS* approach, until finding the best couple. It then selects the \eqn{c}
-#' parameter for which the best (\eqn{\lambda_w}, \eqn{\lambda_b}) couple yielded the most
-#' stable, yet sparse network.
+#' explore three different hyperparameters. These all have, to a different 
+#' degree, a direct influence on network sparsity, hence on stability. For every 
+#' iteration, `xstars()` explores one of the three parameters (\eqn{\lambda_w}, 
+#' \eqn{\lambda_b}, or \eqn{c}), keeping the other ones fixed at their previous 
+#' selected estimate, using the normal, one-dimentional *StARS* approach, until 
+#' finding the best combination of the three that yields the most stable, yet 
+#' sparse network.
 #'
 #' @param coglasso_obj The object of `S3` class `coglasso` returned by `coglasso()`.
 #' @param stars_thresh The threshold set for variability of the explored
@@ -44,39 +43,29 @@
 #'   containing the results of the
 #'   selection procedure, built upon the object of `S3` class `coglasso` returned by `coglasso()`.
 #' * ... are the same elements returned by [coglasso()].
-#' * `merge_lw` and `merge_lb` are lists with as many elements as the number of
-#'   \eqn{c} parameters explored. Every element is in turn a list of as many
-#'   matrices as the number of \eqn{\lambda_w} (or \eqn{\lambda_b}) values explored. Each
-#'   matrix is the "merged" adjacency matrix, the average of all the adjacency
-#'   matrices estimated  for those specific \eqn{c} and \eqn{\lambda_w} (or \eqn{\lambda_b})
-#'   values across all the subsampling in the last path explored before
-#'   convergence, the one when the final combination of \eqn{\lambda_w} and \eqn{\lambda_b}
-#'   is selected for the given \eqn{c} value.
-#' * `variability_lw` and `variability_lb` are lists with as many elements as
-#'  the number of \eqn{c} parameters explored. Every element is a numeric vector
-#'  of as many items as the number of \eqn{\lambda_w} (or \eqn{\lambda_b}) values explored.
-#'  Each item is the variability of the network estimated for those specific
-#'  \eqn{c} and \eqn{\lambda_w} (or \eqn{\lambda_b}) values in the last path explored before
-#'  convergence, the one when the final combination of \eqn{\lambda_w} and \eqn{\lambda_b}
-#'  is selected for the given \eqn{c} value.
-#' * `opt_adj` is a list of the adjacency matrices finally selected for each
-#'  \eqn{c} parameter explored.
-#' * `opt_variability` is a numerical vector containing the variabilities
-#'  associated to the adjacency matrices in `opt_adj`.
-#' * `opt_index_lw` and `opt_index_lb` are integer vectors containing the
-#'  index of the selected \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each \eqn{c} parameters
-#'  explored.
-#' * `opt_lambda_w` and `opt_lambda_b` are vectors containing the selected
-#'  \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each \eqn{c} parameters explored.
+#' * `merge` is the "merged" adjacency matrix, the average of all the adjacency 
+#'   matrices estimated across all the different subsamples for the selected 
+#'   combination of \eqn{\lambda_w}, \eqn{\lambda_b}, and \eqn{c} values in the
+#'   last path explored before convergence. Each entry is a measure of how 
+#'   recurrent the corresponding edge is across the subsamples.
+#' * `variability_lw`, `variability_lb` and `variability_c` are numeric vectors
+#'   of as many items as the number of \eqn{\lambda_w}, \eqn{\lambda_b}, and 
+#'   \eqn{c} values explored. Each item is the variability of the network 
+#'   estimated for the corresponding hyperparameter value, keeping the other two 
+#'   hyperparameters fixed to their selected value.
 #' * `sel_index_c`, `sel_index_lw` and `sel_index_lb` are the indexes of the
-#'  final selected parameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b} leading to the
-#'  most stable sparse network.
+#'   final selected parameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b} 
+#'   leading to the most stable sparse network.
 #' * `sel_c`, `sel_lambda_w` and `sel_lambda_b` are the final selected
-#'  parameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b} leading to the most stable
-#'  sparse network.
+#'   hyperparameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b} leading to the 
+#'   most stable sparse network.
 #' * `sel_adj` is the adjacency matrix of the final selected network.
+#' * `sel_variability` is the variability of the final selected network.
 #' * `sel_density` is the density of the final selected network.
 #' * `sel_icov` is the inverse covariance matrix of the final selected network.
+#' * `sel_cov` optional, given only when `coglasso()` was called with 
+#'   `cov_output = TRUE`. It is the covariance matrix associated with the final 
+#'   selected network.
 #' * `call` is the matched call.
 #' * `method` is the chosen model selection method. Here, it is "xstars".
 #'
@@ -105,16 +94,17 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
     if (n <= 144) stars_subsample_ratio <- 0.8
   }
   
-  coglasso_obj$merge_lw <- vector(mode = "list", length = n_c)
-  coglasso_obj$merge_lb <- vector(mode = "list", length = n_c)
-  coglasso_obj$variability_lw <- vector(mode = "list", length = n_c)
-  coglasso_obj$variability_lb <- vector(mode = "list", length = n_c)
-  coglasso_obj$opt_adj <- vector(mode = "list", length = n_c)
-  coglasso_obj$opt_variability <- rep(0, n_c)
-  coglasso_obj$opt_index_lw <- rep(0, n_c)
-  coglasso_obj$opt_index_lb <- rep(0, n_c)
-  coglasso_obj$opt_lambda_w <- rep(0, n_c)
-  coglasso_obj$opt_lambda_b <- rep(0, n_c)
+  coglasso_obj$variability_lw <- rep(0, n_lambda_w)
+  coglasso_obj$variability_lb <- rep(0, n_lambda_b)
+  coglasso_obj$variability_c <- rep(0, n_c)
+  coglasso_obj$sel_adj <- Matrix::Matrix(0, p_tot, p_tot)
+  coglasso_obj$sel_variability <- 0
+  coglasso_obj$sel_index_lw <- 0
+  coglasso_obj$sel_index_lb <- 0
+  coglasso_obj$sel_index_c <- 0
+  coglasso_obj$sel_lambda_w <- 0
+  coglasso_obj$sel_lambda_b <- 0
+  coglasso_obj$sel_c <- 0
   
   if (is.null(coglasso_obj$icov_guess)) {
     icov_guess <- matrix(0, p_tot, p_tot)
@@ -123,204 +113,302 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
     icov_guess <- coglasso_obj$icov_guess
   }
   
-  for (i in 1:n_c) {
+  if (verbose) {
+    mes <- "Selecting best Lambda_w/Lambda_b/c combination with \"xstars\"....in progress"
+    cat(mes, "\r")
+    cat("\n")
+    flush.console()
+  }
+  
+  lw_sel <- -1
+  lb_sel <- coglasso_obj$lambda_b[n_lambda_b]
+  c_sel <- coglasso_obj$c[n_c]
+  num_iter <- 0
+  converged <- 0
+  select_lw <- TRUE
+  select_lb <- FALSE
+  
+  while ((converged < 2 | num_iter < 1) & num_iter < max_iter) {
+    # XStARS converges when two selected hyperparameters in a row are equal to
+    # the result of the previous selection procedure
+    if (select_lw) {
+      alpha <- 1 / (c_sel * (D - 1) + 1)
+      
+      coglasso_obj$merge <- vector(mode = "list", length = n_lambda_w)
+      coglasso_obj$variability_lw <- rep(0, n_lambda_w)
+      
+      for (j in 1:n_lambda_w) coglasso_obj$merge[[j]] <- Matrix::Matrix(0, p_tot, p_tot)
+      
+      real_rep.num <- rep(0, n_lambda_w)
+      
+      for (j in 1:rep_num)
+      {
+        if (verbose) {
+          mes <- paste(c("Conducting Subsampling Lambda_w....in progress:", floor(100 * j / rep_num), "%"), collapse = "")
+          cat(mes, "\r")
+          flush.console()
+        }
+        ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
+        
+        corr_matrix <- cor(scale(coglasso_obj$data[ind.sample, ]))
+        if (coglasso_obj$D == 2) {
+          #hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w)), nrow = n_lambda_w, ncol = 3)
+          hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w), rep(c_sel, n_lambda_w)), nrow = n_lambda_w, ncol = 4)
+          #print(hpars)
+          tmp <- co_glasso(corr_matrix, p[1], hpars, icov_guess, FALSE, FALSE, FALSE)
+        }
+        else {
+          hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w), rep(c_sel, n_lambda_w)), nrow = n_lambda_w, ncol = 4)
+          tmp <- co_glasso_D(corr_matrix, p, hpars, FALSE, FALSE, FALSE)
+        }
+        
+        convergence <- tmp$convergence
+        tmp <- tmp$path
+        
+        for (k in 1:n_lambda_w) {
+          if (convergence[k] == 1) {
+            real_rep.num[k] <- real_rep.num[k] + 1
+            coglasso_obj$merge[[k]] <- coglasso_obj$merge[[k]] + tmp[[k]]
+          }
+        }
+        rm(ind.sample, tmp)
+        gc()
+      }
+      
+      for (j in 1:n_lambda_w) {
+        coglasso_obj$merge[[j]] <- coglasso_obj$merge[[j]] / real_rep.num[j]
+        coglasso_obj$variability_lw[j] <- 4 * sum(coglasso_obj$merge[[j]] *
+                                                    (1 - coglasso_obj$merge[[j]])) / (p_tot * (p_tot - 1))
+      }
+      
+      index_lw <- max(which.max(coglasso_obj$variability_lw >=
+                                  stars_thresh)[1] - 1, 1)
+      coglasso_obj$sel_variability <- coglasso_obj$variability_lw[index_lw]
+      tmp_lw <- coglasso_obj$lambda_w[index_lw]
+      if (tmp_lw == lw_sel) {
+        converged <- converged + 1
+      } else {
+        converged <- 0
+      }
+      
+      lw_sel <- tmp_lw
+      
+      if (verbose) {
+        mes <- "Conducting Subsampling Lambda_w....done.                 "
+        cat(mes, "\r")
+        cat("\n")
+        if (converged == 2) {
+          mes <- "Reached convergence.                 "
+          cat(mes, "\r")
+          cat("\n")
+        }
+        flush.console()
+      }
+      select_lw <- FALSE
+      select_lb <- TRUE
+      
+      if (converged == 2) {
+        coglasso_obj$merge <- coglasso_obj$merge[[index_lw]]
+      }
+      
+    } else if (select_lb) {
+      alpha <- 1 / (c_sel * (D - 1) + 1)
+      
+      coglasso_obj$merge <- vector(mode = "list", length = n_lambda_b)
+      coglasso_obj$variability_lb <- rep(0, n_lambda_b)
+      
+      for (j in 1:n_lambda_b) coglasso_obj$merge[[j]] <- Matrix::Matrix(0, p_tot, p_tot)
+      
+      real_rep.num <- rep(0, n_lambda_b)
+      
+      for (j in 1:rep_num)
+      {
+        if (verbose) {
+          mes <- paste(c("Conducting Subsampling Lambda_b....in progress:", floor(100 * j / rep_num), "%"), collapse = "")
+          cat(mes, "\r")
+          flush.console()
+        }
+        ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
+        
+        corr_matrix <- cor(scale(coglasso_obj$data[ind.sample, ]))
+        if (coglasso_obj$D == 2) {
+          #hpars <- matrix(c(rep(alpha, n_lambda_b), coglasso_obj$lambda_b, rep(lw_sel, n_lambda_b)), nrow = n_lambda_b, ncol = 3)
+          hpars <- matrix(c(rep(alpha, n_lambda_b), rep(lw_sel, n_lambda_b), coglasso_obj$lambda_b, rep(c_sel, n_lambda_b)), nrow = n_lambda_b, ncol = 4)
+          tmp <- co_glasso(corr_matrix, p[1], hpars, icov_guess, FALSE, FALSE, FALSE)
+        }
+        else {
+          hpars <- matrix(c(rep(alpha, n_lambda_b), rep(lw_sel, n_lambda_b), coglasso_obj$lambda_b, rep(c_sel, n_lambda_b)), nrow = n_lambda_b, ncol = 4)
+          tmp <- co_glasso_D(corr_matrix, p, hpars, FALSE, FALSE, FALSE)
+        }
+        
+        convergence <- tmp$convergence
+        tmp <- tmp$path
+        
+        for (k in 1:n_lambda_b) {
+          if (convergence[k] == 1) {
+            real_rep.num[k] <- real_rep.num[k] + 1
+            coglasso_obj$merge[[k]] <- coglasso_obj$merge[[k]] + tmp[[k]]
+          }
+        }
+        rm(ind.sample, tmp)
+        gc()
+      }
+      
+      coglasso_obj$variability_lb <- rep(0, n_lambda_b)
+      for (j in 1:n_lambda_b) {
+        coglasso_obj$merge[[j]] <- coglasso_obj$merge[[j]] / real_rep.num[j]
+        coglasso_obj$variability_lb[j] <- 4 * sum(coglasso_obj$merge[[j]] *
+                                                    (1 - coglasso_obj$merge[[j]])) / (p_tot * (p_tot - 1))
+      }
+      
+      index_lb <- max(which.max(coglasso_obj$variability_lb >=
+                                  stars_thresh)[1] - 1, 1)
+      coglasso_obj$sel_variability <- coglasso_obj$variability_lb[index_lb]
+      tmp_lb <- coglasso_obj$lambda_b[index_lb]
+      if (tmp_lb == lb_sel) {
+        converged <- converged + 1
+      } else {
+        converged <- 0
+      }
+      
+      lb_sel <- tmp_lb
+      
+      if (verbose) {
+        mes <- "Conducting Subsampling Lambda_b....done.                 "
+        cat(mes, "\r")
+        cat("\n")
+        if (converged == 2) {
+          mes <- "Reached convergence.                 "
+          cat(mes, "\r")
+          cat("\n")
+        }
+        flush.console()
+      }
+      
+      if (converged == 2) {
+        coglasso_obj$merge <- coglasso_obj$merge[[index_lb]]
+      }
+      
+      select_lb <- FALSE
+    } else {
+      # Select c
+      alpha <- 1 / (coglasso_obj$c * (D - 1) + 1)
+      
+      coglasso_obj$merge <- vector(mode = "list", length = n_c)
+      coglasso_obj$variability_c <- rep(0, n_c)
+      
+      for (j in 1:n_c) coglasso_obj$merge[[j]] <- Matrix::Matrix(0, p_tot, p_tot)
+      
+      real_rep.num <- rep(0, n_c)
+      
+      for (j in 1:rep_num)
+      {
+        if (verbose) {
+          mes <- paste(c("Conducting Subsampling c....in progress:", floor(100 * j / rep_num), "%"), collapse = "")
+          cat(mes, "\r")
+          flush.console()
+        }
+        ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
+        
+        corr_matrix <- cor(scale(coglasso_obj$data[ind.sample, ]))
+        if (coglasso_obj$D == 2) {
+          #hpars <- matrix(c(rep(alpha, n_c), coglasso_obj$c, rep(lw_sel, n_c)), nrow = n_c, ncol = 3)
+          hpars <- matrix(c(alpha, rep(lw_sel, n_c), rep(lb_sel, n_c), coglasso_obj$c), nrow = n_c, ncol = 4)
+          tmp <- co_glasso(corr_matrix, p[1], hpars, icov_guess, FALSE, FALSE, FALSE)
+        }
+        else {
+          hpars <- matrix(c(alpha, rep(lw_sel, n_c), rep(lb_sel, n_c), coglasso_obj$c), nrow = n_c, ncol = 4)
+          tmp <- co_glasso_D(corr_matrix, p, hpars, FALSE, FALSE, FALSE)
+        }
+        
+        convergence <- tmp$convergence
+        tmp <- tmp$path
+        
+        for (k in 1:n_c) {
+          if (convergence[k] == 1) {
+            real_rep.num[k] <- real_rep.num[k] + 1
+            coglasso_obj$merge[[k]] <- coglasso_obj$merge[[k]] + tmp[[k]]
+          }
+        }
+        rm(ind.sample, tmp)
+        gc()
+      }
+      
+      for (j in 1:n_c) {
+        coglasso_obj$merge[[j]] <- coglasso_obj$merge[[j]] / real_rep.num[j]
+        coglasso_obj$variability_c[j] <- 4 * sum(coglasso_obj$merge[[j]] *
+                                                   (1 - coglasso_obj$merge[[j]])) / (p_tot * (p_tot - 1))
+      }
+      
+      index_c <- max(which.max(coglasso_obj$variability_c >=
+                                 stars_thresh)[1] - 1, 1)
+      coglasso_obj$sel_variability <- coglasso_obj$variability_c[index_c]
+      tmp_c <- coglasso_obj$c[index_c]
+      if (tmp_c == c_sel) {
+        converged <- converged + 1
+      } else {
+        converged <- 0
+      }
+      
+      c_sel <- tmp_c
+      
+      if (verbose) {
+        mes <- "Conducting Subsampling c....done.                 "
+        cat(mes, "\r")
+        cat("\n")
+        if (converged == 2) {
+          mes <- "Reached convergence.                 "
+          cat(mes, "\r")
+          cat("\n")
+        }
+        flush.console()
+      }
+      
+      if (converged == 2) {
+        coglasso_obj$merge <- coglasso_obj$merge[[index_c]]
+      }
+      
+      select_lw <- TRUE
+    }
+    
+    num_iter <- num_iter + 1/3
+  }
+  
+  if (num_iter >= max_iter) {
     if (verbose) {
-      mes <- paste(c("Selecting best Lambda_w/Lambda_b combination for all c values with \"xstars\"....in progress:", floor(100 * i / n_c), "%"), collapse = "")
+      mes <- "Reached max Iterations.                 "
       cat(mes, "\r")
       cat("\n")
       flush.console()
     }
-    
-    c <- coglasso_obj$c[i]
-    alpha <- 1 / (c * (D - 1) + 1)
-    
-    lw_sel <- -1
-    lb_sel <- coglasso_obj$lambda_b[n_lambda_b]
-    num_iter <- 0
-    converged <- FALSE
-    select_lw <- TRUE
-    
-    while (!converged & num_iter < max_iter) {
-      if (select_lw) {
-        coglasso_obj$merge_lw[[i]] <- list()
-        for (j in 1:n_lambda_w) coglasso_obj$merge_lw[[i]][[j]] <- Matrix::Matrix(0, p_tot, p_tot)
-        
-        real_rep.num <- rep(0, n_lambda_w)
-        
-        for (j in 1:rep_num)
-        {
-          if (verbose) {
-            mes <- paste(c("Conducting Subsampling Lambda_w....in progress:", floor(100 * j / rep_num), "%"), collapse = "")
-            cat(mes, "\r")
-            flush.console()
-          }
-          ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
-          
-          corr_matrix <- cor(scale(coglasso_obj$data[ind.sample, ]))
-          if (coglasso_obj$D == 2) {
-            #hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w)), nrow = n_lambda_w, ncol = 3)
-            hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w), rep(c, n_lambda_w)), nrow = n_lambda_w, ncol = 4)
-            #print(hpars)
-            tmp <- co_glasso(corr_matrix, p[1], hpars, icov_guess, FALSE, FALSE, FALSE)
-          }
-          else {
-            hpars <- matrix(c(rep(alpha, n_lambda_w), coglasso_obj$lambda_w, rep(lb_sel, n_lambda_w), rep(c, n_lambda_w)), nrow = n_lambda_w, ncol = 4)
-            tmp <- co_glasso_D(corr_matrix, p, hpars, FALSE, FALSE, FALSE)
-          }
-          
-          convergence <- tmp$convergence
-          tmp <- tmp$path
-          
-          for (k in 1:n_lambda_w) {
-            if (convergence[k] == 1) {
-              real_rep.num[k] <- real_rep.num[k] + 1
-              coglasso_obj$merge_lw[[i]][[k]] <- coglasso_obj$merge_lw[[i]][[k]] + tmp[[k]]
-            }
-          }
-          rm(ind.sample, tmp)
-          gc()
-        }
-        
-        coglasso_obj$variability_lw[[i]] <- rep(0, n_lambda_w)
-        for (j in 1:n_lambda_w) {
-          coglasso_obj$merge_lw[[i]][[j]] <- coglasso_obj$merge_lw[[i]][[j]] / real_rep.num[j]
-          coglasso_obj$variability_lw[[i]][j] <- 4 * sum(coglasso_obj$merge_lw[[i]][[j]] *
-                                                           (1 - coglasso_obj$merge_lw[[i]][[j]])) / (p_tot * (p_tot - 1))
-        }
-        
-        index_lw <- max(which.max(coglasso_obj$variability_lw[[i]] >=
-                                    stars_thresh)[1] - 1, 1)
-        coglasso_obj$opt_variability[i] <- coglasso_obj$variability_lw[[i]][index_lw]
-        tmp_lw <- coglasso_obj$lambda_w[[index_lw]]
-        if (tmp_lw == lw_sel) converged <- TRUE
-        
-        lw_sel <- tmp_lw
-        
-        if (verbose) {
-          mes <- "Conducting Subsampling Lambda_w....done.                 "
-          cat(mes, "\r")
-          cat("\n")
-          if (converged) {
-            mes <- "Reached convergence.                 "
-            cat(mes, "\r")
-            cat("\n")
-          }
-          flush.console()
-        }
-      } else {
-        coglasso_obj$merge_lb[[i]] <- list()
-        for (j in 1:n_lambda_b) coglasso_obj$merge_lb[[i]][[j]] <- Matrix::Matrix(0, p_tot, p_tot)
-        
-        real_rep.num <- rep(0, n_lambda_b)
-        
-        for (j in 1:rep_num)
-        {
-          if (verbose) {
-            mes <- paste(c("Conducting Subsampling Lambda_b....in progress:", floor(100 * j / rep_num), "%"), collapse = "")
-            cat(mes, "\r")
-            flush.console()
-          }
-          ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
-          
-          corr_matrix <- cor(scale(coglasso_obj$data[ind.sample, ]))
-          if (coglasso_obj$D == 2) {
-            #hpars <- matrix(c(rep(alpha, n_lambda_b), coglasso_obj$lambda_b, rep(lw_sel, n_lambda_b)), nrow = n_lambda_b, ncol = 3)
-            hpars <- matrix(c(rep(alpha, n_lambda_b), rep(lw_sel, n_lambda_b), coglasso_obj$lambda_b, rep(c, n_lambda_w)), nrow = n_lambda_b, ncol = 4)
-            tmp <- co_glasso(corr_matrix, p[1], hpars, icov_guess, FALSE, FALSE, FALSE)
-          }
-          else {
-            hpars <- matrix(c(rep(alpha, n_lambda_b), rep(lw_sel, n_lambda_b), coglasso_obj$lambda_b, rep(c, n_lambda_b)), nrow = n_lambda_b, ncol = 4)
-            tmp <- co_glasso_D(corr_matrix, p, hpars, FALSE, FALSE, FALSE)
-          }
-          
-          convergence <- tmp$convergence
-          tmp <- tmp$path
-          
-          for (k in 1:n_lambda_b) {
-            if (convergence[k] == 1) {
-              real_rep.num[k] <- real_rep.num[k] + 1
-              coglasso_obj$merge_lb[[i]][[k]] <- coglasso_obj$merge_lb[[i]][[k]] + tmp[[k]]
-            }
-          }
-          rm(ind.sample, tmp)
-          gc()
-        }
-        
-        coglasso_obj$variability_lb[[i]] <- rep(0, n_lambda_b)
-        for (j in 1:n_lambda_b) {
-          coglasso_obj$merge_lb[[i]][[j]] <- coglasso_obj$merge_lb[[i]][[j]] / real_rep.num[j]
-          coglasso_obj$variability_lb[[i]][j] <- 4 * sum(coglasso_obj$merge_lb[[i]][[j]] *
-                                                           (1 - coglasso_obj$merge_lb[[i]][[j]])) / (p_tot * (p_tot - 1))
-        }
-        
-        index_lb <- max(which.max(coglasso_obj$variability_lb[[i]] >=
-                                    stars_thresh)[1] - 1, 1)
-        coglasso_obj$opt_variability[i] <- coglasso_obj$variability_lb[[i]][index_lb]
-        tmp_lb <- coglasso_obj$lambda_b[[index_lb]]
-        if (tmp_lb == lb_sel) converged <- TRUE
-        
-        lb_sel <- tmp_lb
-        
-        if (verbose) {
-          mes <- "Conducting Subsampling Lambda_b....done.                 "
-          cat(mes, "\r")
-          cat("\n")
-          if (converged) {
-            mes <- "Reached convergence.                 "
-            cat(mes, "\r")
-            cat("\n")
-          }
-          flush.console()
-        }
-      }
-      select_lw <- !select_lw
-      
-      num_iter <- num_iter + 0.5
-    }
-    if (num_iter == max_iter) {
-      if (verbose) {
-        mes <- "Reached max Iterations.                 "
-        cat(mes, "\r")
-        cat("\n")
-        flush.console()
-      }
-    }
-    
-    
-    if (verbose) {
-      mes <- "Selecting best Lambda_w/Lambda_b combination for all c values with \"xstars\"....done"
-      cat(mes, "\r")
-      flush.console()
-    }
-    
-    coglasso_obj$opt_index_lw[i] <- index_lw
-    coglasso_obj$opt_index_lb[i] <- index_lb
-    coglasso_obj$opt_lambda_w[i] <- coglasso_obj$lambda_w[index_lw]
-    coglasso_obj$opt_lambda_b[i] <- coglasso_obj$lambda_b[index_lb]
-    opt_hpars_combination <- which(coglasso_obj$hpars[, 1] == alpha &
-                                     coglasso_obj$hpars[, 2] == coglasso_obj$opt_lambda_w[i] &
-                                     coglasso_obj$hpars[, 3] == coglasso_obj$opt_lambda_b[i] &
-                                     coglasso_obj$hpars[, 4] == c)
-    coglasso_obj$opt_adj[[i]] <- coglasso_obj$path[[opt_hpars_combination]]
-    colnames(coglasso_obj$opt_adj[[i]]) <- colnames(coglasso_obj$data)
-    row.names(coglasso_obj$opt_adj[[i]]) <- colnames(coglasso_obj$data)
   }
   
-  if (all(is.na(coglasso_obj$opt_variability))) {
-    warning("coglasso did not converge for any c parameter. Will select the highest c.")
+  if (verbose) {
+    mes <- "Selecting best Lambda_w/Lambda_b/c combination with \"xstars\"....done"
+    cat(mes, "\r")
+    cat("\n")
+    flush.console()
   }
   
-  coglasso_obj$sel_index_c <- min(which.min(coglasso_obj$opt_variability), n_c)
-  coglasso_obj$sel_index_lw <- coglasso_obj$opt_index_lw[coglasso_obj$sel_index_c]
-  coglasso_obj$sel_index_lb <- coglasso_obj$opt_index_lb[coglasso_obj$sel_index_c]
-  coglasso_obj$sel_lambda_w <- coglasso_obj$lambda_w[coglasso_obj$sel_index_lw]
-  coglasso_obj$sel_lambda_b <- coglasso_obj$lambda_b[coglasso_obj$sel_index_lb]
-  coglasso_obj$sel_c <- coglasso_obj$c[coglasso_obj$sel_index_c]
-  coglasso_obj$sel_adj <- coglasso_obj$opt_adj[[coglasso_obj$sel_index_c]]
-  sel_hpars_combination <- which(coglasso_obj$hpars[, 1] == 1 / (coglasso_obj$sel_c * (D - 1) +1) &
+  coglasso_obj$sel_index_lw <- index_lw
+  coglasso_obj$sel_index_lb <- index_lb
+  coglasso_obj$sel_index_c <- index_c
+  coglasso_obj$sel_lambda_w <- coglasso_obj$lambda_w[index_lw]
+  coglasso_obj$sel_lambda_b <- coglasso_obj$lambda_b[index_lb]
+  coglasso_obj$sel_c <- coglasso_obj$c[index_c]
+  alpha <- 1 / (coglasso_obj$sel_c * (D - 1) + 1)
+  sel_hpars_combination <- which(coglasso_obj$hpars[, 1] == alpha &
                                    coglasso_obj$hpars[, 2] == coglasso_obj$sel_lambda_w &
                                    coglasso_obj$hpars[, 3] == coglasso_obj$sel_lambda_b &
                                    coglasso_obj$hpars[, 4] == coglasso_obj$sel_c)
+  coglasso_obj$sel_adj <- coglasso_obj$path[[sel_hpars_combination]]
+  colnames(coglasso_obj$sel_adj) <- colnames(coglasso_obj$data)
+  row.names(coglasso_obj$sel_adj) <- colnames(coglasso_obj$data)
+  
+  #if (is.na(coglasso_obj$sel_variability)) {
+  #  warning("coglasso did not converge. Will select the highest c.")
+  #}
+  
   coglasso_obj$sel_density <- coglasso_obj$density[sel_hpars_combination]
   coglasso_obj$sel_icov <- coglasso_obj$icov[[sel_hpars_combination]]
   if (!is.null(coglasso_obj$cov)) {
@@ -350,30 +438,32 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
 #' published by Liu, H. *et al.* (2010): Stability Approach to Regularization
 #' Selection (StARS). *StARS* was developed for network estimation regulated by
 #' a single penalty parameter, while *collaborative graphical lasso* needs to
-#' explore three different hyperparameters. In particular, two of these are
-#' penalty parameters with a direct influence on network sparsity, hence on
-#' stability. For every \eqn{c} parameter, `xestars()` explores one of the two
-#' penalty parameters (\eqn{\lambda_w} or \eqn{\lambda_b}), keeping the other
-#' one fixed at its previous best estimate, using the normal, one-dimentional
-#' *StARS* approach, until finding the best couple. What makes it more efficient
-#' than `xstars()` is that the stability check that in the original algorithm 
-#' (even in the original *StARS*) is performed for every \eqn{\lambda_w} or 
-#' \eqn{\lambda_b} value, is implemented here as a *stopping criterion*. This 
-#' reduces sensibly the number of iterations before convergence. It then selects
-#' the \eqn{c} parameter for which the best (\eqn{\lambda_w}, \eqn{\lambda_b})
-#' couple yielded the most stable, yet sparse network. \cr
+#' explore three different hyperparameters. These all have, to different 
+#' degree, a direct influence on network sparsity, hence on
+#' stability. For every 
+#' iteration, `xstars()` explores one of the three parameters (\eqn{\lambda_w}, 
+#' \eqn{\lambda_b}, or \eqn{c}), keeping the other ones fixed at their previous 
+#' selected estimate, using the normal, one-dimentional *StARS* approach, until 
+#' finding the best combination of the three. What makes it more efficient
+#' than `xstars()` is the different way that the stability check is implemented 
+#' in the two algorithms. In `xstars()` (and even in the original *StARS*), the 
+#' stability check is performed, for example, for every \eqn{\lambda_w} value 
+#' (or \eqn{\lambda_b}, or \eqn{c}), until all values are explored, and then it 
+#' when the algorithm selects the one yielding the most stable, yet sparse 
+#' network, and only then switching to the selection of the following 
+#' hyperparameter. In `xestars()`, the stability check becomes a *stopping criterion*. 
+#' The moment that the stability threshold is passed, the value of the 
+#' hyperparameter currently being selected is fixed, and the switch to the next 
+#' one happens immediately, without exploring the whole landscape. This reduces 
+#' sensibly the number of iterations before convergence to a final network. \cr
 #' The original *XStARS* computes a new subsampling for every time the algorithm
-#' switches from optimizing the two\eqn{\lambda_w} and \eqn{\lambda_b}, and for 
-#' every \eqn{c}. This does not allow to compare the hyperparameters on an equal
-#' ground, and can slow the selection down with bigger data set or a larger
-#' hyperparameter space. To allow a fairer (and faster) comparison among 
-#' different optimizations, the `old_sampling` parameter has been implemented. 
-#' If set to TRUE, the subsampling is the same one `xstars()` would perform. 
-#' Otherwise the subsampling is performed at the beginning of the algorithm once
-#' and for all its iterations. \cr
-#' To allow `xestars()` to be more memory light, the `light` parameter has been 
-#' implemented. If set to TRUE and the "merged" matrixes traditionally returned 
-#' by both *StARS* and *XStARS* are not returned.
+#' switches from optimizing \eqn{\lambda_w}, \eqn{\lambda_b}, or \eqn{c}. This 
+#' does not allow to compare the hyperparameters on an equal ground, and can 
+#' slow the selection down with bigger data set or a larger hyperparameter 
+#' space. To allow a similar subsampling to `xstars()`, the `old_sampling` 
+#' parameter has been implemented. If set to TRUE, the subsampling is similar to 
+#' the one `xstars()` would perform. Otherwise, the subsampling is performed at 
+#' the beginning of the algorithm once and for all its iterations.
 #' 
 #' @param coglasso_obj The object of `S3` class `coglasso` returned by `coglasso()`.
 #' @param stars_thresh The threshold set for variability of the explored
@@ -393,9 +483,6 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
 #' @param old_sampling Perform the same subsampling `xstars()` would if set to 
 #'   TRUE. Makes a difference with bigger data sets, where computing
 #'   a correlation matrix could take significantly longer. Defaults to FALSE.
-#' @param light Do not store the "merged" matrixes recording average variability
-#'   of each edge, making the algorithm more memory efficient, if set to TRUE. 
-#'   Defaults to TRUE.
 #' @param verbose Print information regarding the progress of the selection
 #'   procedure on the console.
 #'
@@ -403,16 +490,16 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
 #'   containing the results of the selection
 #'   procedure, built upon the object of `S3` class `coglasso` returned by `coglasso()`.
 #' * ... are the same elements returned by [coglasso()].
-#' * `opt_adj` is a list of the adjacency matrices finally selected for each
-#'   \eqn{c} parameter explored.
-#' * `opt_variability` is a numerical vector containing the variabilities
-#'   associated to the adjacency matrices in `opt_adj`.
-#' * `opt_index_lw` and `opt_index_lb` are integer vectors containing the
-#'   index of the selected \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each
-#'   \eqn{c} parameters explored.
-#' * `opt_lambda_w` and `opt_lambda_b` are vectors containing the selected
-#'   \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each \eqn{c} parameters
-#'   explored.
+#' * `merge` is the "merged" adjacency matrix, the average of all the adjacency 
+#'   matrices estimated across all the different subsamples for the selected 
+#'   combination of \eqn{\lambda_w}, \eqn{\lambda_b}, and \eqn{c} values in the
+#'   last path explored before convergence. Each entry is a measure of how 
+#'   recurrent the corresponding edge is across the subsamples.
+#' * `variability_lw`, `variability_lb` and `variability_c` are numeric vectors
+#'   of as many items as the number of \eqn{\lambda_w}, \eqn{\lambda_b}, and 
+#'   \eqn{c} values explored. Each item is the variability of the network 
+#'   estimated for the corresponding hyperparameter value, keeping the other two 
+#'   hyperparameters fixed to their selected value.
 #' * `sel_index_c`, `sel_index_lw` and `sel_index_lb` are the indexes of the
 #'   final selected parameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b}
 #'   leading to the most stable sparse network.
@@ -420,18 +507,14 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
 #'   parameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b} leading to the most
 #'   stable sparse network.
 #' * `sel_adj` is the adjacency matrix of the final selected network.
+#' * `sel_variability` is the variability of the final selected network.
 #' * `sel_density` is the density of the final selected network.
 #' * `sel_icov` is the inverse covariance matrix of the final selected network.
+#' * `sel_cov` optional, given only when `coglasso()` was called with 
+#'   `cov_output = TRUE`. It is the covariance matrix associated with  the final 
+#'   selected network.
 #' * `call` is the matched call.
 #' * `method` is the chosen model selection method. Here, it is "xestars".
-#' * `merge_lw` and `merge_lb` are returned only if `light` is set to FALSE.
-#'   They are lists with as many elements as the number of
-#'   \eqn{c} parameters explored. Every element is a "merged" adjacency matrix,
-#'   the average of all the adjacency matrices estimated  for those specific 
-#'   \eqn{c} and the selected \eqn{\lambda_w} (or \eqn{\lambda_b}) values 
-#'   across all the subsampling in the last path explored before convergence, 
-#'   the one when the final combination of \eqn{\lambda_w} and \eqn{\lambda_b} 
-#'   is selected for the given \eqn{c} value.
 #'
 #' @export
 #'
@@ -442,7 +525,7 @@ xstars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NUL
 #' # Takes less than five seconds
 #' sel_cg <- xestars(cg, verbose = FALSE)
 #' }
-xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NULL, rep_num = 20, max_iter = 10, old_sampling = FALSE, light = TRUE, verbose = TRUE) {
+xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NULL, rep_num = 20, max_iter = 10, old_sampling = FALSE, verbose = TRUE) {
   call <- match.call()
   
   n <- nrow(coglasso_obj$data)
@@ -458,20 +541,17 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
     if (n <= 144) stars_subsample_ratio <- 0.8
   }
   
-  if (!light) {
-    coglasso_obj$merge_lw <- vector(mode = "list", length = n_c)
-    coglasso_obj$merge_lb <- vector(mode = "list", length = n_c)
-  }
-  coglasso_obj$variability_lw <- vector(mode = "list", length = n_c)
-  coglasso_obj$variability_lb <- vector(mode = "list", length = n_c)
-  
-  coglasso_obj$opt_adj <- vector(mode = "list", length = n_c)
-  coglasso_obj$opt_variability <- rep(0, n_c)
-  coglasso_obj$opt_index_lw <- rep(0, n_c)
-  coglasso_obj$opt_index_lb <- rep(0, n_c)
-  coglasso_obj$opt_lambda_w <- rep(0, n_c)
-  coglasso_obj$opt_lambda_b <- rep(0, n_c)
-  
+  coglasso_obj$variability_lw <- rep(0, n_lambda_w)
+  coglasso_obj$variability_lb <- rep(0, n_lambda_b)
+  coglasso_obj$variability_c <- rep(0, n_c)
+  coglasso_obj$sel_adj <- Matrix::Matrix(0, p_tot, p_tot)
+  coglasso_obj$sel_variability <- 0
+  coglasso_obj$sel_index_lw <- 0
+  coglasso_obj$sel_index_lb <- 0
+  coglasso_obj$sel_index_c <- 0
+  coglasso_obj$sel_lambda_w <- 0
+  coglasso_obj$sel_lambda_b <- 0
+  coglasso_obj$sel_c <- 0
   
   # Create the same samples of indexes for the whole set of iterations,
   # cancelled when `old_sampling` is true
@@ -490,299 +570,385 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
     icov_guess <- coglasso_obj$icov_guess
   }
   
-  for (i in 1:n_c) {
+  if (verbose) {
+    mes <- "Selecting best Lambda_w/Lambda_b/c combination with \"xestars\"....in progress"
+    cat(mes, "\r")
+    cat("\n")
+    flush.console()
+  }
+  
+  lw_sel <- coglasso_obj$lambda_w[n_lambda_w]
+  lb_sel <- coglasso_obj$lambda_b[n_lambda_b]
+  c_sel <- -1
+  num_iter <- 0
+  converged <- 0
+  select_lw <- TRUE
+  select_lb <- FALSE
+  
+  while ((converged < 2 | num_iter < 1) & num_iter < max_iter) {
+    if (select_lw) {
+      # Consider breaking in a one-dimensional sub-function returning a lambda estars
+      alpha <- 1 / (c_sel * (D - 1) + 1)
+      
+      if (old_sampling) {
+        corr_matrixes <- vector(mode = "list", length = rep_num)
+        for (j in 1:rep_num) {
+          ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
+          corr_matrixes[[j]] <- cor(scale(coglasso_obj$data[ind.sample, ]))
+        }
+      }
+      
+      for (j in 1:n_lambda_w) {
+        if (verbose) {
+          mes <- paste(c("Conducting Subsampling Lambda_w....in progress:", floor(100 * j / n_lambda_w), "%"), collapse = "")
+          cat(mes, "\r")
+          flush.console()
+        }
+        real_rep.num <- 0
+        merge_tmp <- rep(0, p_tot*p_tot)
+        for (k in 1:rep_num) {
+          if (coglasso_obj$D == 2) {
+            #tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel))), FALSE, FALSE, FALSE)
+            tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel, c_sel))), icov_guess, FALSE, FALSE, FALSE)
+          }
+          else {
+            tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel, c_sel))), FALSE, FALSE, FALSE)
+          }
+          nexploded <- tmp$nexploded[1]
+          tmp <- as.vector(tmp$path[[1]])
+          if (nexploded == 0) {
+            real_rep.num <- real_rep.num + 1
+            merge_tmp <- merge_tmp + tmp
+          }
+        }
+        rm(tmp)
+        gc()
+        
+        merge_tmp <- merge_tmp / real_rep.num
+        variability_tmp <- 4 * sum(merge_tmp * (1 - merge_tmp)) / (p_tot * (p_tot - 1))
+        
+        coglasso_obj$variability_lw[j] <- variability_tmp
+        
+        if (variability_tmp >= stars_thresh) {
+          index_lw <- max(j - 1, 1)
+          tmp_lw <- coglasso_obj$lambda_w[index_lw]
+          if (tmp_lw == lw_sel) {
+            converged <- converged + 1
+          } else {
+            converged <- 0
+          }
+          
+          lw_sel <- tmp_lw
+          
+          if (j == 1) {
+            coglasso_obj$sel_variability <- variability_tmp
+            coglasso_obj$merge <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
+          }
+          
+          if (verbose) {
+            mes <- "Conducting Subsampling Lambda_w....done.                 "
+            cat(mes, "\r")
+            cat("\n")
+            if (converged == 2) {
+              mes <- "Reached convergence.                 "
+              cat(mes, "\r")
+              cat("\n")
+            }
+            flush.console()
+          }
+          
+          break
+        } else if (j == n_lambda_w) {
+          index_lw <- 1
+          tmp_lw <- coglasso_obj$lambda_w[index_lw]
+          if (tmp_lw == lw_sel) {
+            converged <- converged + 1
+          } else {
+            converged <- 0
+          }
+          
+          lw_sel <- tmp_lw
+          
+          if (j == 1) {
+            coglasso_obj$sel_variability <- variability_tmp
+            coglasso_obj$merge <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
+          }
+          
+          if (verbose) {
+            mes <- "Conducting Subsampling Lambda_w....done.                 "
+            cat(mes, "\r")
+            cat("\n")
+            if (converged == 2) {
+              mes <- "Reached convergence.                 "
+              cat(mes, "\r")
+              cat("\n")
+            }
+            flush.console()
+          }
+          
+          break
+        }
+        
+        coglasso_obj$sel_variability <- variability_tmp
+        coglasso_obj$merge <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
+      }
+      select_lw <- FALSE
+      select_lb <- TRUE
+      
+    } else if (select_lb) {
+      alpha <- 1 / (c_sel * (D - 1) + 1)
+      
+      if (old_sampling) {
+        corr_matrixes <- vector(mode = "list", length = rep_num)
+        for (j in 1:rep_num) {
+          ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
+          corr_matrixes[[j]] <- cor(scale(coglasso_obj$data[ind.sample, ]))
+        }
+      }
+      
+      for (j in 1:n_lambda_b) {
+        if (verbose) {
+          mes <- paste(c("Conducting Subsampling Lambda_b....in progress:", floor(100 * j / n_lambda_b), "%"), collapse = "")
+          cat(mes, "\r")
+          flush.console()
+        }
+        real_rep.num <- 0
+        merge_tmp <- rep(0, p_tot*p_tot)
+        for (k in 1:rep_num) {
+          if (coglasso_obj$D == 2) {
+            #tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j]))), FALSE, FALSE, FALSE)
+            tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j], c_sel))), icov_guess, FALSE, FALSE, FALSE)
+          }
+          else {
+            tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j], c_sel))), FALSE, FALSE, FALSE)
+          }
+          nexploded <- tmp$nexploded[1]
+          tmp <- as.vector(tmp$path[[1]])
+          if (nexploded == 0) {
+            real_rep.num <- real_rep.num + 1
+            merge_tmp <- merge_tmp + tmp
+          }
+        }
+        rm(tmp)
+        gc()
+        
+        merge_tmp <- merge_tmp / real_rep.num
+        variability_tmp <- 4 * sum(merge_tmp * (1 - merge_tmp)) / (p_tot * (p_tot - 1))
+        
+        coglasso_obj$variability_lb[j] <- variability_tmp
+        
+        if (variability_tmp >= stars_thresh) {
+          index_lb <- max(j - 1, 1)
+          tmp_lb <- coglasso_obj$lambda_b[index_lb]
+          if (tmp_lb == lb_sel) {
+            converged <- converged + 1
+          } else {
+            converged <- 0
+          }
+          
+          lb_sel <- tmp_lb
+          
+          if (j == 1) {
+            coglasso_obj$sel_variability <- variability_tmp
+            coglasso_obj$merge <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
+          }
+          
+          if (verbose) {
+            mes <- "Conducting Subsampling Lambda_b....done.                 "
+            cat(mes, "\r")
+            cat("\n")
+            if (converged == 2) {
+              mes <- "Reached convergence.                 "
+              cat(mes, "\r")
+              cat("\n")
+            }
+            flush.console()
+          }
+          
+          break
+        } else if (j == n_lambda_b) {
+          index_lb <- 1
+          tmp_lb <- coglasso_obj$lambda_b[index_lb]
+          if (tmp_lb == lb_sel) {
+            converged <- converged + 1
+          } else {
+            converged <- 0
+          }
+          
+          lb_sel <- tmp_lb
+          
+          if (j == 1) {
+            coglasso_obj$sel_variability <- variability_tmp
+            coglasso_obj$merge <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
+          }
+          
+          if (verbose) {
+            mes <- "Conducting Subsampling Lambda_b....done.                 "
+            cat(mes, "\r")
+            cat("\n")
+            if (converged == 2) {
+              mes <- "Reached convergence.                 "
+              cat(mes, "\r")
+              cat("\n")
+            }
+            flush.console()
+          }
+          
+          break
+        }
+        
+        coglasso_obj$sel_variability <- variability_tmp
+        coglasso_obj$merge <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
+      }
+      select_lb <- FALSE
+    } else  {
+      if (old_sampling) {
+        corr_matrixes <- vector(mode = "list", length = rep_num)
+        for (j in 1:rep_num) {
+          ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
+          corr_matrixes[[j]] <- cor(scale(coglasso_obj$data[ind.sample, ]))
+        }
+      }
+      
+      for (j in 1:n_c) {
+        alpha <- 1 / (coglasso_obj$c[j] * (D - 1) + 1)
+        
+        if (verbose) {
+          mes <- paste(c("Conducting Subsampling c....in progress:", floor(100 * j / n_c), "%"), collapse = "")
+          cat(mes, "\r")
+          flush.console()
+        }
+        real_rep.num <- 0
+        merge_tmp <- rep(0, p_tot*p_tot)
+        for (k in 1:rep_num) {
+          if (coglasso_obj$D == 2) {
+            #tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j]))), FALSE, FALSE, FALSE)
+            tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, lw_sel, lb_sel, coglasso_obj$c[j]))), icov_guess, FALSE, FALSE, FALSE)
+          }
+          else {
+            tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, lw_sel, lb_sel, coglasso_obj$c[j]))), FALSE, FALSE, FALSE)
+          }
+          nexploded <- tmp$nexploded[1]
+          tmp <- as.vector(tmp$path[[1]])
+          if (nexploded == 0) {
+            real_rep.num <- real_rep.num + 1
+            merge_tmp <- merge_tmp + tmp
+          }
+        }
+        rm(tmp)
+        gc()
+        
+        merge_tmp <- merge_tmp / real_rep.num
+        variability_tmp <- 4 * sum(merge_tmp * (1 - merge_tmp)) / (p_tot * (p_tot - 1))
+        
+        coglasso_obj$variability_c[j] <- variability_tmp
+        
+        if (variability_tmp >= stars_thresh) {
+          index_c <- max(j - 1, 1)
+          tmp_c <- coglasso_obj$c[index_c]
+          if (tmp_c == c_sel) {
+            converged <- converged + 1
+          } else {
+            converged <- 0
+          }
+          
+          c_sel <- tmp_c
+          
+          if (j == 1) {
+            coglasso_obj$sel_variability <- variability_tmp
+            coglasso_obj$merge <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
+          }
+          
+          if (verbose) {
+            mes <- "Conducting Subsampling c....done.                 "
+            cat(mes, "\r")
+            cat("\n")
+            if (converged == 2) {
+              mes <- "Reached convergence.                 "
+              cat(mes, "\r")
+              cat("\n")
+            }
+            flush.console()
+          }
+          
+          break
+        } else if (j == n_c) {
+          if (verbose) {
+            print("No c value was enough to pass the threshold of instability. Try with a higher value.")
+          }
+          index_c <- 1
+          tmp_c <- coglasso_obj$c[index_c]
+          if (tmp_c == c_sel) {
+            converged <- converged + 1
+          } else {
+            converged <- 0
+          }
+          
+          c_sel <- tmp_c
+          
+          if (j == 1) {
+            coglasso_obj$sel_variability <- variability_tmp
+            coglasso_obj$merge <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
+          }
+          
+          if (verbose) {
+            mes <- "Conducting Subsampling c....done.                 "
+            cat(mes, "\r")
+            cat("\n")
+            if (converged == 2) {
+              mes <- "Reached convergence.                 "
+              cat(mes, "\r")
+              cat("\n")
+            }
+            flush.console()
+          }
+          
+          break
+        }
+        
+        coglasso_obj$sel_variability <- variability_tmp
+        coglasso_obj$merge <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
+      }
+      select_lw <- TRUE
+    }
+    
+    num_iter <- num_iter + 1/3
+  }
+  if (num_iter >= max_iter) {
     if (verbose) {
-      mes <- paste(c("Selecting best Lambda_w/Lambda_b combination for all c values with \"xestars\"....in progress:", floor(100 * i / n_c), "%"), collapse = "")
+      mes <- "Reached max Iterations.                 "
       cat(mes, "\r")
       cat("\n")
       flush.console()
     }
-    
-    c <- coglasso_obj$c[i]
-    alpha <- 1 / (c * (D - 1) + 1)
-    
-    lw_sel <- -1
-    lb_sel <- coglasso_obj$lambda_b[n_lambda_b]
-    num_iter <- 0
-    converged <- FALSE
-    select_lw <- TRUE
-    
-    coglasso_obj$variability_lw[[i]] <- rep(0, n_lambda_w)
-    coglasso_obj$variability_lb[[i]] <- rep(0, n_lambda_b)
-    
-    while (!converged & num_iter < max_iter) {
-      if (select_lw) {
-        # Consider breaking in a one-dimensional sub-function returning a lambda estars
-        
-        if (old_sampling) {
-          corr_matrixes <- vector(mode = "list", length = rep_num)
-          for (j in 1:rep_num) {
-            ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
-            corr_matrixes[[j]] <- cor(scale(coglasso_obj$data[ind.sample, ]))
-          }
-        }
-        
-        for (j in 1:n_lambda_w) {
-          if (verbose) {
-            mes <- paste(c("Conducting Subsampling Lambda_w....in progress:", floor(100 * j / n_lambda_w), "%"), collapse = "")
-            cat(mes, "\r")
-            flush.console()
-          }
-          real_rep.num <- 0
-          merge_tmp <- rep(0, p_tot*p_tot)
-          for (k in 1:rep_num) {
-            if (coglasso_obj$D == 2) {
-              #tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel))), FALSE, FALSE, FALSE)
-              tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel, c))), icov_guess, FALSE, FALSE, FALSE)
-            }
-            else {
-              tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, coglasso_obj$lambda_w[j], lb_sel, c))), FALSE, FALSE, FALSE)
-            }
-            nexploded <- tmp$nexploded[1]
-            tmp <- as.vector(tmp$path[[1]])
-            if (nexploded == 0) {
-              real_rep.num <- real_rep.num + 1
-              merge_tmp <- merge_tmp + tmp
-            }
-          }
-          rm(tmp)
-          gc()
-          
-          merge_tmp <- merge_tmp / real_rep.num
-          variability_tmp <- 4 * sum(merge_tmp * (1 - merge_tmp)) / (p_tot * (p_tot - 1))
-          
-          coglasso_obj$variability_lw[[i]][j] <- variability_tmp
-          
-          # print("/n")
-          # print("/n")
-          # print(coglasso_obj$lambda_w[j])
-          # print(variability_tmp)
-          # print("/n")
-          # print("/n")
-          
-          if (variability_tmp >= stars_thresh) {
-            index_lw <- max(j - 1, 1)
-            tmp_lw <- coglasso_obj$lambda_w[[index_lw]]
-            if (tmp_lw == lw_sel) converged <- TRUE
-            
-            lw_sel <- tmp_lw
-            
-            if (j == 1) {
-              coglasso_obj$opt_variability[i] <- variability_tmp
-              if (!light) {
-                coglasso_obj$merge_lw[[i]] <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
-              }
-            }
-            
-            if (verbose) {
-              mes <- "Conducting Subsampling Lambda_w....done.                 "
-              cat(mes, "\r")
-              cat("\n")
-              if (converged) {
-                mes <- "Reached convergence.                 "
-                cat(mes, "\r")
-                cat("\n")
-              }
-              flush.console()
-            }
-            
-            break
-          }
-          
-          else if (j == n_lambda_w) {
-            index_lw <- 1
-            tmp_lw <- coglasso_obj$lambda_w[[index_lw]]
-            if (tmp_lw == lw_sel) converged <- TRUE
-            
-            lw_sel <- tmp_lw
-            
-            if (j == 1) {
-              coglasso_obj$opt_variability[i] <- variability_tmp
-              if (!light) {
-                coglasso_obj$merge_lw[[i]] <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
-              }
-            }
-            
-            if (verbose) {
-              mes <- "Conducting Subsampling Lambda_w....done.                 "
-              cat(mes, "\r")
-              cat("\n")
-              if (converged) {
-                mes <- "Reached convergence.                 "
-                cat(mes, "\r")
-                cat("\n")
-              }
-              flush.console()
-            }
-            
-            break
-          }
-          
-          coglasso_obj$opt_variability[i] <- variability_tmp
-          if (!light) {
-            coglasso_obj$merge_lw[[i]] <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
-          }
-        }
-      } 
-      else {
-        if (old_sampling) {
-          corr_matrixes <- vector(mode = "list", length = rep_num)
-          for (j in 1:rep_num) {
-            ind.sample <- sample(c(1:n), floor(n * stars_subsample_ratio), replace = FALSE)
-            corr_matrixes[[j]] <- cor(scale(coglasso_obj$data[ind.sample, ]))
-          }
-        }
-        
-        for (j in 1:n_lambda_b) {
-          if (verbose) {
-            mes <- paste(c("Conducting Subsampling Lambda_b....in progress:", floor(100 * j / n_lambda_b), "%"), collapse = "")
-            cat(mes, "\r")
-            flush.console()
-          }
-          real_rep.num <- 0
-          merge_tmp <- rep(0, p_tot*p_tot)
-          for (k in 1:rep_num) {
-            if (coglasso_obj$D == 2) {
-              #tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j]))), FALSE, FALSE, FALSE)
-              tmp <- co_glasso(corr_matrixes[[k]], p[1], t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j], c))), icov_guess, FALSE, FALSE, FALSE)
-            }
-            else {
-              tmp <- co_glasso_D(corr_matrixes[[k]], p, t(as.matrix(c(alpha, lw_sel, coglasso_obj$lambda_b[j], c))), FALSE, FALSE, FALSE)
-            }
-            nexploded <- tmp$nexploded[1]
-            tmp <- as.vector(tmp$path[[1]])
-            if (nexploded == 0) {
-              real_rep.num <- real_rep.num + 1
-              merge_tmp <- merge_tmp + tmp
-            }
-          }
-          rm(tmp)
-          gc()
-          
-          merge_tmp <- merge_tmp / real_rep.num
-          variability_tmp <- 4 * sum(merge_tmp * (1 - merge_tmp)) / (p_tot * (p_tot - 1))
-          
-          coglasso_obj$variability_lb[[i]][j] <- variability_tmp
-          
-          # print("/n")
-          # print("/n")
-          # print(coglasso_obj$lambda_b[j])
-          # print(variability_tmp)
-          # print("/n")
-          # print("/n")
-          
-          if (variability_tmp >= stars_thresh) {
-            index_lb <- max(j - 1, 1)
-            tmp_lb <- coglasso_obj$lambda_b[[index_lb]]
-            if (tmp_lb == lb_sel) converged <- TRUE
-            
-            lb_sel <- tmp_lb
-            
-            if (j == 1) {
-              coglasso_obj$opt_variability[i] <- variability_tmp
-              if (!light) {
-                coglasso_obj$merge_lb[[i]] <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
-              }
-            }
-            
-            if (verbose) {
-              mes <- "Conducting Subsampling Lambda_b....done.                 "
-              cat(mes, "\r")
-              cat("\n")
-              if (converged) {
-                mes <- "Reached convergence.                 "
-                cat(mes, "\r")
-                cat("\n")
-              }
-              flush.console()
-            }
-            
-            break
-          }
-          
-          else if (j == n_lambda_b) {
-            index_lb <- 1
-            tmp_lb <- coglasso_obj$lambda_b[[index_lb]]
-            if (tmp_lb == lb_sel) converged <- TRUE
-            
-            lb_sel <- tmp_lb
-            
-            if (j == 1) {
-              coglasso_obj$opt_variability[i] <- variability_tmp
-              if (!light) {
-                coglasso_obj$merge_lb[[i]] <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
-              }
-            }
-            
-            if (verbose) {
-              mes <- "Conducting Subsampling Lambda_b....done.                 "
-              cat(mes, "\r")
-              cat("\n")
-              if (converged) {
-                mes <- "Reached convergence.                 "
-                cat(mes, "\r")
-                cat("\n")
-              }
-              flush.console()
-            }
-            
-            break
-          }
-          
-          coglasso_obj$opt_variability[i] <- variability_tmp
-          if (!light) {
-            coglasso_obj$merge_lb[[i]] <- merge_tmp #make sure to make it a matrix again if implementing the vector to compute variability above
-          }
-        }
-      }
-      
-      select_lw <- !select_lw
-      
-      num_iter <- num_iter + 0.5
-    }
-    if (num_iter == max_iter) {
-      if (verbose) {
-        mes <- "Reached max Iterations.                 "
-        cat(mes, "\r")
-        cat("\n")
-        flush.console()
-      }
-    }
-    
-    if (verbose) {
-      mes <- "Selecting best Lambda_w/Lambda_b combination for all c values with \"xestars\"....done"
-      cat(mes, "\r")
-      flush.console()
-    }
-    
-    coglasso_obj$opt_index_lw[i] <- index_lw
-    coglasso_obj$opt_index_lb[i] <- index_lb
-    coglasso_obj$opt_lambda_w[i] <- coglasso_obj$lambda_w[index_lw]
-    coglasso_obj$opt_lambda_b[i] <- coglasso_obj$lambda_b[index_lb]
-    opt_hpars_combination <- which(coglasso_obj$hpars[, 1] == alpha &
-                                     coglasso_obj$hpars[, 2] == coglasso_obj$opt_lambda_w[i] &
-                                     coglasso_obj$hpars[, 3] == coglasso_obj$opt_lambda_b[i] &
-                                     coglasso_obj$hpars[, 4] == c)
-    coglasso_obj$opt_adj[[i]] <- coglasso_obj$path[[opt_hpars_combination]]
-    colnames(coglasso_obj$opt_adj[[i]]) <- colnames(coglasso_obj$data)
-    row.names(coglasso_obj$opt_adj[[i]]) <- colnames(coglasso_obj$data)
   }
   
-  if (all(is.na(coglasso_obj$opt_variability))) {
-    warning("coglasso did not converge for any c parameter. Will select the highest c.")
+  if (verbose) {
+    mes <- "Selecting best Lambda_w/Lambda_b/c combination with \"xestars\"....done"
+    cat(mes, "\r")
+    cat("\n")
+    flush.console()
   }
   
-  coglasso_obj$sel_index_c <- min(which.min(coglasso_obj$opt_variability), n_c)
-  coglasso_obj$sel_index_lw <- coglasso_obj$opt_index_lw[coglasso_obj$sel_index_c]
-  coglasso_obj$sel_index_lb <- coglasso_obj$opt_index_lb[coglasso_obj$sel_index_c]
-  coglasso_obj$sel_lambda_w <- coglasso_obj$lambda_w[coglasso_obj$sel_index_lw]
-  coglasso_obj$sel_lambda_b <- coglasso_obj$lambda_b[coglasso_obj$sel_index_lb]
-  coglasso_obj$sel_c <- coglasso_obj$c[coglasso_obj$sel_index_c]
-  coglasso_obj$sel_adj <- coglasso_obj$opt_adj[[coglasso_obj$sel_index_c]]
-  sel_hpars_combination <- which(coglasso_obj$hpars[, 1] ==  1 / (coglasso_obj$sel_c * (D - 1) + 1) &
+  coglasso_obj$sel_index_lw <- index_lw
+  coglasso_obj$sel_index_lb <- index_lb
+  coglasso_obj$sel_index_c <- index_c
+  coglasso_obj$sel_lambda_w <- coglasso_obj$lambda_w[index_lw]
+  coglasso_obj$sel_lambda_b <- coglasso_obj$lambda_b[index_lb]
+  coglasso_obj$sel_c <- coglasso_obj$c[index_c]
+  alpha <- 1 / (coglasso_obj$sel_c * (D - 1) + 1)
+  sel_hpars_combination <- which(coglasso_obj$hpars[, 1] == alpha &
                                    coglasso_obj$hpars[, 2] == coglasso_obj$sel_lambda_w &
                                    coglasso_obj$hpars[, 3] == coglasso_obj$sel_lambda_b &
                                    coglasso_obj$hpars[, 4] == coglasso_obj$sel_c)
+  coglasso_obj$sel_adj <- coglasso_obj$path[[sel_hpars_combination]]
+  colnames(coglasso_obj$sel_adj) <- colnames(coglasso_obj$data)
+  row.names(coglasso_obj$sel_adj) <- colnames(coglasso_obj$data)
+  
+  #if (all(is.na(coglasso_obj$sel_variability))) {
+  #  warning("coglasso did not converge for any c parameter. Will select the highest c.")
+  #}
+  
   coglasso_obj$sel_density <- coglasso_obj$density[sel_hpars_combination]
   coglasso_obj$sel_icov <- coglasso_obj$icov[[sel_hpars_combination]]
   if (!is.null(coglasso_obj$cov)) {
@@ -802,8 +968,8 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
 #' `r lifecycle::badge("deprecated")`
 #' 
 #' `stars_coglasso()` was deprecated in favor of [xstars()] as the function name
-#' does not reflect properly the method it implements. The new function will 
-#' also allow new memory-lighter and faster possibilities. 
+#' does not reflect properly the method it implements. The new function 
+#' also allows new memory-lighter and faster possibilities. 
 #' 
 #' @keywords internal
 #' @export

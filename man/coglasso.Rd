@@ -20,7 +20,7 @@ coglasso(
   c_max = NULL,
   lambda_w_min_ratio = NULL,
   lambda_b_min_ratio = NULL,
-  c_min_ratio = NULL,
+  c_min = NULL,
   icov_guess = NULL,
   cov_output = FALSE,
   lock_lambdas = FALSE,
@@ -61,7 +61,7 @@ explore. A sequence of size \code{nlambda_b} of \eqn{\lambda_b} parameters will
 be generated. Defaults to 8. Ignored when \code{lambda_b} is set by the user.}
 
 \item{nc}{The number of requested \eqn{c} parameters to explore. A sequence
-of size \code{nc} of \eqn{c} parameters will be generated. Defaults to 8.
+of size \code{nc} of \eqn{c} parameters will be generated. Defaults to 5.
 Ignored when \code{c} is set by the user.}
 
 \item{lambda_w_max}{The greatest generated \eqn{\lambda_w}. By default it is
@@ -72,7 +72,7 @@ user.}
 computed with a data-driven approach. Ignored when \code{lambda_b} is set by the
 user.}
 
-\item{c_max}{The greatest generated \eqn{c}. Defaults to 10. Ignored when \code{c}
+\item{c_max}{The greatest \eqn{c} explored. Defaults to 100. Ignored when \code{c}
 is set by the user.}
 
 \item{lambda_w_min_ratio}{The ratio of the smallest generated \eqn{\lambda_w}
@@ -83,9 +83,9 @@ over the greatest generated \eqn{\lambda_w}. Defaults to 0.1. Ignored when
 over the greatest generated \eqn{\lambda_b}. Defaults to 0.1. Ignored when
 \code{lambda_b} is set by the user.}
 
-\item{c_min_ratio}{The ratio of the smallest generated \eqn{c} over the
-greatest generated \eqn{c}. Defaults to 0.1. Ignored when \code{c} is set by the
-user.}
+\item{c_min}{The the smallest \eqn{c} explored. Defaults to
+\eqn{\frac{1}{c_{max}}}, so to 0.01 if \code{c_max} is not set by the user.
+Ignored when \code{c} is set by the user.}
 
 \item{icov_guess}{Use a predetermined inverse covariance matrix as an initial
 guess for the network estimation.}
@@ -144,8 +144,10 @@ the hyperparameters \eqn{\lambda_w}, \eqn{\lambda_b} and \eqn{c}.
 }
 \examples{
 # Typical usage: set the number of hyperparameters to explore
-cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, 
-               nlambda_b = 3, nc = 3, verbose = FALSE)
+cg <- coglasso(multi_omics_sd_micro,
+  p = c(4, 2), nlambda_w = 3,
+  nlambda_b = 3, nc = 3, verbose = FALSE
+)
 \donttest{
 # Model selection using eXtended Efficient StARS, takes less than five seconds
 sel_cg_xestars <- select_coglasso(cg, method = "xestars", verbose = FALSE)

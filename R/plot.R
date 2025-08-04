@@ -33,6 +33,7 @@
 #' 
 plot.select_coglasso <- function(x, index_c=NULL, index_lw=NULL, index_lb=NULL, node_labels = TRUE, hide_isolated = TRUE, ...) {
   sel_network <- get_network(x, index_c=index_c, index_lw=index_lw, index_lb=index_lb)
+  sel_pcor <- get_pcor(x, index_c=index_c, index_lw=index_lw, index_lb=index_lb)
   
   if (!node_labels) {
     igraph::V(sel_network)$label <- NA
@@ -55,7 +56,13 @@ plot.select_coglasso <- function(x, index_c=NULL, index_lw=NULL, index_lb=NULL, 
     igraph::V(sel_network)$label.color[j] <- fillsframes[[2]][i]
   }
   
-  lo <- igraph::layout_with_fr(sel_network)
+  ws <- abs(sel_pcor)
+  upper <- c(ws[upper.tri(ws)])
+  lower <- c(t(ws)[upper.tri(ws)])
+  ws <- sapply(seq_along(upper), function(i) max(upper[i], lower[i]))
+  ws <- ws[ws != 0]
+  
+  lo <- igraph::layout_with_fr(sel_network, weights = ws)
   if (hide_isolated) {
     disconnected <- which(igraph::degree(sel_network) == 0)
     sel_network <- igraph::delete_vertices(sel_network, disconnected)
@@ -76,6 +83,7 @@ plot.select_coglasso <- function(x, index_c=NULL, index_lw=NULL, index_lb=NULL, 
 #' @export
 plot.coglasso <- function(x, index_c, index_lw, index_lb, node_labels = TRUE, hide_isolated = TRUE, ...) {
   sel_network <- get_network(x, index_c=index_c, index_lw=index_lw, index_lb=index_lb)
+  sel_pcor <- get_pcor(x, index_c=index_c, index_lw=index_lw, index_lb=index_lb)
   
   if (!node_labels) {
     igraph::V(sel_network)$label <- NA
@@ -98,7 +106,13 @@ plot.coglasso <- function(x, index_c, index_lw, index_lb, node_labels = TRUE, hi
     igraph::V(sel_network)$label.color[j] <- fillsframes[[2]][i]
   }
   
-  lo <- igraph::layout_with_fr(sel_network)
+  ws <- abs(sel_pcor)
+  upper <- c(ws[upper.tri(ws)])
+  lower <- c(t(ws)[upper.tri(ws)])
+  ws <- sapply(seq_along(upper), function(i) max(upper[i], lower[i]))
+  ws <- ws[ws != 0]
+  
+  lo <- igraph::layout_with_fr(sel_network, weights = ws)
   if (hide_isolated) {
     disconnected <- which(igraph::degree(sel_network) == 0)
     sel_network <- igraph::delete_vertices(sel_network, disconnected)

@@ -6,6 +6,9 @@ editor_options:
 
 # coglasso (development version)
 
+-   Changed the `xstars()` algorithm to perform the stability-based selection of
+    the `c` hyperparameter simultaneously with `lambda_w` and `lambda_b`.
+
 -   Began the deprecation process of `stars_coglasso()`, renamed to the
     more accurate `xstars()`. Made also some implementation improvements
     to `xstars()` that made it faster.
@@ -28,7 +31,7 @@ editor_options:
     `select_coglasso()` in a single function call.
 
 -   Implemented `xestars()`, performing *eXtended Efficient StARS*, a
-    significantly faster and more memory-efficient version of *XStARS*.\
+    significantly faster version of *XStARS*.\
     **How much faster?**\
     In our tests, `xestars()` runs 80-90% faster than `xstars()`, even
     more in specific instances.\
@@ -48,21 +51,11 @@ editor_options:
     algorithm switches from the selection of lambda_w to that of a
     lambda_b (which can happen several times). Especially for larger
     data sets, this consists a huge difference.\
-    **What features make `xestars()` more memory-efficient?\
-    **`xestars()` does not keep in memory for longer than strictly
-    necessary the "merged" matrixes that store the average stability of
-    each edge, without accumulating them as in the original `xstars()`.
-    This, unless not explicitely requested by setting the parameter
-    `light` to `FALSE`.\
     **How do `xstars()` and `xestars()` differ in results?\
-    **The impressive increase in speed and more memory-efficiency comes
+    **The impressive increase in speed comes
     with some minor costs.\
-    First of all, some objects returned by `xstars()` are not returned
-    if not explicitly requested, and in general they come in a smaller
-    amount (see question above).\
-    Second, the different sampling strategy may guarantee not only a
-    faster, but also a fairer parameter selection, as they are all
-    selected from the same subsamplings. This may lead to different
+    The different sampling strategy that guarantees not only a
+    faster, but also a fairer parameter selection, may lead to different
     selected hyperparameters between the older and the new methodology.
 
 -   Created the classes `coglasso` and `select_coglasso`, with related

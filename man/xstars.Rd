@@ -43,39 +43,29 @@ containing the results of the
 selection procedure, built upon the object of \code{S3} class \code{coglasso} returned by \code{coglasso()}.
 \itemize{
 \item ... are the same elements returned by \code{\link[=coglasso]{coglasso()}}.
-\item \code{merge_lw} and \code{merge_lb} are lists with as many elements as the number of
-\eqn{c} parameters explored. Every element is in turn a list of as many
-matrices as the number of \eqn{\lambda_w} (or \eqn{\lambda_b}) values explored. Each
-matrix is the "merged" adjacency matrix, the average of all the adjacency
-matrices estimated  for those specific \eqn{c} and \eqn{\lambda_w} (or \eqn{\lambda_b})
-values across all the subsampling in the last path explored before
-convergence, the one when the final combination of \eqn{\lambda_w} and \eqn{\lambda_b}
-is selected for the given \eqn{c} value.
-\item \code{variability_lw} and \code{variability_lb} are lists with as many elements as
-the number of \eqn{c} parameters explored. Every element is a numeric vector
-of as many items as the number of \eqn{\lambda_w} (or \eqn{\lambda_b}) values explored.
-Each item is the variability of the network estimated for those specific
-\eqn{c} and \eqn{\lambda_w} (or \eqn{\lambda_b}) values in the last path explored before
-convergence, the one when the final combination of \eqn{\lambda_w} and \eqn{\lambda_b}
-is selected for the given \eqn{c} value.
-\item \code{opt_adj} is a list of the adjacency matrices finally selected for each
-\eqn{c} parameter explored.
-\item \code{opt_variability} is a numerical vector containing the variabilities
-associated to the adjacency matrices in \code{opt_adj}.
-\item \code{opt_index_lw} and \code{opt_index_lb} are integer vectors containing the
-index of the selected \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each \eqn{c} parameters
-explored.
-\item \code{opt_lambda_w} and \code{opt_lambda_b} are vectors containing the selected
-\eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each \eqn{c} parameters explored.
+\item \code{merge} is the "merged" adjacency matrix, the average of all the adjacency
+matrices estimated across all the different subsamples for the selected
+combination of \eqn{\lambda_w}, \eqn{\lambda_b}, and \eqn{c} values in the
+last path explored before convergence. Each entry is a measure of how
+recurrent the corresponding edge is across the subsamples.
+\item \code{variability_lw}, \code{variability_lb} and \code{variability_c} are numeric vectors
+of as many items as the number of \eqn{\lambda_w}, \eqn{\lambda_b}, and
+\eqn{c} values explored. Each item is the variability of the network
+estimated for the corresponding hyperparameter value, keeping the other two
+hyperparameters fixed to their selected value.
 \item \code{sel_index_c}, \code{sel_index_lw} and \code{sel_index_lb} are the indexes of the
-final selected parameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b} leading to the
-most stable sparse network.
+final selected parameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b}
+leading to the most stable sparse network.
 \item \code{sel_c}, \code{sel_lambda_w} and \code{sel_lambda_b} are the final selected
-parameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b} leading to the most stable
-sparse network.
+hyperparameters \eqn{c}, \eqn{\lambda_w} and \eqn{\lambda_b} leading to the
+most stable sparse network.
 \item \code{sel_adj} is the adjacency matrix of the final selected network.
+\item \code{sel_variability} is the variability of the final selected network.
 \item \code{sel_density} is the density of the final selected network.
 \item \code{sel_icov} is the inverse covariance matrix of the final selected network.
+\item \code{sel_cov} optional, given only when \code{coglasso()} was called with
+\code{cov_output = TRUE}. It is the covariance matrix associated with the final
+selected network.
 \item \code{call} is the matched call.
 \item \code{method} is the chosen model selection method. Here, it is "xstars".
 }
@@ -93,14 +83,13 @@ allowing repetition. Subsamples are collected for a fixed amount of times
 published by Liu, H. \emph{et al.} (2010): Stability Approach to Regularization
 Selection (StARS). \emph{StARS} was developed for network estimation regulated by
 a single penalty parameter, while \emph{collaborative graphical lasso} needs to
-explore three different hyperparameters. In particular, two of these are
-penalty parameters with a direct influence on network sparsity, hence on
-stability. For every \eqn{c} parameter, \code{xstars()} explores one of
-the two penalty parameters (\eqn{\lambda_w} or \eqn{\lambda_b}), keeping the other one
-fixed at its previous best estimate, using the normal, one-dimentional
-\emph{StARS} approach, until finding the best couple. It then selects the \eqn{c}
-parameter for which the best (\eqn{\lambda_w}, \eqn{\lambda_b}) couple yielded the most
-stable, yet sparse network.
+explore three different hyperparameters. These all have, to a different
+degree, a direct influence on network sparsity, hence on stability. For every
+iteration, \code{xstars()} explores one of the three parameters (\eqn{\lambda_w},
+\eqn{\lambda_b}, or \eqn{c}), keeping the other ones fixed at their previous
+selected estimate, using the normal, one-dimentional \emph{StARS} approach, until
+finding the best combination of the three that yields the most stable, yet
+sparse network.
 }
 \examples{
 cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, 

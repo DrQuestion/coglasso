@@ -5,12 +5,12 @@ test_that("plot.select_coglasso and plot.coglasso work", {
   })
   set.seed(42)
   # plot.coglasso
-  cg <- coglasso(multi_omics_sd_small, p = 14, nlambda_w = 15, nlambda_b = 15,
-               nc = 2, lambda_w_min_ratio = 0.6, verbose = FALSE)
+  cg <- coglasso(multi_omics_sd_small, p = 14, nlambda_w = 5, nlambda_b = 5,
+               nc = 2, lambda_w_min_ratio = 0.4, lambda_b_min_ratio = 0.5, verbose = FALSE)
   expect_no_error(plot(cg, index_c = 2, index_lw = 1, index_lb = 5))
   expect_no_error(plot(cg, index_c = 2, index_lw = 1, index_lb = 5, node_labels = FALSE, hide_isolated = FALSE))
   # plot.select_coglasso
-  sel_cg <- select_coglasso(cg, rep_num = 4, verbose = FALSE)
+  sel_cg <- select_coglasso(cg, rep_num = 3, verbose = FALSE)
   expect_no_error(plot(sel_cg))
   expect_no_error(plot(sel_cg, node_labels = FALSE, hide_isolated = FALSE))
 })

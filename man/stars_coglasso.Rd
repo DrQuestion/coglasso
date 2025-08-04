@@ -17,8 +17,8 @@ stars_coglasso(
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
 \code{stars_coglasso()} was deprecated in favor of \code{\link[=xstars]{xstars()}} as the function name
-does not reflect properly the method it implements. The new function will
-also allow new memory-lighter and faster possibilities.
+does not reflect properly the method it implements. The new function
+also allows new memory-lighter and faster possibilities.
 }
 \examples{
 cg <- coglasso(multi_omics_sd_micro, p = c(4, 2), nlambda_w = 3, 

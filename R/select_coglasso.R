@@ -14,9 +14,9 @@
 #'     number of samples (`stars_subsample_ratio`). See [xstars()] for more
 #'     information on the methodology.
 #'   \item "xestars" uses *eXtended Efficient StARS* (*XEStARS*), a significantly
-#'     faster and memory-effcient version of *XStARS*. It could produce marginally 
-#'     different results to "xstars" due to a different sampling strategy. See 
-#'     [xestars()] for more information on the methodology.
+#'     faster version of *XStARS*. It could produce marginally different results
+#'     to "xstars" due to a different sampling strategy. See [xestars()] for 
+#'     more information on the methodology.
 #'   \item "ebic" uses the *extended Bayesian Information*
 #'     *Criterion* (*eBIC*) selecting the network that minimizes it. `gamma` sets the
 #'     wait given to the extended component, turning the model selection method to
@@ -46,59 +46,25 @@
 #'   \item `sel_adj` is the adjacency matrix of the final selected network.
 #'   \item `sel_density` is the density of the final selected network.
 #'   \item `sel_icov` is the inverse covariance matrix of the final selected network.
+#'   \item `sel_cov` optional, given only when `coglasso()` was called with 
+#'   `cov_output = TRUE`. It is the covariance matrix associated with the final 
+#'   selected network.
 #'   \item `call` is the matched call.
 #'   \item `method` is the chosen model selection method.
 #' }
-#'   These are the additional elements returned when choosing "xestars":
+#'   These are the additional elements returned when choosing "xestars" or "xstars":
 #' \itemize{
-#'   \item `opt_adj` is a list of the adjacency matrices finally selected for each
-#'     \eqn{c} parameter explored.
-#'   \item `opt_variability` is a numerical vector containing the variabilities
-#'     associated to the adjacency matrices in `opt_adj`.
-#'   \item `opt_index_lw` and `opt_index_lb` are integer vectors containing the
-#'     index of the selected \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each
-#'     \eqn{c} parameters explored.
-#'   \item `opt_lambda_w` and `opt_lambda_b` are vectors containing the selected
-#'     \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each \eqn{c} parameters
-#'     explored.
-#'   \item `merge_lw` and `merge_lb` are returned only if `light` is set to FALSE.
-#'     They are lists with as many elements as the number of
-#'     \eqn{c} parameters explored. Every element is a "merged" adjacency matrix,
-#'     the average of all the adjacency matrices estimated  for those specific 
-#'     \eqn{c} and the selected \eqn{\lambda_w} (or \eqn{\lambda_b}) values 
-#'     across all the subsampling in the last path explored before convergence, 
-#'     the one when the final combination of \eqn{\lambda_w} and \eqn{\lambda_b} 
-#'     is selected for the given \eqn{c} value.
-#' }
-#'   These are the additional elements returned when choosing "xstars":
-#' \itemize{
-#'   \item `merge_lw` and `merge_lb` are lists with as many elements as the number of
-#'     \eqn{c} parameters explored. Every element is in turn a list of as many
-#'     matrices as the number of \eqn{\lambda_w} (or \eqn{\lambda_b}) values
-#'     explored. Each matrix is the "merged" adjacency matrix, the average of all
-#'     the adjacency matrices estimated  for those specific \eqn{c} and
-#'     \eqn{\lambda_w} (or \eqn{\lambda_b}) values across all the subsampling in
-#'     the last path explored before convergence, the one when the final
-#'     combination of \eqn{\lambda_w} and \eqn{\lambda_b} is selected for the
-#'     given \eqn{c} value.
-#'   \item `variability_lw` and `variability_lb` are lists with as many elements as
-#'     the number of \eqn{c} parameters explored. Every element is a numeric
-#'     vector of as many items as the number of \eqn{\lambda_w} (or
-#'     \eqn{\lambda_b}) values explored. Each item is the variability of the
-#'     network estimated for those specific \eqn{c} and \eqn{\lambda_w} (or
-#'     \eqn{\lambda_b}) values in the last path explored before convergence, the
-#'     one when the final combination of \eqn{\lambda_w} and \eqn{\lambda_b} is
-#'     selected for the given \eqn{c} value.
-#'   \item `opt_adj` is a list of the adjacency matrices finally selected for each
-#'     \eqn{c} parameter explored.
-#'   \item `opt_variability` is a numerical vector containing the variabilities
-#'     associated to the adjacency matrices in `opt_adj`.
-#'   \item `opt_index_lw` and `opt_index_lb` are integer vectors containing the
-#'     index of the selected \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each
-#'     \eqn{c} parameters explored.
-#'   \item `opt_lambda_w` and `opt_lambda_b` are vectors containing the selected
-#'     \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each \eqn{c} parameters
-#'     explored.
+#'   \item `merge` is the "merged" adjacency matrix, the average of all the adjacency 
+#'     matrices estimated across all the different subsamples for the selected 
+#'     combination of \eqn{\lambda_w}, \eqn{\lambda_b}, and \eqn{c} values in the
+#'     last path explored before convergence. Each entry is a measure of how 
+#'     recurrent the corresponding edge is across the subsamples.
+#'   \item `variability_lw`, `variability_lb` and `variability_c` are numeric vectors
+#'     of as many items as the number of \eqn{\lambda_w}, \eqn{\lambda_b}, and 
+#'     \eqn{c} values explored. Each item is the variability of the network 
+#'     estimated for the corresponding hyperparameter value, keeping the other two 
+#'     hyperparameters fixed to their selected value.
+#'   \item `sel_variability` is the variability of the final selected network.
 #' }
 #'   These are the additional elements returned when choosing "ebic":
 #' \itemize{
@@ -119,7 +85,7 @@
 #' # Using eBIC
 #' sel_cg_ebic <- select_coglasso(cg, method = "ebic", verbose = FALSE)
 #' 
-select_coglasso <- function(coglasso_obj, method = "xestars", stars_thresh = 0.1, stars_subsample_ratio = NULL, rep_num = 20, max_iter = 10, old_sampling = FALSE, light = TRUE, ebic_gamma = 0.5, verbose = TRUE) {
+select_coglasso <- function(coglasso_obj, method = "xestars", stars_thresh = 0.1, stars_subsample_ratio = NULL, rep_num = 20, max_iter = 10, old_sampling = FALSE, ebic_gamma = 0.5, verbose = TRUE) {
   call <- match.call()
   if ((method != "xestars") & (method != "xstars") & (method != "ebic")) {
     warning("Only available selection methods are \"xstars\", \"xestars\" and \"ebic\". Reverting to default selection method \"xestars\"")
@@ -129,7 +95,7 @@ select_coglasso <- function(coglasso_obj, method = "xestars", stars_thresh = 0.1
   if (method == "xstars") {
     coglasso_obj <- xstars(coglasso_obj = coglasso_obj, stars_thresh = stars_thresh, stars_subsample_ratio = stars_subsample_ratio, rep_num = rep_num, max_iter = max_iter, verbose = verbose)
   } else if (method == "xestars") {
-    coglasso_obj <- xestars(coglasso_obj = coglasso_obj, stars_thresh = stars_thresh, stars_subsample_ratio = stars_subsample_ratio, rep_num = rep_num, max_iter = max_iter, old_sampling = old_sampling, light = light, verbose = verbose)
+    coglasso_obj <- xestars(coglasso_obj = coglasso_obj, stars_thresh = stars_thresh, stars_subsample_ratio = stars_subsample_ratio, rep_num = rep_num, max_iter = max_iter, old_sampling = old_sampling, verbose = verbose)
   } else if (method == "ebic") {
     if (verbose) {
       mes <- "Selecting best Lambda_w/Lambda_b combination for all c values with \"ebic\"....in progress"
@@ -160,6 +126,9 @@ select_coglasso <- function(coglasso_obj, method = "xestars", stars_thresh = 0.1
     coglasso_obj$sel_adj <- coglasso_obj$path[[sel_combination]]
     coglasso_obj$sel_density <- coglasso_obj$density[sel_combination]
     coglasso_obj$sel_icov <- coglasso_obj$icov[[sel_combination]]
+    if (!is.null(coglasso_obj$cov)) {
+      coglasso_obj$sel_cov <- coglasso_obj$cov[[sel_combination]]
+    }
   }
   coglasso_obj$call <- call
   coglasso_obj$method <- method

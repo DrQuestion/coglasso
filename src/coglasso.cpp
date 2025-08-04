@@ -136,7 +136,6 @@ List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd
             }
         }
 
-
         // Anti explosion warm start
         // for (int ii = 0; ii < p; ii++) {
         //     for (int jj = 0; jj < p; jj++) {
@@ -171,9 +170,9 @@ List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd
         {
             if (verbose) {
                 if (scr)
-                    Rcout << "\rConducting the collaborative graphical lasso (coglasso) wtih lossy screening....in progress: " << floor(100 * (1. - (1. * i / nhpars))) << "%";
+                    Rcout << "Conducting the collaborative graphical lasso (coglasso) wtih lossy screening....in progress: " << floor(100 * (1. - (1. * i / nhpars))) << "%\r";
                 if (!scr)
-                    Rcout << "\rConducting the collaborative graphical lasso (coglasso)....in progress: " << floor(100 * (1. - (1. * i / nhpars))) << "%";
+                    Rcout << "Conducting the collaborative graphical lasso (coglasso)....in progress: " << floor(100 * (1. - (1. * i / nhpars))) << "%\r";
             }
 
             coglasso_sub(sub_S, sub_W, sub_T, pX, p, alpha, c, Lambda_star_ij, sub_df, converged, scr, i);
@@ -242,6 +241,14 @@ List co_glasso(Eigen::Map<Eigen::MatrixXd> S, int pX, Eigen::Map<Eigen::MatrixXd
         }
 
     }
+    
+    if (verbose) {
+      if (scr)
+        Rcout << "Conducting the collaborative graphical lasso (coglasso) wtih lossy screening....done            \n";
+      if (!scr)
+        Rcout << "Conducting the collaborative graphical lasso (coglasso)....done            \n";
+    }
+    
     List path, icov, cov;
     for (unsigned int i = 0; i < nhpars; i++) {
         path.push_back(*(tmp_path_p[nhpars - 1 - i]));

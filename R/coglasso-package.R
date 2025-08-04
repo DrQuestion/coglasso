@@ -10,6 +10,7 @@
 #' @importFrom Rcpp evalCpp
 #' @importFrom rlang call_args
 #' @importFrom stats cor
+#' @importFrom stats cov2cor
 #' @importFrom utils flush.console
 #' @useDynLib coglasso, .registration=TRUE
 ## usethis namespace: end

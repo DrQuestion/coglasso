@@ -20,7 +20,7 @@ bs(
   c_max = NULL,
   lambda_w_min_ratio = NULL,
   lambda_b_min_ratio = NULL,
-  c_min_ratio = NULL,
+  c_min = NULL,
   icov_guess = NULL,
   cov_output = FALSE,
   lock_lambdas = FALSE,
@@ -30,7 +30,6 @@ bs(
   rep_num = 20,
   max_iter = 10,
   old_sampling = FALSE,
-  light = TRUE,
   ebic_gamma = 0.5,
   verbose = TRUE
 )
@@ -69,7 +68,7 @@ explore. A sequence of size \code{nlambda_b} of \eqn{\lambda_b} parameters will
 be generated. Defaults to 8. Ignored when \code{lambda_b} is set by the user.}
 
 \item{nc}{The number of requested \eqn{c} parameters to explore. A sequence
-of size \code{nc} of \eqn{c} parameters will be generated. Defaults to 8.
+of size \code{nc} of \eqn{c} parameters will be generated. Defaults to 5.
 Ignored when \code{c} is set by the user.}
 
 \item{lambda_w_max}{The greatest generated \eqn{\lambda_w}. By default it is
@@ -80,7 +79,7 @@ user.}
 computed with a data-driven approach. Ignored when \code{lambda_b} is set by the
 user.}
 
-\item{c_max}{The greatest generated \eqn{c}. Defaults to 10. Ignored when \code{c}
+\item{c_max}{The greatest \eqn{c} explored. Defaults to 100. Ignored when \code{c}
 is set by the user.}
 
 \item{lambda_w_min_ratio}{The ratio of the smallest generated \eqn{\lambda_w}
@@ -91,9 +90,9 @@ over the greatest generated \eqn{\lambda_w}. Defaults to 0.1. Ignored when
 over the greatest generated \eqn{\lambda_b}. Defaults to 0.1. Ignored when
 \code{lambda_b} is set by the user.}
 
-\item{c_min_ratio}{The ratio of the smallest generated \eqn{c} over the
-greatest generated \eqn{c}. Defaults to 0.1. Ignored when \code{c} is set by the
-user.}
+\item{c_min}{The the smallest \eqn{c} explored. Defaults to
+\eqn{\frac{1}{c_{max}}}, so to 0.01 if \code{c_max} is not set by the user.
+Ignored when \code{c} is set by the user.}
 
 \item{icov_guess}{Use a predetermined inverse covariance matrix as an initial
 guess for the network estimation.}
@@ -128,10 +127,6 @@ choose a new best \eqn{\lambda_w}. Defaults to 10.}
 \item{old_sampling}{Perform the same subsampling \code{xstars()} would if set to
 TRUE. Makes a difference with bigger data sets, where computing
 a correlation matrix could take significantly longer. Defaults to FALSE.}
-
-\item{light}{Do not store the "merged" matrixes recording average variability
-of each edge, making the algorithm more memory efficient, if set to TRUE.
-Defaults to TRUE.}
 
 \item{ebic_gamma}{The \eqn{\gamma} tuning parameter for \emph{eBIC} selection, to set
 between 0 and 1. When set to 0 one has the standard \emph{BIC}. Defaults to 0.5.}
@@ -186,59 +181,25 @@ stable sparse network.
 \item \code{sel_adj} is the adjacency matrix of the final selected network.
 \item \code{sel_density} is the density of the final selected network.
 \item \code{sel_icov} is the inverse covariance matrix of the final selected network.
+\item \code{sel_cov} optional, given only when \code{coglasso()} was called with
+\code{cov_output = TRUE}. It is the covariance matrix associated with the final
+selected network.
 \item \code{call} is the matched call.
 \item \code{method} is the chosen model selection method.
 }
-These are the additional elements returned when choosing "xestars":
+These are the additional elements returned when choosing "xestars" or "xstars":
 \itemize{
-\item \code{opt_adj} is a list of the adjacency matrices finally selected for each
-\eqn{c} parameter explored.
-\item \code{opt_variability} is a numerical vector containing the variabilities
-associated to the adjacency matrices in \code{opt_adj}.
-\item \code{opt_index_lw} and \code{opt_index_lb} are integer vectors containing the
-index of the selected \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each
-\eqn{c} parameters explored.
-\item \code{opt_lambda_w} and \code{opt_lambda_b} are vectors containing the selected
-\eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each \eqn{c} parameters
-explored.
-\item \code{merge_lw} and \code{merge_lb} are returned only if \code{light} is set to FALSE.
-They are lists with as many elements as the number of
-\eqn{c} parameters explored. Every element is a "merged" adjacency matrix,
-the average of all the adjacency matrices estimated  for those specific
-\eqn{c} and the selected \eqn{\lambda_w} (or \eqn{\lambda_b}) values
-across all the subsampling in the last path explored before convergence,
-the one when the final combination of \eqn{\lambda_w} and \eqn{\lambda_b}
-is selected for the given \eqn{c} value.
-}
-These are the additional elements returned when choosing "xstars":
-\itemize{
-\item \code{merge_lw} and \code{merge_lb} are lists with as many elements as the number of
-\eqn{c} parameters explored. Every element is in turn a list of as many
-matrices as the number of \eqn{\lambda_w} (or \eqn{\lambda_b}) values
-explored. Each matrix is the "merged" adjacency matrix, the average of all
-the adjacency matrices estimated  for those specific \eqn{c} and
-\eqn{\lambda_w} (or \eqn{\lambda_b}) values across all the subsampling in
-the last path explored before convergence, the one when the final
-combination of \eqn{\lambda_w} and \eqn{\lambda_b} is selected for the
-given \eqn{c} value.
-\item \code{variability_lw} and \code{variability_lb} are lists with as many elements as
-the number of \eqn{c} parameters explored. Every element is a numeric
-vector of as many items as the number of \eqn{\lambda_w} (or
-\eqn{\lambda_b}) values explored. Each item is the variability of the
-network estimated for those specific \eqn{c} and \eqn{\lambda_w} (or
-\eqn{\lambda_b}) values in the last path explored before convergence, the
-one when the final combination of \eqn{\lambda_w} and \eqn{\lambda_b} is
-selected for the given \eqn{c} value.
-\item \code{opt_adj} is a list of the adjacency matrices finally selected for each
-\eqn{c} parameter explored.
-\item \code{opt_variability} is a numerical vector containing the variabilities
-associated to the adjacency matrices in \code{opt_adj}.
-\item \code{opt_index_lw} and \code{opt_index_lb} are integer vectors containing the
-index of the selected \eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each
-\eqn{c} parameters explored.
-\item \code{opt_lambda_w} and \code{opt_lambda_b} are vectors containing the selected
-\eqn{\lambda_w}s (or \eqn{\lambda_b}s) for each \eqn{c} parameters
-explored.
+\item \code{merge} is the "merged" adjacency matrix, the average of all the adjacency
+matrices estimated across all the different subsamples for the selected
+combination of \eqn{\lambda_w}, \eqn{\lambda_b}, and \eqn{c} values in the
+last path explored before convergence. Each entry is a measure of how
+recurrent the corresponding edge is across the subsamples.
+\item \code{variability_lw}, \code{variability_lb} and \code{variability_c} are numeric vectors
+of as many items as the number of \eqn{\lambda_w}, \eqn{\lambda_b}, and
+\eqn{c} values explored. Each item is the variability of the network
+estimated for the corresponding hyperparameter value, keeping the other two
+hyperparameters fixed to their selected value.
+\item \code{sel_variability} is the variability of the final selected network.
 }
 These are the additional elements returned when choosing "ebic":
 \itemize{
