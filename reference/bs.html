@@ -11,7 +11,7 @@ to select the best one according to the chosen criterion."><meta property="og:im
 
     <a class="navbar-brand me-2" href="../index.html">coglasso</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2.9002</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,7 @@ to select the best one according to the chosen criterion.</p>
 <span>  c_max <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lambda_w_min_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lambda_b_min_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  c_min_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  c_min <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  icov_guess <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cov_output <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  lock_lambdas <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -74,7 +74,6 @@ to select the best one according to the chosen criterion.</p>
 <span>  rep_num <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  max_iter <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  old_sampling <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  light <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ebic_gamma <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -134,7 +133,7 @@ be generated. Defaults to 8. Ignored when <code>lambda_b</code> is set by the us
 
 <dt id="arg-nc">nc<a class="anchor" aria-label="anchor" href="#arg-nc"></a></dt>
 <dd><p>The number of requested \(c\) parameters to explore. A sequence
-of size <code>nc</code> of \(c\) parameters will be generated. Defaults to 8.
+of size <code>nc</code> of \(c\) parameters will be generated. Defaults to 5.
 Ignored when <code>c</code> is set by the user.</p></dd>
 
 
@@ -151,7 +150,7 @@ user.</p></dd>
 
 
 <dt id="arg-c-max">c_max<a class="anchor" aria-label="anchor" href="#arg-c-max"></a></dt>
-<dd><p>The greatest generated \(c\). Defaults to 10. Ignored when <code>c</code>
+<dd><p>The greatest \(c\) explored. Defaults to 100. Ignored when <code>c</code>
 is set by the user.</p></dd>
 
 
@@ -167,10 +166,10 @@ over the greatest generated \(\lambda_b\). Defaults to 0.1. Ignored when
 <code>lambda_b</code> is set by the user.</p></dd>
 
 
-<dt id="arg-c-min-ratio">c_min_ratio<a class="anchor" aria-label="anchor" href="#arg-c-min-ratio"></a></dt>
-<dd><p>The ratio of the smallest generated \(c\) over the
-greatest generated \(c\). Defaults to 0.1. Ignored when <code>c</code> is set by the
-user.</p></dd>
+<dt id="arg-c-min">c_min<a class="anchor" aria-label="anchor" href="#arg-c-min"></a></dt>
+<dd><p>The the smallest \(c\) explored. Defaults to
+\(\frac{1}{c_{max}}\), so to 0.01 if <code>c_max</code> is not set by the user.
+Ignored when <code>c</code> is set by the user.</p></dd>
 
 
 <dt id="arg-icov-guess">icov_guess<a class="anchor" aria-label="anchor" href="#arg-icov-guess"></a></dt>
@@ -223,12 +222,6 @@ choose a new best \(\lambda_w\). Defaults to 10.</p></dd>
 <dd><p>Perform the same subsampling <code><a href="xstars.html">xstars()</a></code> would if set to
 TRUE. Makes a difference with bigger data sets, where computing
 a correlation matrix could take significantly longer. Defaults to FALSE.</p></dd>
-
-
-<dt id="arg-light">light<a class="anchor" aria-label="anchor" href="#arg-light"></a></dt>
-<dd><p>Do not store the "merged" matrixes recording average variability
-of each edge, making the algorithm more memory efficient, if set to TRUE.
-Defaults to TRUE.</p></dd>
 
 
 <dt id="arg-ebic-gamma">ebic_gamma<a class="anchor" aria-label="anchor" href="#arg-ebic-gamma"></a></dt>
@@ -284,53 +277,22 @@ stable sparse network.</p></li>
 <li><p><code>sel_adj</code> is the adjacency matrix of the final selected network.</p></li>
 <li><p><code>sel_density</code> is the density of the final selected network.</p></li>
 <li><p><code>sel_icov</code> is the inverse covariance matrix of the final selected network.</p></li>
+<li><p><code>sel_cov</code> optional, given only when <code><a href="coglasso.html">coglasso()</a></code> was called with
+<code>cov_output = TRUE</code>. It is the covariance matrix associated with the final
+selected network.</p></li>
 <li><p><code>call</code> is the matched call.</p></li>
 <li><p><code>method</code> is the chosen model selection method.</p></li>
-</ul><p>These are the additional elements returned when choosing "xestars":</p><ul><li><p><code>opt_adj</code> is a list of the adjacency matrices finally selected for each
-\(c\) parameter explored.</p></li>
-<li><p><code>opt_variability</code> is a numerical vector containing the variabilities
-associated to the adjacency matrices in <code>opt_adj</code>.</p></li>
-<li><p><code>opt_index_lw</code> and <code>opt_index_lb</code> are integer vectors containing the
-index of the selected \(\lambda_w\)s (or \(\lambda_b\)s) for each
-\(c\) parameters explored.</p></li>
-<li><p><code>opt_lambda_w</code> and <code>opt_lambda_b</code> are vectors containing the selected
-\(\lambda_w\)s (or \(\lambda_b\)s) for each \(c\) parameters
-explored.</p></li>
-<li><p><code>merge_lw</code> and <code>merge_lb</code> are returned only if <code>light</code> is set to FALSE.
-They are lists with as many elements as the number of
-\(c\) parameters explored. Every element is a "merged" adjacency matrix,
-the average of all the adjacency matrices estimated  for those specific
-\(c\) and the selected \(\lambda_w\) (or \(\lambda_b\)) values
-across all the subsampling in the last path explored before convergence,
-the one when the final combination of \(\lambda_w\) and \(\lambda_b\)
-is selected for the given \(c\) value.</p></li>
-</ul><p>These are the additional elements returned when choosing "xstars":</p><ul><li><p><code>merge_lw</code> and <code>merge_lb</code> are lists with as many elements as the number of
-\(c\) parameters explored. Every element is in turn a list of as many
-matrices as the number of \(\lambda_w\) (or \(\lambda_b\)) values
-explored. Each matrix is the "merged" adjacency matrix, the average of all
-the adjacency matrices estimated  for those specific \(c\) and
-\(\lambda_w\) (or \(\lambda_b\)) values across all the subsampling in
-the last path explored before convergence, the one when the final
-combination of \(\lambda_w\) and \(\lambda_b\) is selected for the
-given \(c\) value.</p></li>
-<li><p><code>variability_lw</code> and <code>variability_lb</code> are lists with as many elements as
-the number of \(c\) parameters explored. Every element is a numeric
-vector of as many items as the number of \(\lambda_w\) (or
-\(\lambda_b\)) values explored. Each item is the variability of the
-network estimated for those specific \(c\) and \(\lambda_w\) (or
-\(\lambda_b\)) values in the last path explored before convergence, the
-one when the final combination of \(\lambda_w\) and \(\lambda_b\) is
-selected for the given \(c\) value.</p></li>
-<li><p><code>opt_adj</code> is a list of the adjacency matrices finally selected for each
-\(c\) parameter explored.</p></li>
-<li><p><code>opt_variability</code> is a numerical vector containing the variabilities
-associated to the adjacency matrices in <code>opt_adj</code>.</p></li>
-<li><p><code>opt_index_lw</code> and <code>opt_index_lb</code> are integer vectors containing the
-index of the selected \(\lambda_w\)s (or \(\lambda_b\)s) for each
-\(c\) parameters explored.</p></li>
-<li><p><code>opt_lambda_w</code> and <code>opt_lambda_b</code> are vectors containing the selected
-\(\lambda_w\)s (or \(\lambda_b\)s) for each \(c\) parameters
-explored.</p></li>
+</ul><p>These are the additional elements returned when choosing "xestars" or "xstars":</p><ul><li><p><code>merge</code> is the "merged" adjacency matrix, the average of all the adjacency
+matrices estimated across all the different subsamples for the selected
+combination of \(\lambda_w\), \(\lambda_b\), and \(c\) values in the
+last path explored before convergence. Each entry is a measure of how
+recurrent the corresponding edge is across the subsamples.</p></li>
+<li><p><code>variability_lw</code>, <code>variability_lb</code> and <code>variability_c</code> are numeric vectors
+of as many items as the number of \(\lambda_w\), \(\lambda_b\), and
+\(c\) values explored. Each item is the variability of the network
+estimated for the corresponding hyperparameter value, keeping the other two
+hyperparameters fixed to their selected value.</p></li>
+<li><p><code>sel_variability</code> is the variability of the final selected network.</p></li>
 </ul><p>These are the additional elements returned when choosing "ebic":</p><ul><li><p><code>ebic_scores</code> is a numerical vector containing the eBIC scores for all the
 hyperparameter combination.</p></li>
 </ul></div>

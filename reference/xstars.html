@@ -17,7 +17,7 @@ allowing repetition. Subsamples are collected for a fixed amount of times
 
     <a class="navbar-brand me-2" href="../index.html">coglasso</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2.9002</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -112,39 +112,29 @@ procedure on the console.</p></dd>
     <p><code>xstars()</code> returns an object of <code>S3</code> class <code>select_coglasso</code>
 containing the results of the
 selection procedure, built upon the object of <code>S3</code> class <code>coglasso</code> returned by <code><a href="coglasso.html">coglasso()</a></code>.</p><ul><li><p>... are the same elements returned by <code><a href="coglasso.html">coglasso()</a></code>.</p></li>
-<li><p><code>merge_lw</code> and <code>merge_lb</code> are lists with as many elements as the number of
-\(c\) parameters explored. Every element is in turn a list of as many
-matrices as the number of \(\lambda_w\) (or \(\lambda_b\)) values explored. Each
-matrix is the "merged" adjacency matrix, the average of all the adjacency
-matrices estimated  for those specific \(c\) and \(\lambda_w\) (or \(\lambda_b\))
-values across all the subsampling in the last path explored before
-convergence, the one when the final combination of \(\lambda_w\) and \(\lambda_b\)
-is selected for the given \(c\) value.</p></li>
-<li><p><code>variability_lw</code> and <code>variability_lb</code> are lists with as many elements as
-the number of \(c\) parameters explored. Every element is a numeric vector
-of as many items as the number of \(\lambda_w\) (or \(\lambda_b\)) values explored.
-Each item is the variability of the network estimated for those specific
-\(c\) and \(\lambda_w\) (or \(\lambda_b\)) values in the last path explored before
-convergence, the one when the final combination of \(\lambda_w\) and \(\lambda_b\)
-is selected for the given \(c\) value.</p></li>
-<li><p><code>opt_adj</code> is a list of the adjacency matrices finally selected for each
-\(c\) parameter explored.</p></li>
-<li><p><code>opt_variability</code> is a numerical vector containing the variabilities
-associated to the adjacency matrices in <code>opt_adj</code>.</p></li>
-<li><p><code>opt_index_lw</code> and <code>opt_index_lb</code> are integer vectors containing the
-index of the selected \(\lambda_w\)s (or \(\lambda_b\)s) for each \(c\) parameters
-explored.</p></li>
-<li><p><code>opt_lambda_w</code> and <code>opt_lambda_b</code> are vectors containing the selected
-\(\lambda_w\)s (or \(\lambda_b\)s) for each \(c\) parameters explored.</p></li>
+<li><p><code>merge</code> is the "merged" adjacency matrix, the average of all the adjacency
+matrices estimated across all the different subsamples for the selected
+combination of \(\lambda_w\), \(\lambda_b\), and \(c\) values in the
+last path explored before convergence. Each entry is a measure of how
+recurrent the corresponding edge is across the subsamples.</p></li>
+<li><p><code>variability_lw</code>, <code>variability_lb</code> and <code>variability_c</code> are numeric vectors
+of as many items as the number of \(\lambda_w\), \(\lambda_b\), and
+\(c\) values explored. Each item is the variability of the network
+estimated for the corresponding hyperparameter value, keeping the other two
+hyperparameters fixed to their selected value.</p></li>
 <li><p><code>sel_index_c</code>, <code>sel_index_lw</code> and <code>sel_index_lb</code> are the indexes of the
-final selected parameters \(c\), \(\lambda_w\) and \(\lambda_b\) leading to the
-most stable sparse network.</p></li>
+final selected parameters \(c\), \(\lambda_w\) and \(\lambda_b\)
+leading to the most stable sparse network.</p></li>
 <li><p><code>sel_c</code>, <code>sel_lambda_w</code> and <code>sel_lambda_b</code> are the final selected
-parameters \(c\), \(\lambda_w\) and \(\lambda_b\) leading to the most stable
-sparse network.</p></li>
+hyperparameters \(c\), \(\lambda_w\) and \(\lambda_b\) leading to the
+most stable sparse network.</p></li>
 <li><p><code>sel_adj</code> is the adjacency matrix of the final selected network.</p></li>
+<li><p><code>sel_variability</code> is the variability of the final selected network.</p></li>
 <li><p><code>sel_density</code> is the density of the final selected network.</p></li>
 <li><p><code>sel_icov</code> is the inverse covariance matrix of the final selected network.</p></li>
+<li><p><code>sel_cov</code> optional, given only when <code><a href="coglasso.html">coglasso()</a></code> was called with
+<code>cov_output = TRUE</code>. It is the covariance matrix associated with the final
+selected network.</p></li>
 <li><p><code>call</code> is the matched call.</p></li>
 <li><p><code>method</code> is the chosen model selection method. Here, it is "xstars".</p></li>
 </ul></div>
@@ -154,14 +144,13 @@ sparse network.</p></li>
 published by Liu, H. <em>et al.</em> (2010): Stability Approach to Regularization
 Selection (StARS). <em>StARS</em> was developed for network estimation regulated by
 a single penalty parameter, while <em>collaborative graphical lasso</em> needs to
-explore three different hyperparameters. In particular, two of these are
-penalty parameters with a direct influence on network sparsity, hence on
-stability. For every \(c\) parameter, <code>xstars()</code> explores one of
-the two penalty parameters (\(\lambda_w\) or \(\lambda_b\)), keeping the other one
-fixed at its previous best estimate, using the normal, one-dimentional
-<em>StARS</em> approach, until finding the best couple. It then selects the \(c\)
-parameter for which the best (\(\lambda_w\), \(\lambda_b\)) couple yielded the most
-stable, yet sparse network.</p>
+explore three different hyperparameters. These all have, to a different
+degree, a direct influence on network sparsity, hence on stability. For every
+iteration, <code>xstars()</code> explores one of the three parameters (\(\lambda_w\),
+\(\lambda_b\), or \(c\)), keeping the other ones fixed at their previous
+selected estimate, using the normal, one-dimentional <em>StARS</em> approach, until
+finding the best combination of the three that yields the most stable, yet
+sparse network.</p>
     </div>
 
     <div class="section level2">
