@@ -94,7 +94,15 @@ editor_options:
 -   Changed the generation procedures for `lambda_w` and `lambda_b`: the
     maximum values will be, respectively, the highest *within* Pearson's
     correlation value and the highest *between* Pearson's correlation
-    value.
+    value. Moreover, in previous versions the granularity of the search 
+    grid increased as the values of `lambda_w` and `lambda_b` decreased. 
+    As our major interest lies in sparser network, this granularity has 
+    now been inverted. 
+    
+-   Implemented the new functions `get_network()` and `get_pcor()`. These
+    two functions extract, respectively, a network in the `igraph` format
+    or a matrix of partial correlations from an object either of class
+    `coglasso` or of class `select_coglasso`.
 
 # coglasso 1.0.2
 
