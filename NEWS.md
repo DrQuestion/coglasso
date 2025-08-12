@@ -6,8 +6,9 @@ editor_options:
 
 # coglasso (development version)
 
--   Changed the `xstars()` algorithm to perform the stability-based selection of
-    the `c` hyperparameter simultaneously with `lambda_w` and `lambda_b`.
+-   Changed the `xstars()` algorithm to perform the stability-based
+    selection of the `c` hyperparameter simultaneously with `lambda_w`
+    and `lambda_b`.
 
 -   Began the deprecation process of `stars_coglasso()`, renamed to the
     more accurate `xstars()`. Made also some implementation improvements
@@ -52,10 +53,9 @@ editor_options:
     lambda_b (which can happen several times). Especially for larger
     data sets, this consists a huge difference.\
     **How do `xstars()` and `xestars()` differ in results?\
-    **The impressive increase in speed comes
-    with some minor costs.\
-    The different sampling strategy that guarantees not only a
-    faster, but also a fairer parameter selection, may lead to different
+    **The impressive increase in speed comes with some minor costs.\
+    The different sampling strategy that guarantees not only a faster,
+    but also a fairer parameter selection, may lead to different
     selected hyperparameters between the older and the new methodology.
 
 -   Created the classes `coglasso` and `select_coglasso`, with related
@@ -67,6 +67,8 @@ editor_options:
 -   Created a plotting module. Now every function of the package that
     produces or selects a network generates an object that can be
     directly be plotted with `plot()`.
+
+-   Networks produced with `plot()` have weighted edges.
 
 -   Began the implementation of a **new version** of the *collaborative
     graphical lasso* algorithm, now able to accept **more than two omics
@@ -94,17 +96,15 @@ editor_options:
 -   Changed the generation procedures for `lambda_w` and `lambda_b`: the
     maximum values will be, respectively, the highest *within* Pearson's
     correlation value and the highest *between* Pearson's correlation
-    value. Moreover, in previous versions the granularity of the search 
-    grid increased as the values of `lambda_w` and `lambda_b` decreased. 
-    As our major interest lies in sparser network, this granularity has 
-    now been inverted. 
-    
--   Implemented the new functions `get_network()` and `get_pcor()`. These
-    two functions extract, respectively, a network in the `igraph` format
-    or a matrix of partial correlations from an object either of class
-    `coglasso` or of class `select_coglasso`.
+    value. Moreover, in previous versions the granularity of the search
+    grid increased as the values of `lambda_w` and `lambda_b` decreased.
+    As our major interest lies in sparser network, this granularity has
+    now been inverted.
 
-# coglasso 1.0.2
+-   Implemented the new functions `get_network()` and `get_pcor()`.
+    These two functions extract, respectively, a network in the `igraph`
+    format or a matrix of partial correlations from an object either of
+    class `coglasso` or of class `select_coglasso`. \# coglasso 1.0.2
 
 -   Reformatted the Description field of DESCRIPTION file according to
     CRAN reviewer's comments.

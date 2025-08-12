@@ -873,9 +873,6 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
           
           break
         } else if (j == n_c) {
-          if (verbose) {
-            print("No c value was enough to pass the threshold of instability. Try with a higher value.")
-          }
           index_c <- 1
           tmp_c <- coglasso_obj$c[index_c]
           if (tmp_c == c_sel) {
@@ -899,6 +896,8 @@ xestars <- function(coglasso_obj, stars_thresh = 0.1, stars_subsample_ratio = NU
               mes <- "Reached convergence.                 "
               cat(mes, "\r")
               cat("\n")
+              cat("No c value was enough to pass the threshold of instability.\nTry with a higher value.\n")
+              
             }
             flush.console()
           }
