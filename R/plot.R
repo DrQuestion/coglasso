@@ -57,12 +57,17 @@ plot.select_coglasso <- function(x, index_c=NULL, index_lw=NULL, index_lb=NULL, 
   }
   
   ws <- abs(sel_pcor)
+  ws <- abs(ws)
   upper <- c(ws[upper.tri(ws)])
   lower <- c(t(ws)[upper.tri(ws)])
-  ws <- sapply(seq_along(upper), function(i) max(upper[i], lower[i]))
-  ws <- ws[ws != 0]
+  max_ws <- vapply(seq_along(upper),
+                   function(i) max(upper[i], lower[i]), numeric(1))
+  ws[upper.tri(ws, diag = FALSE)] <- max_ws
+  ws <- t(ws)
+  ws[upper.tri(ws, diag = FALSE)] <- max_ws
+  igraph::E(sel_network)$weight <- ws[igraph::as_edgelist(sel_network)]
   
-  lo <- igraph::layout_with_fr(sel_network, weights = ws)
+  lo <- igraph::layout_with_fr(sel_network)
   if (hide_isolated) {
     disconnected <- which(igraph::degree(sel_network) == 0)
     sel_network <- igraph::delete_vertices(sel_network, disconnected)
