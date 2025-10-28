@@ -4,7 +4,7 @@ editor_options:
     wrap: 72
 ---
 
-# coglasso 1.2.0
+# coglasso 1.1.0
 
 ## New functions
 
