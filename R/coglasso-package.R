@@ -12,6 +12,7 @@
 #' @importFrom stats cor
 #' @importFrom stats cov2cor
 #' @importFrom utils flush.console
+#' @importFrom withr with_seed
 #' @useDynLib coglasso, .registration=TRUE
 ## usethis namespace: end
 NULL

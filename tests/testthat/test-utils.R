@@ -22,14 +22,11 @@ test_that("get_network from coglasso works", {
 })
 
 test_that("get_network from xstars/xestars works", {
-  old_seed <- get0(".Random.seed", envir = .GlobalEnv)
-  on.exit({
-    assign(".Random.seed", old_seed, envir = .GlobalEnv)
+  withr::with_seed(42, {
+    sel_cg <- bs(multi_omics_sd_micro, p = 4, nlambda_w = 3, nlambda_b = 3, nc = 2, rep_num = 3, verbose = FALSE)
+    expect_s3_class(get_network(sel_cg), "igraph")
+    expect_s3_class(get_network(sel_cg, index_c = 2, index_lw = 2, index_lb = 2), "igraph")
   })
-  set.seed(42)
-  sel_cg <- bs(multi_omics_sd_micro, p = 4, nlambda_w = 3, nlambda_b = 3, nc = 2, rep_num = 3, verbose = FALSE)
-  expect_s3_class(get_network(sel_cg), "igraph")
-  expect_s3_class(get_network(sel_cg, index_c = 2, index_lw = 2, index_lb = 2), "igraph")
 })
 
 test_that("get_network without colnames works", {
@@ -63,14 +60,11 @@ test_that("get_pcor from coglasso works", {
 })
 
 test_that("get_pcor from xstars/xestars works", {
-  old_seed <- get0(".Random.seed", envir = .GlobalEnv)
-  on.exit({
-    assign(".Random.seed", old_seed, envir = .GlobalEnv)
+  withr::with_seed(42, {
+    sel_cg <- bs(multi_omics_sd_micro, p = 4, nlambda_w = 3, nlambda_b = 3, nc = 2, rep_num = 3, verbose = FALSE)
+    expect_equal(dim(get_pcor(sel_cg)), c(6,6))
+    expect_equal(dim(get_pcor(sel_cg, index_c = 2, index_lw = 2, index_lb = 2)), c(6,6))
   })
-  set.seed(42)
-  sel_cg <- bs(multi_omics_sd_micro, p = 4, nlambda_w = 3, nlambda_b = 3, nc = 2, rep_num = 3, verbose = FALSE)
-  expect_equal(dim(get_pcor(sel_cg)), c(6,6))
-  expect_equal(dim(get_pcor(sel_cg, index_c = 2, index_lw = 2, index_lb = 2)), c(6,6))
 })
 
 test_that("get_pcor without colnames works", {
