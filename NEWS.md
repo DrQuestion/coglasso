@@ -1,10 +1,11 @@
-# coglasso (development version)
-
 ---
 editor_options: 
   markdown: 
     wrap: 72
 ---
+# coglasso (development version)
+
+-   Begun new development version
 
 # coglasso 1.1.0
 
